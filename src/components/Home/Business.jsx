@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import React from 'react';
+import { motion } from 'framer-motion';
 
 const companyLogos = [
   "https://images.pexels.com/photos/258174/pexels-photo-258174.jpeg?auto=compress&cs=tinysrgb&w=600",
@@ -21,27 +22,18 @@ const companyLogos = [
   "https://images.pexels.com/photos/31206348/pexels-photo-31206348/free-photo-of-modern-architecture-in-puebla-business-district.jpeg?auto=compress&cs=tinysrgb&w=600",
   "https://images.pexels.com/photos/5531004/pexels-photo-5531004.jpeg?auto=compress&cs=tinysrgb&w=600",
   "https://images.pexels.com/photos/6763964/pexels-photo-6763964.jpeg?auto=compress&cs=tinysrgb&w=600",
-  "https://images.pexels.com/photos/4109051/pexels-photo-4109051.jpeg?auto=compress&cs=tinysrgb&w=600",
-  "https://images.pexels.com/photos/15863044/pexels-photo-15863044/free-photo-of-openai-text-on-tv-screen.jpeg?auto=compress&cs=tinysrgb&w=600",
-  "https://images.pexels.com/photos/26954172/pexels-photo-26954172/free-photo-of-lamborghini-logo-badge-on-hood-of-black-glossy-sports-car.jpeg?auto=compress&cs=tinysrgb&w=600",
-  "https://images.pexels.com/photos/2532680/pexels-photo-2532680.jpeg?auto=compress&cs=tinysrgb&w=600",
-  "https://images.pexels.com/photos/698699/pexels-photo-698699.jpeg?auto=compress&cs=tinysrgb&w=600",
-  "https://images.pexels.com/photos/5872350/pexels-photo-5872350.jpeg?auto=compress&cs=tinysrgb&w=600",
-  "https://images.pexels.com/photos/213084/pexels-photo-213084.jpeg?auto=compress&cs=tinysrgb&w=600",
-  "https://images.pexels.com/photos/39720/pexels-photo-39720.jpeg?auto=compress&cs=tinysrgb&w=600",
-  "https://images.pexels.com/photos/3651828/pexels-photo-3651828.jpeg?auto=compress&cs=tinysrgb&w=600",
-  "https://images.pexels.com/photos/6389017/pexels-photo-6389017.jpeg?auto=compress&cs=tinysrgb&w=600",
 ];
 
 export default function Business() {
   const duplicatedLogos = [...companyLogos, ...companyLogos, ...companyLogos];
+  
   return (
-    <section className="py-16 bg-gradient-to-r from-[#078aa5] to-[#03ab82]">
-      <div className="text-center">
-        <h2 className="w-11/12 mx-auto text-3xl md:text-5xl font-extrabold mb-16 tracking-wide text-white">
-          Join the 15,000+ small and mid-sized US businesses using the GoCo
-          platform
+    <section className="py-16 bg-gradient-radial from-[#4E95DB] via-[#2267AC] to-[#002347] overflow-hidden" style={{background: 'radial-gradient(circle, #4E95DB 0%, #2267AC 30%, #0F5091 60%, #002347 100%)'}}>
+      <div className="text-center mb-16">
+        <h2 className="text-4xl md:text-6xl font-bold text-white mb-12 px-6">
+          <span className="text-[#FF5003]">Join</span> the <span className="text-[#FF5003]">15,000+</span> small and mid-sized US businesses using the <span className="text-[#FF5003]">GoCo</span> platform
         </h2>
+        
         <div className="overflow-hidden relative w-full">
           <motion.div
             className="flex space-x-8 w-max"
@@ -49,7 +41,7 @@ export default function Business() {
               x: ["0%", "-100%"],
             }}
             transition={{
-              duration: 200,
+              duration: 80,
               ease: "linear",
               repeat: Infinity,
             }}
@@ -59,12 +51,13 @@ export default function Business() {
                 key={index}
                 src={logo}
                 alt={`Company ${index + 1}`}
-                className="w-48 h-48 rounded-md"
+                className="w-64 h-48 rounded-md"
               />
             ))}
           </motion.div>
         </div>
       </div>
+
     </section>
   );
 }

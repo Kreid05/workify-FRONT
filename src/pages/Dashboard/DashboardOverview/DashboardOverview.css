@@ -1,0 +1,282 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  background-color: #f9fafb;
+  color: #1e293b;
+}
+
+.dashboard-stats-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 100px;
+  height: 60%;
+  flex: 1;
+  color: white;
+  cursor: default;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  top: 0;
+}
+
+.stat-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  animation: float-gentle 3s ease-in-out infinite;
+}
+
+@keyframes float-gentle {
+  0% {
+    transform: translateY(-6px) scale(1.01);
+  }
+  50% {
+    transform: translateY(-9px) scale(1.01);
+  }
+  100% {
+    transform: translateY(-6px) scale(1.01);
+  }
+}
+
+.stat-card-black {
+  background-color: #000000;
+}
+
+.stat-card-grey {
+  background-color: #ff5003;
+}
+.stat-card-orange {
+  background-color: #fd7702;
+}
+
+.stat-card-white {
+  background-color: #fef9f4;
+  color: #1e293b;
+  box-shadow: 0 10px 20px rgb(0 0 0 / 0.05);
+  position: relative;
+}
+
+.stat-header h3 {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.stat-main {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-weight: 700;
+  font-size: 40px;
+}
+
+.stat-icon {
+  font-size: 30px;
+}
+
+.stat-subtext {
+  font-weight: 300;
+  font-size: 10px;
+}
+
+.stat-subtext-small {
+  font-weight: 300;
+  font-size: 10px;
+  max-width: 180px;
+  line-height: 1;
+}
+
+.stat-link {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #ffffff;
+  cursor: pointer;
+  user-select: none;
+}
+
+.semi-circle-progress-container {
+  display: flex;
+  justify-content: center;
+  margin: 0.5rem 0;
+}
+
+.progress-bg-semi {
+  stroke: #f3f3f3;
+}
+
+.progress-bar-semi {
+  stroke: #ff5003;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.progress-text-semi {
+  font-size: 15px;
+  fill: #1e293b;
+  font-weight: 700;
+}
+
+.dashboard-lower-row {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.recent-payments-card {
+  background-color: white;
+  flex: 1;
+  min-width: 280px;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-payments-card h3 {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.recent-payments-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.recent-payment-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+.payment-name {
+  font-weight: 600;
+  flex: 2;
+  text-align: left;
+}
+
+.payment-amount {
+  flex: 1;
+  text-align: left;
+  font-weight: 500;
+  color: #ff5003;
+}
+
+.payment-date {
+  flex: 1;
+  text-align: right;
+  font-weight: 300;
+  color: #64748b;
+}
+
+.salary-history-card {
+  background-color: white;
+  flex: 2;
+  min-width: 360px;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.salary-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.salary-history-header h3 {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #1e293b;
+}
+
+.yearly-select {
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  background-color: transparent;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+}
+
+.bottom-cards-row {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.bottom-card {
+  background-color: #f9fafb;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  flex: 1;
+  min-width: 140px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: #334155;
+}
+
+.bottom-card-title {
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
+  color: #64748b;
+}
+
+.bottom-card-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #0f172a;
+}
+
+.bottom-card-sub {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.bottom-card-icon {
+  font-size: 1.8rem;
+  color: #334155;
+  margin: 0.3rem 0;
+}
+
+@media (max-width: 768px) {
+  .dashboard-stats-row,
+  .dashboard-lower-row {
+    flex-direction: column;
+  }
+
+  .stat-card,
+  .recent-payments-card,
+  .salary-history-card {
+    min-width: 100%;
+  }
+
+  .bottom-cards-row {
+    flex-direction: column;
+  }
+}

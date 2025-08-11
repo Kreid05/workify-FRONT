@@ -1,3 +1,7 @@
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
 body.light-mode {
   background-color: #ffffff;
   color: #1a103d;
@@ -11,3 +15,14 @@ body.dark-mode {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Prevent excess scrollable space */
+html, body, #root {
+  height: 100%;
+}
+
+/* Ensure main containers fit viewport */
+main {
+  height: 100vh;
+  overflow-y: auto;
+}

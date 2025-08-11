@@ -1,69 +1,64 @@
-import { useQuery } from "@tanstack/react-query";
 import Lottie from "lottie-react";
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { toast } from "react-toastify";
-import { saveUsr } from "../../api/utils.";
 import technical from "../../assets/login.json";
-import useAuth from "../../hooks/useAuth";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
+import "./Login.css";
 
 export default function Login() {
-  const { signInUser, userLogout } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
   const axiosPublic = useAxiosPublic();
 
-  // get all fired user
-  const { data: firedUser = [] } = useQuery({
-    queryKey: ["firedUsers"],
-    queryFn: async () => {
-      const { data } = await axiosPublic.get("/firedUser");
-      return data;
-    },
-  });
-
-  // email password  login
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-
-    // check fired user email
-    const isTrue = firedUser.some((user) => user?.email === email);
-    if (isTrue) {
-      toast.error("This user has already been fired.");
+    if (!email || !password) {
+      toast.error("Email and password are required.");
       return;
     }
 
-    signInUser(email, password)
-      .then((result) => {
-        navigate(location.state ? location.state : "/");
-        toast.success("Your login successful");
-      })
-      .catch(() => toast.error("Your email or password is incorrect!"));
+    try {
+      setLoading(true);
+      const { data } = await axiosPublic.post("/auth/login", { email, password });
+
+      // store jwt token
+      localStorage.setItem("access-token", data.token);
+
+      toast.success("Login successful!");
+      navigate(location.state?.from || "/");
+    } catch (err) {
+      if (err.response?.status === 403) {
+        toast.error("Your account has been disabled.");
+      } else {
+        toast.error(err.response?.data?.message || "Invalid email or password.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
-      <div className="w-11/12 mx-auto py-6 md:py-12 grid grid-cols-1 md:grid-cols-2 gap-52">
-        <div className="hidden md:block">
-          <Lottie animationData={technical} loop={true} />
-        </div>
-        <div className="">
-          <div className="max-w-md">
-            <h1 className="text-3xl font-bold  mb-4 text-center ">
-              Login now!
-            </h1>
-            <div className="card bg-base-100 shadow-2xl rounded-lg p-8">
-              <form onSubmit={handleLoginSubmit} className=" space-y-4">
+      <div className="login-container">
+        <div className="login-content">
+          <div className="login-animation">
+            <Lottie animationData={technical} loop={true} />
+          </div>
+          <div className="login-form-side">
+            <div className="login-card">
+              <h1 className="login-title">
+                Welcome!
+              </h1>
+              <form onSubmit={handleLoginSubmit} className="login-form">
                 <div className="form-control">
-                  <label className="label font-semibold text-gray-700">
+                  <label className="form-label">
                     Email
                   </label>
                   <input
@@ -72,13 +67,13 @@ export default function Login() {
                     name="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="input input-bordered border w-full p-3 text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="form-input"
                     required
                   />
                 </div>
 
                 <div className="form-control">
-                  <label className="label font-semibold text-gray-700">
+                  <label className="form-label">
                     Password
                   </label>
                   <input
@@ -87,35 +82,24 @@ export default function Login() {
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="input input-bordered border w-full p-3  text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="form-input"
                     required
                   />
                 </div>
 
-                <div className="form-control">
-                  <button className="btn bg-button w-full py-3 rounded-lg text-white font-semibold hover:text-primary">
-                    Login
+                <div className="form-control login-buttons">
+                  <button type="submit" className="sign-in-button">
+                    Sign in
                   </button>
                 </div>
               </form>
               <div className="text-center mt-4">
                 <Link
                   to="/forgot-password"
-                  className="text-sm text-primary hover:underline font-semibold"
+                  className="forgot-password"
                 >
                   Forgot password?
                 </Link>
-              </div>
-              <div className="text-center mt-6">
-                <p className="text-sm text-gray-600">
-                  Don't have an account?{" "}
-                  <Link
-                    to="/register"
-                    className="hover:underline text-primary font-semibold"
-                  >
-                    Register here
-                  </Link>
-                </p>
               </div>
             </div>
           </div>

@@ -1,3 +1,4 @@
+import React from "react";
 import { StarIcon } from "@heroicons/react/24/solid";
 import { Carousel } from "@material-tailwind/react";
 
@@ -45,9 +46,14 @@ const Testimonials = () => {
     <section className="dark:bg-[#222a3d] dark:text-[#a4aab0]">
       <div className="py-10 md:py-16 w-11/12 mx-auto">
         <div className="text-center">
-          <h2 className="text-center text-5xl font-extrabold tracking-wide mb-8">
-            What Our Clients Say
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#002347] mb-6 leading-tight">
+            What Our
+            <br />
+            <span className="text-[#FF5003]">Clients Say</span>
           </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-16">
+            Don't just take our word for it, hear from the companies that have transformed their HR processes with our platform
+          </p>
           <Carousel autoplay={true} loop={true} autoplayDelay={5000}>
             {testimonials.map((item) => (
               <div
@@ -62,7 +68,6 @@ const Testimonials = () => {
                     className="h-[450px] w-full object-cover object-top"
                   />
                 </div>
-
                 {/* Right Side - Text */}
                 <div className="w-full md:w-1/2 p-8 text-left ">
                   <h3 className="text-3xl font-bold text-gray-900 dark:text-[#96a3b5]">
@@ -74,19 +79,16 @@ const Testimonials = () => {
                       {item.company}
                     </span>
                   </p>
-
                   {/* Experience */}
                   <p className="mt-2 text-sm text-gray-500 dark:text-[#96a3b5]">
                     {item.experience}
                   </p>
-
                   {/* Star Rating */}
                   <div className="flex items-center mt-3 text-yellow-500">
                     {[...Array(item.rating)].map((_, index) => (
                       <StarIcon key={index} className="h-6 w-6" />
                     ))}
                   </div>
-
                   {/* Feedback Text */}
                   <p className="mt-5 text-gray-700 text-lg italic dark:text-[#96a3b5]">
                     "{item.feedback}"
