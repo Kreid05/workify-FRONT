@@ -161,12 +161,6 @@
   text-align: center;
 }
 
-/* Divider */
-.sidebar-divider {
-  margin: 0.5rem 0;
-  border-color: #d1d5db;
-}
-
 /* Sidebar Footer */
 .sidebar-footer {
   border-top: 1px solid #d1d5db;

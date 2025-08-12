@@ -54,7 +54,7 @@ const DashboardOverview = () => {
   ];
 
   const topEmployeeMonth = {
-    name: "Chris Redford",
+    name: "Chris Redfield",
     month: "August",
   };
 

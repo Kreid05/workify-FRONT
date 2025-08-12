@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import DataTable from "react-data-table-component";
-import { FaFilter } from "react-icons/fa";
+import { FaFilter, FaCheck } from "react-icons/fa";
 import "./Progress.css";
 
 function ProgressList() {
@@ -8,29 +8,32 @@ function ProgressList() {
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // Hardcoded progrees data
+  // Hardcoded progress data
   const Progress = [
     {
       _id: "1",
       name: "Lim Alcovendas",
+      taskName: "Sales Report Q1",
       department: "Sales",
-      worksheet: "On Progress",
+      status: "On Progress",
       hoursWorked: "48",
       completionDate: "00-00-0000",
     },
     {
       _id: "2",
       name: "Mark Regie Magtangob",
+      taskName: "Client Presentation",
       department: "Sales",
-      worksheet: "Completed",
+      status: "On Progress",
       hoursWorked: "24",
       completionDate: "08-12-2025",
     },
     {
       _id: "3",
       name: "Ezekiel Olasiman",
+      taskName: "Marketing Campaign",
       department: "Marketing",
-      worksheet: "Completed",
+      status: "On Progress",
       hoursWorked: "24",
       completionDate: "08-12-2025",
     },
@@ -76,48 +79,57 @@ function ProgressList() {
       name: "Name",
       selector: row => row.name,
       sortable: true,
-      width: "30%",
+      width: "18%",
       sortFunction: (rowA, rowB) => {
         return rowA.name.localeCompare(rowB.name);
+      },
+    },
+    {
+      name: "Task Name",
+      selector: row => row.taskName,
+      sortable: true,
+      width: "18%",
+      sortFunction: (rowA, rowB) => {
+        return rowA.taskName.localeCompare(rowB.taskName);
       },
     },
     {
       name: "Department",
       selector: row => row.department,
       sortable: true,
-      width: "15%",
+      width: "12%",
       sortFunction: (rowA, rowB) => {
         return rowA.department.localeCompare(rowB.department);
       },
     },
     {
-      name: "Worksheet",
-      selector: row => row.worksheet,
-      width: "20%",
+      name: "Status",
+      selector: row => row.status,
+      width: "15%",
       center: true,
       cell: (row) => {
-        const status = row.worksheet?.toLowerCase();
+        const status = row.status?.toLowerCase();
         let statusClass = "";
         
         if (status === "completed") {
-          statusClass = "worksheet-completed";
+          statusClass = "status-completed";
         } else if (status === "on progress" || status === "in progress") {
-          statusClass = "worksheet-on-progress";
+          statusClass = "status-on-progress";
         }
         
         return (
           <span className={statusClass}>
-            {row.worksheet}
+            {row.status}
           </span>
         );
       }
     },
     {
-      name: "Hours Worked",
+      name: "Hrs Worked",
       selector: row => `${row.hoursWorked} hrs`,
       sortable: true,
       center: true,
-      width: "20%",
+      width: "12%",
       sortFunction: (rowA, rowB) => {
         return rowA.hoursWorked - rowB.hoursWorked;
       },
@@ -133,6 +145,30 @@ function ProgressList() {
         const dateB = parseDate(rowB.completionDate);
         return dateB - dateA; // Sort by recent date (newest first)
       },
+    },
+    {
+      name: "Action",
+      width: "10%",
+      center: true,
+      cell: (row) => (
+        <button
+          style={{
+            backgroundColor: '#028a0f',
+            color: 'white',
+            border: 'none',
+            padding: '8px 12px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '5px',
+            fontSize: '12px'
+          }}
+        >
+          <FaCheck size={14} />
+          Done
+        </button>
+      ),
     },
   ];
 

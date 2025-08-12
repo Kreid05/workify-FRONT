@@ -5,24 +5,29 @@ import {
   FaClipboard,
   FaEnvelope,
   FaHome,
-  FaListAlt,
   FaMoneyBill,
   FaUser,
   FaUserAlt,
   FaSignOutAlt,
 } from "react-icons/fa";
 import { RxDashboard } from "react-icons/rx";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 import "./Sidebar.css";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { userLogout } = useAuth();
+  const navigate = useNavigate();
   // All navigation items are now hardcoded - no backend connection needed
 
   const handleLogout = () => {
     userLogout();
+    navigate("/login");
+  };
+
+  const handleLogoClick = () => {
+    navigate("/");
   };
 
   return (
@@ -43,13 +48,14 @@ const Sidebar = () => {
       <aside
         className={`sidebar ${isOpen ? "sidebar-open" : "sidebar-closed"}`}
       >
-        <div className="logo-container">
+        <div className="logo-container" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
           <img 
             src="/src/assets/logo-noback.png" 
             alt="Workify Logo" 
             className="logo"
           />
         </div>
+      
         <nav className="sidebar-nav">
           <div className="sidebar-content">
             <ul>
@@ -63,23 +69,8 @@ const Sidebar = () => {
                   <span>Overview</span>
                 </NavLink>
               </li>
+
               {/* Hardcoded navigation items - all visible without role checks */}
-              <li>
-                <NavLink 
-                  to="/dashboard/work-sheet" 
-                  className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
-                >
-                  <FaClipboard className="nav-icon" /> <span>Work Sheet</span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink 
-                  to="/dashboard/payment-history" 
-                  className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
-                >
-                  <FaMoneyBill className="nav-icon" /> <span>Payment History</span>
-                </NavLink>
-              </li>
               <li>
                 <NavLink 
                   to="/dashboard/employee-list" 
@@ -88,6 +79,16 @@ const Sidebar = () => {
                   <FaUserAlt className="nav-icon" /> <span>Employee List</span>
                 </NavLink>
               </li>
+
+              <li>
+                <NavLink 
+                  to="/dashboard/work-sheet" 
+                  className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
+                >
+                  <FaClipboard className="nav-icon" /> <span>Task</span>
+                </NavLink>
+              </li>
+
               <li>
                 <NavLink 
                   to="/dashboard/progress" 
@@ -96,45 +97,31 @@ const Sidebar = () => {
                   <FaChartLine className="nav-icon" /> <span>Progress</span>
                 </NavLink>
               </li>
-              <li>
-                <NavLink 
-                  to="/dashboard/all-employee-list" 
-                  className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
-                >
-                  <FaListAlt className="nav-icon" /> <span>Verified Employee</span>
-                </NavLink>
-              </li>
+              
               <li>
                 <NavLink 
                   to="/dashboard/payroll" 
                   className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
                 >
-                  <FaMoneyBill className="nav-icon" /> <span>Payroll</span>
+                  <FaMoneyBill className="nav-icon" /> <span>Payroll Request</span>
                 </NavLink>
               </li>
+
               <li>
                 <NavLink 
                   to="/dashboard/contactUs-message" 
                   className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
                 >
-                  <FaEnvelope className="nav-icon" /> <span>Message</span>
+                  <FaEnvelope className="nav-icon" /> <span>Feedback</span>
                 </NavLink>
               </li>
-              <hr className="sidebar-divider" />
+
               <li>
                 <NavLink 
-                  to="/" 
+                  to="/dashboard/payment-history" 
                   className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
                 >
-                  <FaHome className="nav-icon" /> <span>Home</span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink 
-                  to="/dashboard/profile" 
-                  className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
-                >
-                  <FaUser className="nav-icon" /> <span>Profile</span>
+                  <FaMoneyBill className="nav-icon" /> <span>Payment History</span>
                 </NavLink>
               </li>
             </ul>

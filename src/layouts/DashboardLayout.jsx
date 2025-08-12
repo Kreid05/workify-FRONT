@@ -13,10 +13,9 @@ const DashboardLayout = () => {
     if (path.includes('/dashboard/employee-list')) return 'Employee List';
     if (path.includes('/dashboard/progress')) return 'Employee Work Progress';
     if (path.includes('/dashboard/profile')) return 'Profile';
-    if (path.includes('/dashboard/payroll')) return 'Payroll Management';
-    if (path.includes('/dashboard/all-employee-list')) return 'Verified Employees';
-    if (path.includes('/dashboard/contactUs-message')) return 'Messages';
-    if (path.includes('/dashboard/work-sheet')) return 'Work Sheet';
+    if (path.includes('/dashboard/payroll')) return 'Payroll Request';
+    if (path.includes('/dashboard/contactUs-message')) return 'Feedback';
+    if (path.includes('/dashboard/work-sheet')) return 'Task';
     if (path.includes('/dashboard/payment-history')) return 'Payment History';
     
     // Default title

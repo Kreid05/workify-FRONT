@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import DataTable from "react-data-table-component";
-import { FaFilter } from "react-icons/fa";
+import { FaFilter, FaUserEdit } from "react-icons/fa";
 import EmployeeDetails from "./EmployeeDetails";
+import RoleChangeModal from "./RoleChangeModal";
 import "./EmployeeList.css";
 
 function EmployeeList() {
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEmployeeForRole, setSelectedEmployeeForRole] = useState(null);
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
 
   // Hardcoded employee data
   const employees = [
@@ -18,8 +22,6 @@ function EmployeeList() {
       name: "Lim Alcovendas",
       email: "limalcovendas@company.com",
       department: "Sales",
-      bankAccountNo: "1234567890",
-      salary: 75000,
       hiredDate: "01-28-2023",
       firstName: "Lim",
       middleName: "",
@@ -57,8 +59,8 @@ function EmployeeList() {
       name: "Ezekiel Olasiman",
       email: "zekeolasiman@company.com",
       department: "Marketing",
-      bankAccountNo: "0987654321",
-      salary: 65000,
+      jobTitle: "Marketing Specialist",
+      employeeNumber: "0023-232348-2325",
       hiredDate: "04-07-2023",
     },
     {
@@ -66,8 +68,8 @@ function EmployeeList() {
       name: "Klei Ishia Pagatpatan",
       email: "kleipagatpatan@company.com",
       department: "Marketing",
-      bankAccountNo: "1122334455",
-      salary: 65000,
+      jobTitle: "Digital Marketing Coordinator",
+      employeeNumber: "0023-232348-2326",
       hiredDate: "06-11-2021",
     },
     {
@@ -75,8 +77,8 @@ function EmployeeList() {
       name: "Regine Mae Hambiol",
       email: "reginehambiol@company.com",
       department: "Compliance",
-      bankAccountNo: "5566778899",
-      salary: 60000,
+      jobTitle: "Compliance Officer",
+      employeeNumber: "0023-232348-2327",
       hiredDate: "11-19-2023",
     },
     {
@@ -84,8 +86,8 @@ function EmployeeList() {
       name: "Mark Regie Magtangob",
       email: "regiemagtangob@company.com",
       department: "Sales",
-      bankAccountNo: "9988776655",
-      salary: 75000,
+      jobTitle: "Sales Representative",
+      employeeNumber: "0023-232348-2328",
       hiredDate: "07-10-2024",
     },
     {
@@ -93,19 +95,11 @@ function EmployeeList() {
       name: "Jesalle Villegas",
       email: "jesallevillegas@company.com",
       department: "Compliance",
-      bankAccountNo: "4433221100",
-      salary: 60000,
+      jobTitle: "Compliance Analyst",
+      employeeNumber: "0023-232348-2329",
       hiredDate: "08-08-2022",
     }
   ];
-
-  // Helper function to format salary as money with commas
-  const formatSalary = (salary) => {
-    if (salary === null || salary === undefined || salary === "") return "₱0";
-    const numSalary = Number(salary);
-    if (isNaN(numSalary)) return "₱0";
-    return "₱" + numSalary.toLocaleString();
-  };
 
   // Get unique departments for filter dropdown
   const departments = [...new Set(employees.map(emp => emp.department))].sort();
@@ -144,10 +138,19 @@ function EmployeeList() {
   // Define columns for react-data-table-component with custom sorting
   const columns = [
     {
+      name: "Employee No.",
+      selector: row => row.employeeNumber,
+      sortable: true,
+      width: "13%",
+      sortFunction: (rowA, rowB) => {
+        return rowA.employeeNumber.localeCompare(rowB.employeeNumber);
+      },
+    },
+    {
       name: "Name",
       selector: row => row.name,
       sortable: true,
-      width: "20%",
+      width: "18%",
       sortFunction: (rowA, rowB) => {
         return rowA.name.localeCompare(rowB.name);
       },
@@ -156,7 +159,7 @@ function EmployeeList() {
       name: "Email",
       selector: row => row.email,
       sortable: true,
-      width: "25%",
+      width: "20%",
       sortFunction: (rowA, rowB) => {
         return rowA.email.localeCompare(rowB.email);
       },
@@ -165,37 +168,61 @@ function EmployeeList() {
       name: "Department",
       selector: row => row.department,
       sortable: true,
-      width: "15%",
+      width: "13%",
       sortFunction: (rowA, rowB) => {
         return rowA.department.localeCompare(rowB.department);
       },
     },
     {
-      name: "Account No.",
-      selector: row => row.bankAccountNo,
-      sortable: false,
-      width: "15%",
-    },
-    {
-      name: "Salary",
-      selector: row => row.salary,
+      name: "Job Title",
+      selector: row => row.jobTitle,
       sortable: true,
-      width: "10%",
-      cell: (row) => formatSalary(row.salary),
+      width: "15%",
       sortFunction: (rowA, rowB) => {
-        return rowA.salary - rowB.salary;
+        return rowA.jobTitle.localeCompare(rowB.jobTitle);
       },
     },
     {
       name: "Hired Date",
       selector: row => row.hiredDate,
       sortable: true,
-      width: "15%",
+      width: "11%",
       sortFunction: (rowA, rowB) => {
         const dateA = parseDate(rowA.hiredDate);
         const dateB = parseDate(rowB.hiredDate);
         return dateB - dateA; // Sort by recent date (newest first)
       },
+    },
+    {
+      name: "Action",
+      cell: (row) => (
+        <button
+          style={{
+            backgroundColor: '#ff5003',
+            color: 'white',
+            border: 'none',
+            padding: '8px 12px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '5px',
+            fontSize: '12px'
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setSelectedEmployeeForRole(row);
+            setIsRoleModalOpen(true);
+          }}
+        >
+          <FaUserEdit size={14} />
+          Role
+        </button>
+      ),
+      width: "10%",
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
     },
   ];
 
@@ -297,6 +324,17 @@ function EmployeeList() {
       {isModalOpen && (
         <EmployeeDetails employee={selectedEmployee} onClose={closeModal} />
       )}
+      <RoleChangeModal
+        isOpen={isRoleModalOpen}
+        onClose={() => setIsRoleModalOpen(false)}
+        employee={selectedEmployeeForRole}
+        onRoleChange={async (employeeId, newRole) => {
+          console.log(`Changing role for employee ${employeeId} to ${newRole}`);
+          // Here you would typically make an API call to update the role
+          // For now, we'll just log it and close the modal
+          setIsRoleModalOpen(false);
+        }}
+      />
     </div>
   );
 }

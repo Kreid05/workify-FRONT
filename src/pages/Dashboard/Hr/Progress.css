@@ -96,7 +96,7 @@ div[data-testid="table-row"]:hover > div {
 }
 
 /* Worksheet status styling */
-.worksheet-completed {
+.status-completed {
   background-color: #dcfce7 !important;
   color: #166534 !important;
   font-weight: 600;
@@ -108,7 +108,7 @@ div[data-testid="table-row"]:hover > div {
   border-radius: 20px;
 }
 
-.worksheet-in-progress {
+.status-in-progress {
   background-color: #fef3c7 !important;
   color: #92400e !important;
   font-weight: 600;
@@ -120,7 +120,7 @@ div[data-testid="table-row"]:hover > div {
   border-radius: 20px;
 }
 
-.worksheet-on-progress {
+.status-on-progress {
   background-color: #fef3c7 !important;
   color: #92400e !important;
   font-weight: 600;

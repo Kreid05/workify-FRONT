@@ -317,3 +317,97 @@ div[data-testid="table-row"]:hover > div {
     left: auto;
   }
 }
+
+.role-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Role Modal Styles */
+.role-modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 300px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.role-modal-header {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 20px;
+  text-align: center;
+}
+
+.role-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 25px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+}
+
+.role-option {
+  display: flex;
+  align-items: center;
+
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.role-option:hover {
+  background-color: #f5f5f5;
+}
+
+.role-option input[type="radio"] {
+  margin-right: 10px;
+  transform: scale(1.2);
+}
+
+.role-option span {
+  font-size: 16px;
+  color: #333;
+}
+
+.role-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  gap: 10px;
+}
+
+.role-save-button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.3s;
+}
+
+.role-save-button {
+  background-color: #0000ff;
+  color: white;
+}
+
+.role-save-button:hover {
+  background-color: #031273;
+}

@@ -32,7 +32,7 @@ export default function Login() {
       localStorage.setItem("access-token", data.token);
 
       toast.success("Login successful!");
-      navigate(location.state?.from || "/");
+      navigate(location.state?.from || "/dashboard");
     } catch (err) {
       if (err.response?.status === 403) {
         toast.error("Your account has been disabled.");
