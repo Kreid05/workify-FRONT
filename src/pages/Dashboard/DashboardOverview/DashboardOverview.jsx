@@ -67,65 +67,65 @@ const DashboardOverview = () => {
   const progressPercent = (pendingPayments / pendingTotal) * 100;
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-stats-row">
-      <div className="stat-card stat-card-black" onClick={handleRemainingTasksClick} style={{ cursor: 'pointer' }}>
-        <div className="stat-header">
+    <div className="hr-dashboard-container">
+      <div className="hr-dashboard-stats-row">
+      <div className="hr-stat-card stat-card-remainingTask" onClick={handleRemainingTasksClick} style={{ cursor: 'pointer' }}>
+        <div className="hr-stat-header">
           <h3>Remaining Tasks</h3>
         </div>
-        <div className="stat-main">
-          <div className="stat-number">{remainingTasks}</div>
+        <div className="hr-stat-main">
+          <div className="hr-stat-number">{remainingTasks}</div>
           <FaClipboardList className="stat-icon" />
         </div>
-        <div className="stat-subtext">On progress tasks</div>
-        <div className="stat-link">Progress &rarr;</div>
+        <div className="hr-stat-subtext">On progress tasks</div>
+        <div className="hr-stat-link">Progress &rarr;</div>
       </div>
 
-      <div className="stat-card stat-card-grey" onClick={handleCompletedTasksClick} style={{ cursor: 'pointer' }}>
-        <div className="stat-header">
+      <div className="hr-stat-card stat-card-completedTask" onClick={handleCompletedTasksClick} style={{ cursor: 'pointer' }}>
+        <div className="hr-stat-header">
           <h3>Completed Tasks</h3>
         </div>
-        <div className="stat-main">
-          <div className="stat-number">{completedTasks}</div>
+        <div className="hr-stat-main">
+          <div className="hr-stat-number">{completedTasks}</div>
           <FaClipboardList className="stat-icon" />
         </div>
-        <div className="stat-subtext">Finished tasks</div>
-        <div className="stat-link">Details &rarr;</div>
+        <div className="hr-stat-subtext">Finished tasks</div>
+        <div className="hr-stat-link">Details &rarr;</div>
       </div>
 
-      <div className="stat-card stat-card-orange" onClick={handleTotalPaidEmployeesClick} style={{ cursor: 'pointer' }}>
-        <div className="stat-header">
+      <div className="hr-stat-card stat-card-totalPaid" onClick={handleTotalPaidEmployeesClick} style={{ cursor: 'pointer' }}>
+        <div className="hr-stat-header">
           <h3>Total Paid Employees</h3>
         </div>
-        <div className="stat-main">
-          <div className="stat-number">{totalPaidEmployees}</div>
+        <div className="hr-stat-main">
+          <div className="hr-stat-number">{totalPaidEmployees}</div>
           <FaCreditCard className="stat-icon" />
         </div>
-        <div className="stat-subtext">
+        <div className="hr-stat-subtext">
           Already paid the salaries of the employees
         </div>
-        <div className="stat-link">Payment History &rarr;</div>
+        <div className="hr-stat-link">Payment History &rarr;</div>
       </div>
 
-          <div className="stat-card stat-card-white">
-          <div className="stat-header">
+          <div className="hr-stat-card stat-card-pendingPayments">
+          <div className="hr-stat-header">
             <h3>Pending Payments</h3>
           </div>
-          <div className="semi-circle-progress-container">
+          <div className="hr-semi-circle-progress-container">
             <svg
-              className="semi-circle-progress"
+              className="hr-semi-circle-progress"
               width="120"
               height="60"
               viewBox="0 0 120 60"
             >
               <path
-                className="progress-bg-semi"
+                className="hr-progress-bg-semi"
                 d="M 10 60 A 50 50 0 0 1 110 60"
                 strokeWidth="12"
                 fill="none"
               />
               <path
-                className="progress-bar-semi"
+                className="hr-progress-bar-semi"
                 d="M 10 60 A 50 50 0 0 1 110 60"
                 strokeWidth="12"
                 fill="none"
@@ -137,37 +137,37 @@ const DashboardOverview = () => {
                 y="45"
                 textAnchor="middle"
                 dominantBaseline="middle"
-                className="progress-text-semi"
+                className="hr-progress-text-semi"
               >
                 {pendingPayments}/{pendingTotal}
               </text>
             </svg>
           </div>
-          <div className="stat-subtext-small">
+          <div className="hr-stat-subtext-small">
             Employees has not yet given their salary
           </div>
         </div>
       </div>
 
-      <div className="dashboard-lower-row">
-        <div className="recent-payments-card">
+      <div className="hr-dashboard-lower-row">
+        <div className="hr-recent-payments-card">
           <h3>Recent Payments</h3>
-          <ul className="recent-payments-list">
+          <ul className="hr-recent-payments-list">
             {recentPayments.map((payment, index) => (
               <li key={index} className="recent-payment-item">
-                <div className="payment-name">{payment.name}</div>
-                <div className="payment-amount">₱ {payment.amount.toLocaleString()}</div>
-                <div className="payment-date">{payment.date}</div>
+                <div className="hr-payment-name">{payment.name}</div>
+                <div className="hr-payment-amount">₱ {payment.amount.toLocaleString()}</div>
+                <div className="hr-payment-date">{payment.date}</div>
               </li>
             ))}
           </ul>
-          <div className="stat-link-orange">Payment History &rarr;</div>
+          <div className="hr-stat-link-orange">Payment History &rarr;</div>
         </div>
 
-        <div className="salary-history-card">
-          <div className="salary-history-header">
+        <div className="hr-salary-history-card">
+          <div className="hr-salary-history-header">
             <h3>Salary History</h3>
-            <select className="yearly-select" defaultValue="yearly">
+            <select className="hr-yearly-select" defaultValue="yearly">
               <option value="yearly">Yearly</option>
               <option value="monthly">Monthly</option>
             </select>
@@ -195,22 +195,22 @@ const DashboardOverview = () => {
               />
             </LineChart>
           </ResponsiveContainer>
-          <div className="bottom-cards-row">
-            <div className="bottom-card">
-              <div className="bottom-card-title">Top Employee of the Month</div>
-              <div className="bottom-card-name">{topEmployeeMonth.name}</div>
-              <div className="bottom-card-sub">{topEmployeeMonth.month}</div>
+          <div className="hr-bottom-cards-row">
+            <div className="hr-bottom-card">
+              <div className="hr-bottom-card-title">Top Employee of the Month</div>
+              <div className="hr-bottom-card-name">{topEmployeeMonth.name}</div>
+              <div className="hr-bottom-card-sub">{topEmployeeMonth.month}</div>
             </div>
-            <div className="bottom-card">
-              <div className="bottom-card-title">Top Employee of the Year</div>
-              <div className="bottom-card-name">{topEmployeeYear.name}</div>
-              <div className="bottom-card-sub">{topEmployeeYear.year}</div>
+            <div className="hr-bottom-card">
+              <div className="hr-bottom-card-title">Top Employee of the Year</div>
+              <div className="hr-bottom-card-name">{topEmployeeYear.name}</div>
+              <div className="hr-bottom-card-sub">{topEmployeeYear.year}</div>
             </div>
-            <div className="bottom-card">
-              <div className="bottom-card-title">Total Employee</div>
-              <FaUsers className="bottom-card-icon" />
-              <div className="bottom-card-number">{totalEmployees}</div>
-              <div className="bottom-card-sub">Employees</div>
+            <div className="hr-bottom-card">
+              <div className="hr-bottom-card-title">Total Employee</div>
+              <FaUsers className="hr-bottom-card-icon" />
+              <div className="hr-bottom-card-number">{totalEmployees}</div>
+              <div className="hr-bottom-card-sub">Employees</div>
             </div>
           </div>
         </div>

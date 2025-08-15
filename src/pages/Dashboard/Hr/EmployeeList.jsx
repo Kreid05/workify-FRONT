@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import DataTable from "react-data-table-component";
-import { FaFilter, FaUserEdit } from "react-icons/fa";
+import { FaFilter, FaEdit } from "react-icons/fa";
 import EmployeeDetails from "./EmployeeDetails";
-import RoleChangeModal from "./RoleChangeModal";
+import EmployeeUpdateModal from "./EmployeeUpdateModal";
 import "./EmployeeList.css";
 
 function EmployeeList() {
@@ -12,11 +12,11 @@ function EmployeeList() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedEmployeeForRole, setSelectedEmployeeForRole] = useState(null);
-  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const [selectedEmployeeForUpdate, setSelectedEmployeeForUpdate] = useState(null);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
-  // Hardcoded employee data
-  const employees = [
+  // Hardcoded employee data with currentRole field added
+  const [employees, setEmployees] = useState([
     {
       _id: "1",
       name: "Lim Alcovendas",
@@ -27,6 +27,7 @@ function EmployeeList() {
       middleName: "",
       lastName: "Alcovendas",
       jobTitle: "Sales Manager",
+      currentRole: "Manager",
       phoneNumber: "+63 963-633-4053",
       gender: "Male",
       age: 23,
@@ -60,6 +61,7 @@ function EmployeeList() {
       email: "zekeolasiman@company.com",
       department: "Marketing",
       jobTitle: "Marketing Specialist",
+      currentRole: "Specialist",
       employeeNumber: "0023-232348-2325",
       hiredDate: "04-07-2023",
     },
@@ -69,6 +71,7 @@ function EmployeeList() {
       email: "kleipagatpatan@company.com",
       department: "Marketing",
       jobTitle: "Digital Marketing Coordinator",
+      currentRole: "Coordinator",
       employeeNumber: "0023-232348-2326",
       hiredDate: "06-11-2021",
     },
@@ -78,6 +81,7 @@ function EmployeeList() {
       email: "reginehambiol@company.com",
       department: "Compliance",
       jobTitle: "Compliance Officer",
+      currentRole: "Officer",
       employeeNumber: "0023-232348-2327",
       hiredDate: "11-19-2023",
     },
@@ -87,6 +91,7 @@ function EmployeeList() {
       email: "regiemagtangob@company.com",
       department: "Sales",
       jobTitle: "Sales Representative",
+      currentRole: "Representative",
       employeeNumber: "0023-232348-2328",
       hiredDate: "07-10-2024",
     },
@@ -96,10 +101,11 @@ function EmployeeList() {
       email: "jesallevillegas@company.com",
       department: "Compliance",
       jobTitle: "Compliance Analyst",
+      currentRole: "Analyst",
       employeeNumber: "0023-232348-2329",
       hiredDate: "08-08-2022",
     }
-  ];
+  ]);
 
   // Get unique departments for filter dropdown
   const departments = [...new Set(employees.map(emp => emp.department))].sort();
@@ -133,6 +139,18 @@ function EmployeeList() {
   const parseDate = (dateString) => {
     const [month, day, year] = dateString.split('-').map(Number);
     return new Date(year, month - 1, day);
+  };
+
+  // Handle employee update
+  const handleEmployeeUpdate = (employeeId, updatedData) => {
+    setEmployees(prevEmployees => 
+      prevEmployees.map(emp => 
+        emp._id === employeeId 
+          ? { ...emp, ...updatedData }
+          : emp
+      )
+    );
+    console.log(`Employee ${employeeId} updated with:`, updatedData);
   };
 
   // Define columns for react-data-table-component with custom sorting
@@ -211,12 +229,12 @@ function EmployeeList() {
           }}
           onClick={(e) => {
             e.stopPropagation();
-            setSelectedEmployeeForRole(row);
-            setIsRoleModalOpen(true);
+            setSelectedEmployeeForUpdate(row);
+            setIsUpdateModalOpen(true);
           }}
         >
-          <FaUserEdit size={14} />
-          Role
+          <FaEdit size={14} />
+          Update
         </button>
       ),
       width: "10%",
@@ -324,16 +342,11 @@ function EmployeeList() {
       {isModalOpen && (
         <EmployeeDetails employee={selectedEmployee} onClose={closeModal} />
       )}
-      <RoleChangeModal
-        isOpen={isRoleModalOpen}
-        onClose={() => setIsRoleModalOpen(false)}
-        employee={selectedEmployeeForRole}
-        onRoleChange={async (employeeId, newRole) => {
-          console.log(`Changing role for employee ${employeeId} to ${newRole}`);
-          // Here you would typically make an API call to update the role
-          // For now, we'll just log it and close the modal
-          setIsRoleModalOpen(false);
-        }}
+      <EmployeeUpdateModal
+        isOpen={isUpdateModalOpen}
+        onClose={() => setIsUpdateModalOpen(false)}
+        employee={selectedEmployeeForUpdate}
+        onUpdateEmployee={handleEmployeeUpdate}
       />
     </div>
   );

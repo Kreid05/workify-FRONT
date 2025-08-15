@@ -1,138 +1,235 @@
-import {
-  Button,
-  Dialog,
-  DialogBody,
-  DialogFooter,
-  DialogHeader,
-} from "@material-tailwind/react";
-import React, { useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { toast } from "react-toastify";
-import useAuth from "../../../hooks/useAuth";
-import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import React, { useState, useEffect } from 'react';
+import './AddTaskModal.css';
 
-const AddTaskModal = ({ open, handleOpen, refetch }) => {
-  const { user } = useAuth();
-  const axiosSecure = useAxiosSecure();
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [taskValue, setTaskValue] = useState("");
-  const [hoursWorkedValue, setHoursWorkedValue] = useState("");
+const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
+  const [formData, setFormData] = useState({
+    taskName: '',
+    description: '',
+    assignedTo: '',
+    assignedBy: '',
+    department: '',
+    dueDate: ''
+  });
+  
+  const [employees, setEmployees] = useState([]);
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
 
-  // Reset form
-  const resetForm = () => {
-    setTaskValue("");
-    setHoursWorkedValue("");
-    setSelectedDate(new Date());
+  // Mock departments - replace with actual data from your backend
+  const departments = [
+    'IT',
+    'HR',
+    'Finance',
+    'Marketing',
+    'Operations',
+    'Sales',
+    'Customer Service'
+  ];
+
+  // Fetch employees for the dropdown
+  useEffect(() => {
+    // Replace this with actual API call to fetch employees
+    const mockEmployees = [
+      { id: 1, name: 'John Doe', email: 'john@company.com' },
+      { id: 2, name: 'Jane Smith', email: 'jane@company.com' },
+      { id: 3, name: 'Mike Johnson', email: 'mike@company.com' },
+      { id: 4, name: 'Sarah Williams', email: 'sarah@company.com' }
+    ];
+    setEmployees(mockEmployees);
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+
+    // Handle assignedTo search
+    if (name === 'assignedTo') {
+      if (value) {
+        const filtered = employees.filter(emp => 
+          emp.name.toLowerCase().includes(value.toLowerCase()) ||
+          emp.email.toLowerCase().includes(value.toLowerCase())
+        );
+        setFilteredEmployees(filtered);
+        setShowDropdown(true);
+      } else {
+        setFilteredEmployees([]);
+        setShowDropdown(false);
+      }
+    }
   };
 
-  // Handle form submission
+  const handleEmployeeSelect = (employee) => {
+    setFormData(prev => ({
+      ...prev,
+      assignedTo: employee.name
+    }));
+    setShowDropdown(false);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!taskValue || !hoursWorkedValue) {
-      toast.error("Please fill all required fields");
+    
+    // Validate required fields
+    if (!formData.taskName || !formData.assignedTo || !formData.dueDate) {
+      alert('Please fill in all required fields');
       return;
     }
 
-    const employeeInfo = {
-      name: user?.displayName,
-      email: user?.email,
-      tasks: taskValue,
-      hoursWorked: hoursWorkedValue,
-      selectedDate,
-      month: selectedDate.toLocaleString("default", { month: "long" }),
+    // Create task object
+    const newTask = {
+      ...formData,
+      assignedTo: employees.find(emp => emp.name === formData.assignedTo)?.id || formData.assignedTo,
+      createdAt: new Date().toISOString()
     };
 
-    axiosSecure
-      .post("/employeeWorkSheet", employeeInfo)
-      .then((result) => {
-        if (result?.data?.insertedId) {
-          refetch();
-          toast.success("Employee data successfully added!");
-          resetForm();
-          handleOpen(); 
-        }
-      })
-      .catch((error) => {
-        toast.error(error?.message);
-      });
+    onAddTask(newTask);
+    
+    // Reset form
+    setFormData({
+      taskName: '',
+      description: '',
+      assignedTo: '',
+      assignedBy: '',
+      department: '',
+      dueDate: ''
+    });
+    
+    onClose();
   };
 
+  const handleClose = () => {
+    // Reset form when closing
+    setFormData({
+      taskName: '',
+      description: '',
+      assignedTo: '',
+      assignedBy: '',
+      department: '',
+      dueDate: ''
+    });
+    setShowDropdown(false);
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
   return (
-    <Dialog open={open} handler={handleOpen} className="max-w-lg w-full">
-      <DialogHeader>Add New Task</DialogHeader>
-      <DialogBody>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Task Dropdown */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Select Task *
-            </label>
-            <select
-              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={taskValue}
-              onChange={(e) => setTaskValue(e.target.value)}
+    <div className="addTask-modal-overlay">
+      <div className="addTask-modal-container">
+        <div className="addTask-modal-header">
+          <h2>Add New Task</h2>
+          <button className="addTask-close-button" onClick={handleClose}>×</button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="addTask-task-form">
+          <div className="addTask-form-group">
+            <label htmlFor="taskName">Task Name *</label>
+            <input
+              type="text"
+              id="taskName"
+              name="taskName"
+              value={formData.taskName}
+              onChange={handleInputChange}
               required
+              placeholder="Enter task name"
+            />
+          </div>
+
+          <div className="addTask-form-group">
+            <label htmlFor="description">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              placeholder="Enter task description"
+              rows="3"
+            />
+          </div>
+
+          <div className="addTask-form-group">
+            <label htmlFor="assignedTo">Assigned To *</label>
+            <div className="addTask-dropdown-container">
+              <input
+                type="text"
+                id="assignedTo"
+                name="assignedTo"
+                value={formData.assignedTo}
+                onChange={handleInputChange}
+                required
+                placeholder="Type to search employee"
+                autoComplete="off"
+              />
+              {showDropdown && filteredEmployees.length > 0 && (
+                <div className="addTask-dropdown-menu">
+                  {filteredEmployees.map(employee => (
+                    <div
+                      key={employee.id}
+                      className="addTask-dropdown-item"
+                      onClick={() => handleEmployeeSelect(employee)}
+                    >
+                      {employee.name} ({employee.email})
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="addTask-form-group">
+            <label htmlFor="assignedBy">Assigned By</label>
+            <input
+              type="text"
+              id="assignedBy"
+              name="assignedBy"
+              value={formData.assignedBy}
+              onChange={handleInputChange}
+              placeholder="Enter assigner's name"
+            />
+          </div>
+
+          <div className="addTask-form-group">
+            <label htmlFor="department">Department</label>
+            <select
+              id="department"
+              name="department"
+              value={formData.department}
+              onChange={handleInputChange}
             >
-              <option value="">Select Task</option>
-              <option value="Sales">Sales</option>
-              <option value="Support">Support</option>
-              <option value="Content">Content</option>
-              <option value="Paper-work">Paperwork</option>
-              <option value="Marketing">Marketing</option>
-              <option value="Development">Development</option>
+              <option value="">Select Department</option>
+              {departments.map(dept => (
+                <option key={dept} value={dept}>{dept}</option>
+              ))}
             </select>
           </div>
 
-          {/* Hours Worked Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Hours Worked *
-            </label>
+          <div className="addTask-form-group">
+            <label htmlFor="dueDate">Due Date *</label>
             <input
-              type="number"
-              placeholder="Hours Worked"
-              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={hoursWorkedValue}
-              onChange={(e) => setHoursWorkedValue(e.target.value)}
-              min="0"
-              step="0.1"
+              type="date"
+              id="dueDate"
+              name="dueDate"
+              value={formData.dueDate}
+              onChange={handleInputChange}
               required
+              min={new Date().toISOString().split('T')[0]}
             />
           </div>
 
-          {/* Date Picker */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Select Date
-            </label>
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
-              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              dateFormat="yyyy-MM-dd"
-            />
+          <div className="addTask-form-actions">
+            <button type="button" className="addTask-cancel-button" onClick={handleClose}>
+              Cancel
+            </button>
+            <button type="submit" className="addTask-submit-button">
+              Add Task
+            </button>
           </div>
         </form>
-      </DialogBody>
-      <DialogFooter>
-        <Button
-          variant="text"
-          color="red"
-          onClick={() => {
-            resetForm();
-            handleOpen();
-          }}
-          className="mr-1"
-        >
-          <span>Cancel</span>
-        </Button>
-        <Button variant="gradient" color="green" onClick={handleSubmit}>
-          <span>Submit</span>
-        </Button>
-      </DialogFooter>
-    </Dialog>
+      </div>
+    </div>
   );
 };
 

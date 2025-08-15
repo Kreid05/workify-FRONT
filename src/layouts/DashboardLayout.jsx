@@ -5,20 +5,21 @@ import "./DashboardLayout.css";
 const DashboardLayout = () => {
   const location = useLocation();
   
-  // Map routes to page titles
+  
   const getPageTitle = (pathname) => {
     const path = pathname.toLowerCase();
     
     if (path.includes('/dashboard/overview')) return 'Dashboard';
     if (path.includes('/dashboard/employee-list')) return 'Employee List';
+    if (path.includes('/dashboard/department')) return 'Departments';
     if (path.includes('/dashboard/progress')) return 'Employee Work Progress';
     if (path.includes('/dashboard/profile')) return 'Profile';
     if (path.includes('/dashboard/payroll')) return 'Payroll Request';
-    if (path.includes('/dashboard/contactUs-message')) return 'Feedback';
-    if (path.includes('/dashboard/work-sheet')) return 'Task';
+    if (path.includes('/dashboard/feedback')) return 'Feedback';
+    if (path.includes('/dashboard/task')) return 'Task';
     if (path.includes('/dashboard/payment-history')) return 'Payment History';
     
-    // Default title
+   
     return 'Dashboard';
   };
 

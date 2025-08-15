@@ -9,6 +9,7 @@ import {
   FaUser,
   FaUserAlt,
   FaSignOutAlt,
+  FaBuilding,
 } from "react-icons/fa";
 import { RxDashboard } from "react-icons/rx";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -82,7 +83,16 @@ const Sidebar = () => {
 
               <li>
                 <NavLink 
-                  to="/dashboard/work-sheet" 
+                  to="/dashboard/department" 
+                  className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
+                >
+                  <FaBuilding className="nav-icon" /> <span>Departments</span>
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink 
+                  to="/dashboard/task" 
                   className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
                 >
                   <FaClipboard className="nav-icon" /> <span>Task</span>
@@ -98,32 +108,32 @@ const Sidebar = () => {
                 </NavLink>
               </li>
               
-              <li>
+              {/* <li>
                 <NavLink 
                   to="/dashboard/payroll" 
                   className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
                 >
                   <FaMoneyBill className="nav-icon" /> <span>Payroll Request</span>
                 </NavLink>
-              </li>
+              </li> */}
 
               <li>
                 <NavLink 
-                  to="/dashboard/contactUs-message" 
+                  to="/dashboard/feedback" 
                   className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
                 >
                   <FaEnvelope className="nav-icon" /> <span>Feedback</span>
                 </NavLink>
               </li>
 
-              <li>
+              {/* <li>
                 <NavLink 
                   to="/dashboard/payment-history" 
                   className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
                 >
                   <FaMoneyBill className="nav-icon" /> <span>Payment History</span>
                 </NavLink>
-              </li>
+              </li> */}
             </ul>
           </div>
           <div className="sidebar-footer">

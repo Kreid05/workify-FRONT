@@ -29,7 +29,7 @@ export default function Login() {
       const { data } = await axiosPublic.post("/auth/login", { email, password });
 
       // store jwt token
-      localStorage.setItem("access-token", data.token);
+      localStorage.setItem("accessToken", data.token);
 
       toast.success("Login successful!");
       navigate(location.state?.from || "/dashboard");

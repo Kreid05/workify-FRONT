@@ -8,8 +8,8 @@ function ProgressList() {
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // Hardcoded progress data
-  const Progress = [
+  // Hardcoded progress data with useState to allow status updates
+  const [Progress, setProgress] = useState([
     {
       _id: "1",
       name: "Lim Alcovendas",
@@ -37,12 +37,12 @@ function ProgressList() {
       hoursWorked: "24",
       completionDate: "08-12-2025",
     },
-  ];
+  ]);
 
-  // Get unique departments for filter dropdown
+
   const departments = [...new Set(Progress.map(emp => emp.department))].sort();
 
-  // Filter progress based on search term and selected department
+  
   const filteredProgress = Progress.filter(progress => {
     const searchLower = searchTerm.toLowerCase();
     const matchesSearch = progress.name.toLowerCase().includes(searchLower);
@@ -50,30 +50,41 @@ function ProgressList() {
     return matchesSearch && matchesDepartment;
   });
 
-  // Toggle filter dropdown
+ 
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
   };
 
-  // Handle department selection
+ 
   const handleDepartmentSelect = (department) => {
     setSelectedDepartment(department);
     setIsFilterOpen(false);
   };
 
-  // Clear filter
+  
   const clearFilter = () => {
     setSelectedDepartment("");
     setIsFilterOpen(false);
   };
 
-  // Helper function to parse date strings in MM-DD-YYYY format
+  
+  const handleMarkAsDone = (taskId) => {
+    setProgress(prevProgress => 
+      prevProgress.map(task => 
+        task._id === taskId 
+          ? { ...task, status: "Completed" }
+          : task
+      )
+    );
+  };
+
+  
   const parseDate = (dateString) => {
     const [month, day, year] = dateString.split('-').map(Number);
     return new Date(year, month - 1, day);
   };
 
-  // Define columns for react-data-table-component with custom sorting
+ 
   const columns = [
     {
       name: "Name",
@@ -103,6 +114,28 @@ function ProgressList() {
       },
     },
     {
+      name: "Hrs Worked",
+      selector: row => `${row.hoursWorked} hrs`,
+      sortable: true,
+      center: true,
+      width: "12%",
+      sortFunction: (rowA, rowB) => {
+        return rowA.hoursWorked - rowB.hoursWorked;
+      },
+    },
+    {
+      name: "Date",
+      selector: row => row.completionDate,
+      sortable: true,
+      width: "12%",
+      center: true,
+      sortFunction: (rowA, rowB) => {
+        const dateA = parseDate(rowA.completionDate);
+        const dateB = parseDate(rowB.completionDate);
+        return dateB - dateA; 
+      },
+    },
+    {
       name: "Status",
       selector: row => row.status,
       width: "15%",
@@ -125,50 +158,41 @@ function ProgressList() {
       }
     },
     {
-      name: "Hrs Worked",
-      selector: row => `${row.hoursWorked} hrs`,
-      sortable: true,
-      center: true,
-      width: "12%",
-      sortFunction: (rowA, rowB) => {
-        return rowA.hoursWorked - rowB.hoursWorked;
-      },
-    },
-    {
-      name: "Completion Date",
-      selector: row => row.completionDate,
-      sortable: true,
-      width: "15%",
-      center: true,
-      sortFunction: (rowA, rowB) => {
-        const dateA = parseDate(rowA.completionDate);
-        const dateB = parseDate(rowB.completionDate);
-        return dateB - dateA; // Sort by recent date (newest first)
-      },
-    },
-    {
       name: "Action",
-      width: "10%",
+      width: "13%",
       center: true,
-      cell: (row) => (
-        <button
-          style={{
-            backgroundColor: '#028a0f',
-            color: 'white',
-            border: 'none',
-            padding: '8px 12px',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '5px',
-            fontSize: '12px'
-          }}
-        >
-          <FaCheck size={14} />
-          Done
-        </button>
-      ),
+      cell: (row) => {
+        const isCompleted = row.status?.toLowerCase() === "completed";
+        
+        return (
+          <button
+            style={{
+              backgroundColor: isCompleted ? '#6c757d' : '#028a0f',
+              color: 'white',
+              border: 'none',
+              padding: '0.5rem 0.75rem',
+              borderRadius: '20px',
+              cursor: isCompleted ? 'default' : 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '4px',
+              fontSize: '12px',
+              fontWeight: '600',
+              width: '100px', 
+              height: '32px', 
+              textAlign: 'center',
+              opacity: isCompleted ? 0.7 : 1,
+              transition: 'all 0.2s ease',
+            }}
+            onClick={() => !isCompleted && handleMarkAsDone(row._id)}
+            disabled={isCompleted}
+          >
+            <FaCheck size={12} />
+            {isCompleted ? "Done" : "Mark as Done"}
+          </button>
+        );
+      },
     },
   ];
 

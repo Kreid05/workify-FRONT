@@ -1,0 +1,268 @@
+
+.bottom-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .bottom-cards-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+
+.card-white {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+.status-card {
+  text-align: center;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.status-card:nth-child(1) {
+  background-color: rgba(0, 35, 71, 0.9);
+  color: white;
+}
+
+.status-card:nth-child(2) {
+  background-color: rgba(255, 80, 3, 0.9);
+  color: white;
+}
+
+.status-card:nth-child(3) {
+  background-color: rgba(107, 114, 128, 0.9);
+  color: white;
+}
+
+.status-card:nth-child(4) {
+  background-color: rgba(75, 85, 99, 0.9);
+  color: white;
+}
+
+.status-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.5rem;
+}
+
+.status-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  margin: 0 auto 0.75rem;
+  color: white;
+}
+
+.status-value {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 0.25rem;
+}
+
+.status-description {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Break Card Specific Styles */
+.break-card {
+  padding-bottom: 2.5rem;
+}
+
+.break-button {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.break-button:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translateX(-50%) translateY(-1px);
+}
+
+/* Overtime Card Specific Styles */
+.overtime-card {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  padding-bottom: 2.5rem;
+}
+
+.overtime-card:hover {
+  transform: translateY(-2px);
+}
+
+.overtime-indicator {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 1rem;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: between;
+  padding: 1.5rem 1.5rem 0 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+  color: #002347;
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+  color: #374151;
+}
+
+.modal-body {
+  padding: 0 1.5rem;
+}
+
+.employee-info,
+.time-info {
+  margin-bottom: 2rem;
+}
+
+.employee-info h3,
+.time-info h3 {
+  color: #002347;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #FF5003;
+  padding-bottom: 0.5rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 500;
+  color: #374151;
+  flex-shrink: 0;
+}
+
+.info-value {
+  color: #1f2937;
+  font-weight: 600;
+  text-align: right;
+}
+
+.overtime-highlight {
+  background-color: #fef3e2;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid #fed7aa;
+}
+
+.overtime-highlight .info-label {
+  color: #ea580c;
+}
+
+.overtime-highlight .info-value {
+  color: #ea580c;
+  font-weight: bold;
+}
+
+.modal-footer {
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.request-button {
+  width: 100%;
+  background-color: #FF5003;
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.request-button:hover {
+  background-color: #dc4503;
+  transform: translateY(-1px);
+}
+
+.request-button:active {
+  transform: translateY(0);
+}

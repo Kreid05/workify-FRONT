@@ -1,15 +1,17 @@
 import { createBrowserRouter } from "react-router";
 import MainLayout from "../layouts/MainLayout";
 import ContactUs from "../pages/ContactUs/ContactUs";
-import ContactUsMessage from "../pages/Dashboard/Admin/ContactUsMessage";
+import Feedback from "../pages/Dashboard/Admin/Feedback";
 import Payroll from "../pages/Dashboard/Admin/Payroll";
 import VerifiedEmployees from "../pages/Dashboard/Admin/VerifiedEmployees";
 import DashboardOverview from "../pages/Dashboard/DashboardOverview/DashboardOverview";
+import EmployeeDashboard from "../pages/Dashboard/DashboardOverview/EmployeeDashboard"; 
 import PaymentHistory from "../pages/Dashboard/Employee/PaymentHistory";
-import WorkSheet from "../pages/Dashboard/Employee/WorkSheet";
+import Task from "../pages/Dashboard/Employee/Task";
 import EmployeeDetails from "../pages/Dashboard/Hr/EmployeeDetails";
 import EmployeeList from "../pages/Dashboard/Hr/EmployeeList";
 import Progress from "../pages/Dashboard/Hr/Progress";
+import DepartmentList from "../pages/Dashboard/Hr/DepartmentList";
 import Profile from "../pages/Dashboard/Profile/Profile";
 import ErrorPage from "../pages/ErrorPage";
 import Home from "../pages/Home/Home";
@@ -48,7 +50,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element:<DashboardLayout />,
+    element: <DashboardLayout />,
     children: [
       {
         index: true,
@@ -58,12 +60,21 @@ const router = createBrowserRouter([
         path: "/dashboard/profile",
         element: <Profile />,
       },
+      
+      {
+        path: "employee-dashboard",
+        element: (
+          <EmployeeRoute>
+            <EmployeeDashboard />
+          </EmployeeRoute>
+        ),
+      },
       // admin routes
       {
-        path: "contactUs-message",
+        path: "feedback",
         element: (
           <AdminRoute>
-            <ContactUsMessage />
+            <Feedback />
           </AdminRoute>
         ),
       },
@@ -101,6 +112,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "department",
+        element: (
+          <HrRoute>
+            <DepartmentList />
+          </HrRoute>
+        ),
+      },
+      {
         path: "details/:email",
         element: (
           <HrRoute>
@@ -118,10 +137,10 @@ const router = createBrowserRouter([
       },
       //employee
       {
-        path: "work-sheet",
+        path: "task",
         element: (
           <EmployeeRoute>
-            <WorkSheet />
+            <Task />
           </EmployeeRoute>
         ),
       },
@@ -132,7 +151,7 @@ const router = createBrowserRouter([
             <PaymentHistory />
           </EmployeeRoute>
         ),
-      },
+      },  
     ],
   },
 ]);

@@ -47,7 +47,7 @@ const Navbar = () => {
         </NavLink>
 
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex items-center gap-8">
+        <div className="flex items-center gap-8">
           <NavLink
             to="/contact"
             className={({ isActive }) =>

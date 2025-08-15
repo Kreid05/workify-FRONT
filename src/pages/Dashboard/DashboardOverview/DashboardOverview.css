@@ -1,4 +1,4 @@
-.dashboard-container {
+.hr-dashboard-container {
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -6,13 +6,13 @@
   color: #1e293b;
 }
 
-.dashboard-stats-row {
+.hr-dashboard-stats-row {
   display: flex;
   gap: 1.5rem;
   flex-wrap: wrap;
 }
 
-.stat-card {
+.hr-stat-card {
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
@@ -29,7 +29,7 @@
   top: 0;
 }
 
-.stat-card:hover {
+.hr-stat-card:hover {
   transform: translateY(-6px) scale(1.01);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
   animation: float-gentle 3s ease-in-out infinite;
@@ -47,30 +47,30 @@
   }
 }
 
-.stat-card-black {
-  background-color: #000000;
+.stat-card-remainingTask {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
 }
 
-.stat-card-grey {
-  background-color: #fd7702;
+.stat-card-completedTask {
+  background: linear-gradient(135deg, #ec5300 0%, #fc9643 100%);
 }
-.stat-card-orange {
-  background-color: #ff8246;
+.stat-card-totalPaid {
+  background: linear-gradient(135deg, #ff8127 0%, #fdba74 100%);
 }
 
-.stat-card-white {
+.stat-card-pendingPayments {
   background-color: #fef9f4;
   color: #1e293b;
   box-shadow: 0 10px 20px rgb(0 0 0 / 0.05);
   position: relative;
 }
 
-.stat-header h3 {
+.hr-stat-header h3 {
   font-weight: 600;
   font-size: 0.9rem;
 }
 
-.stat-main {
+.hr-stat-main {
   display: flex;
   align-items: center;
   gap: 15px;
@@ -78,23 +78,23 @@
   font-size: 40px;
 }
 
-.stat-icon {
+.hr-stat-icon {
   font-size: 30px;
 }
 
-.stat-subtext {
+.hr-stat-subtext {
   font-weight: 300;
   font-size: 10px;
 }
 
-.stat-subtext-small {
+.hr-stat-subtext-small {
   font-weight: 300;
   font-size: 10px;
   max-width: 180px;
   line-height: 1;
 }
 
-.stat-link {
+.hr-stat-link {
   font-weight: 500;
   font-size: 0.9rem;
   color: #ffffff;
@@ -102,36 +102,36 @@
   user-select: none;
 }
 
-.semi-circle-progress-container {
+.hr-semi-circle-progress-container {
   display: flex;
   justify-content: center;
   margin: 0.5rem 0;
 }
 
-.progress-bg-semi {
+.hr-progress-bg-semi {
   stroke: #f3f3f3;
 }
 
-.progress-bar-semi {
+.hr-progress-bar-semi {
   stroke: #ff5003;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.5s ease;
 }
 
-.progress-text-semi {
+.hr-progress-text-semi {
   font-size: 15px;
   fill: #1e293b;
   font-weight: 700;
 }
 
-.dashboard-lower-row {
+.hr-dashboard-lower-row {
   display: flex;
   gap: 2rem;
   flex-wrap: wrap;
   margin-top: 1rem;
 }
 
-.recent-payments-card {
+.hr-recent-payments-card {
   background-color: white;
   flex: 1;
   min-width: 280px;
@@ -142,21 +142,21 @@
   flex-direction: column;
 }
 
-.recent-payments-card h3 {
+.hr-recent-payments-card h3 {
   font-weight: 700;
   font-size: 1.3rem;
   color: #1e293b;
   margin-bottom: 1rem;
 }
 
-.recent-payments-list {
+.hr-recent-payments-list {
   list-style: none;
   padding: 0;
   margin: 0;
   flex-grow: 1;
 }
 
-.recent-payment-item {
+.hr-recent-payment-item {
   display: flex;
   justify-content: space-between;
   padding: 0.5rem 0;
@@ -165,27 +165,27 @@
   color: #334155;
 }
 
-.payment-name {
+.hr-payment-name {
   font-weight: 600;
   flex: 2;
   text-align: left;
 }
 
-.payment-amount {
+.hr-payment-amount {
   flex: 1;
   text-align: left;
   font-weight: 500;
   color: #ff5003;
 }
 
-.payment-date {
+.hr-payment-date {
   flex: 1;
   text-align: right;
   font-weight: 300;
   color: #64748b;
 }
 
-.salary-history-card {
+.hr-salary-history-card {
   background-color: white;
   flex: 2;
   min-width: 360px;
@@ -196,20 +196,20 @@
   flex-direction: column;
 }
 
-.salary-history-header {
+.hr-salary-history-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
 }
 
-.salary-history-header h3 {
+.hr-salary-history-header h3 {
   font-weight: 700;
   font-size: 1.3rem;
   color: #1e293b;
 }
 
-.yearly-select {
+.hr-yearly-select {
   padding: 0.3rem 0.6rem;
   border-radius: 6px;
   background-color: transparent;
@@ -219,14 +219,14 @@
   cursor: pointer;
 }
 
-.bottom-cards-row {
+.hr-bottom-cards-row {
   display: flex;
   gap: 1rem;
   margin-top: 1.5rem;
   flex-wrap: wrap;
 }
 
-.bottom-card {
+.hr-bottom-card {
   background-color: #f9fafb;
   border-radius: 12px;
   padding: 1rem 1.5rem;
@@ -239,44 +239,44 @@
   color: #334155;
 }
 
-.bottom-card-title {
+.hr-bottom-card-title {
   font-weight: 600;
   font-size: 0.85rem;
   margin-bottom: 0.3rem;
   color: #64748b;
 }
 
-.bottom-card-name {
+.hr-bottom-card-name {
   font-weight: 700;
   font-size: 1.1rem;
   color: #0f172a;
 }
 
-.bottom-card-sub {
+.hr-bottom-card-sub {
   font-weight: 500;
   font-size: 0.9rem;
   color: #64748b;
 }
 
-.bottom-card-icon {
+.hr-bottom-card-icon {
   font-size: 1.8rem;
   color: #334155;
   margin: 0.3rem 0;
 }
 
 @media (max-width: 768px) {
-  .dashboard-stats-row,
-  .dashboard-lower-row {
+  .hr-dashboard-stats-row,
+  .hr-dashboard-lower-row {
     flex-direction: column;
   }
 
-  .stat-card,
-  .recent-payments-card,
-  .salary-history-card {
+  .hr-stat-card,
+  .hr-recent-payments-card,
+  .hr-salary-history-card {
     min-width: 100%;
   }
 
-  .bottom-cards-row {
+  .hr-bottom-cards-row {
     flex-direction: column;
   }
 }
