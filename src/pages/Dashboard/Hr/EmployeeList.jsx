@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import { FaFilter, FaEdit } from "react-icons/fa";
 import EmployeeDetails from "./EmployeeDetails";
 import EmployeeUpdateModal from "./EmployeeUpdateModal";
 import "./EmployeeList.css";
+import api from "../../../api/api";
 
 function EmployeeList() {
   
@@ -14,109 +15,16 @@ function EmployeeList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEmployeeForUpdate, setSelectedEmployeeForUpdate] = useState(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-
-  // Hardcoded employee data with currentRole field added
-  const [employees, setEmployees] = useState([
-    {
-      _id: "1",
-      name: "Lim Alcovendas",
-      email: "limalcovendas@company.com",
-      department: "Sales",
-      hiredDate: "01-28-2023",
-      firstName: "Lim",
-      middleName: "",
-      lastName: "Alcovendas",
-      jobTitle: "Sales Manager",
-      currentRole: "Manager",
-      phoneNumber: "+63 963-633-4053",
-      gender: "Male",
-      age: 23,
-      birthDate: "April 5, 2003",
-      birthPlace: "Nodado Hospital, Caloocan City",
-      civilStatus: "Single",
-      nationality: "Filipino",
-      fullAddress: "Blk 16, Lot 1, Pkg 3, Phase 12 Brgy. 188, Tala Caloocan City, 1427",
-      sss: "2331-2343-1132",
-      tin: "12312-31546-422",
-      philhealth: "139924756-1323FA",
-      gsis: "3424636-1232-5",
-      motherMaidenName: "Evelyn Alcovendas",
-      motherPhoneNumber: "09123456789",
-      motherOccupation: "Home Maker",
-      motherStatus: "Alive",
-      motherAddress: "Blk 16, Lot 1, Pkg 3, Phase 12 Brgy. 188, Tala Caloocan City, 1427",
-      fatherMaidenName: "Rommel San-Jose",
-      fatherPhoneNumber: "09987654321",
-      fatherOccupation: "AV Works",
-      fatherStatus: "Alive",
-      fatherAddress: "Blk 16, Lot 1, Pkg 3, Phase 12 Brgy. 188, Tala Caloocan City, 1427",
-      contactName: "Rommel San-Jose",
-      contactPhoneNumber: "09987654321",
-      contactRelationship: "Father",
-      employeeNumber: "0023-232348-2324",
-    },
-    {
-      _id: "2",
-      name: "Ezekiel Olasiman",
-      email: "zekeolasiman@company.com",
-      department: "Marketing",
-      jobTitle: "Marketing Specialist",
-      currentRole: "Specialist",
-      employeeNumber: "0023-232348-2325",
-      hiredDate: "04-07-2023",
-    },
-    {
-      _id: "3",
-      name: "Klei Ishia Pagatpatan",
-      email: "kleipagatpatan@company.com",
-      department: "Marketing",
-      jobTitle: "Digital Marketing Coordinator",
-      currentRole: "Coordinator",
-      employeeNumber: "0023-232348-2326",
-      hiredDate: "06-11-2021",
-    },
-    {
-      _id: "4",
-      name: "Regine Mae Hambiol",
-      email: "reginehambiol@company.com",
-      department: "Compliance",
-      jobTitle: "Compliance Officer",
-      currentRole: "Officer",
-      employeeNumber: "0023-232348-2327",
-      hiredDate: "11-19-2023",
-    },
-    {
-      _id: "5",
-      name: "Mark Regie Magtangob",
-      email: "regiemagtangob@company.com",
-      department: "Sales",
-      jobTitle: "Sales Representative",
-      currentRole: "Representative",
-      employeeNumber: "0023-232348-2328",
-      hiredDate: "07-10-2024",
-    },
-    {
-      _id: "6",
-      name: "Jesalle Villegas",
-      email: "jesallevillegas@company.com",
-      department: "Compliance",
-      jobTitle: "Compliance Analyst",
-      currentRole: "Analyst",
-      employeeNumber: "0023-232348-2329",
-      hiredDate: "08-08-2022",
-    }
-  ]);
+  const [employees, setEmployees] = useState([]);
 
   // Get unique departments for filter dropdown
   const departments = [...new Set(employees.map(emp => emp.department))].sort();
 
   // Filter employees based on search term and selected department
-  const filteredEmployees = employees.filter(employee => {
-    const searchLower = searchTerm.toLowerCase();
-    const matchesSearch = employee.name.toLowerCase().includes(searchLower);
-    const matchesDepartment = selectedDepartment === "" || employee.department === selectedDepartment;
-    return matchesSearch && matchesDepartment;
-  });
+  const filteredEmployees = employees.filter(emp =>
+    emp.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (selectedDepartment ? emp.department === selectedDepartment : true)
+  );
 
   // Toggle filter dropdown
   const toggleFilter = () => {
@@ -153,7 +61,92 @@ function EmployeeList() {
     console.log(`Employee ${employeeId} updated with:`, updatedData);
   };
 
-  // Define columns for react-data-table-component with custom sorting
+// fetch employees
+useEffect(() => {
+  const fetchEmployees = async () => {
+    try {
+      const { data } = await api.get("/emp-info/all");
+
+      const normalized = data.map((p) => {
+        const u = p.userID || {};
+        const dept = u.department || {};
+        const parents = p.parents || {};
+        const emergency = p.emergency || {};
+
+        const fmtMDY = (d) =>
+          d ? new Date(d).toLocaleDateString("en-US") : "";
+        const fmtLong = (d) =>
+          d
+            ? new Date(d).toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })
+            : "";
+        const title = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
+
+        return {
+          // table columns 
+          employeeNumber: p.employeeNo || "",
+          name: `${p.firstName || ""} ${p.middleName ? p.middleName + " " : ""}${p.lastName || ""}`.trim(),
+          email: u.email || "",
+          department: dept.departmentName || "",
+          jobTitle: dept.jobTitle || "",
+          hiredDate: fmtMDY(p.hireDate),
+
+          // ids to keep around
+          _id: u._id || p._id,     // stable id for row
+          userId: u._id,           
+          pInfoID: p._id,
+
+          // personal info
+          firstName: p.firstName || "",
+          middleName: p.middleName || "",
+          lastName: p.lastName || "",
+          currentRole: title(u.role || "employee"),
+          phoneNumber: p.phoneNumber || "",
+          gender: title(p.gender || ""),
+          age: p.age ?? "",
+          birthDate: fmtLong(p.birthDate),
+          birthPlace: p.birthPlace || "",
+          civilStatus: p.civilStatus || "",
+          nationality: p.nationality || "",
+          fullAddress: p.fullAddress || "",
+          sss: p.sssNo || "",
+          tin: p.tinNo || "",
+          philhealth: p.philHealthNo || "",
+          gsis: p.gsisNo || "",
+
+          // parents info
+          motherMaidenName: parents.motherName || "",
+          motherPhoneNumber: parents.mPhoneNo || "",
+          motherOccupation: parents.mOccupation || "",
+          motherStatus: title(parents.mStatus || ""),
+          motherAddress: parents.mAddress || "",
+          fatherMaidenName: parents.fatherName || "",
+          fatherPhoneNumber: parents.fPhoneNo || "",
+          fatherOccupation: parents.fOccupation || "",
+          fatherStatus: title(parents.fStatus || ""),
+          fatherAddress: parents.fAddress || "",
+
+          // emergency info
+          contactName: emergency.contactName || "",
+          contactPhoneNumber: emergency.contactNo || "",
+          contactRelationship: emergency.relationship || "",
+        };
+      });
+
+      setEmployees(normalized);
+    } catch (err) {
+      console.error("Error fetching employees:", err);
+    }
+  };
+
+  fetchEmployees();
+}, []);
+
+
+  // define columns for react-data-table-component with custom sorting
   const columns = [
     {
       name: "Employee No.",

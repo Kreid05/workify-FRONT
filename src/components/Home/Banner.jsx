@@ -128,7 +128,7 @@ function Banner() {
         </div>
 
         {/* Right Content - Dashboard Preview */}
-        <div className="hidden lg:block flex-1 max-w-2xl">
+        <div className="flex-1 max-w-2xl">
           <div className="relative">
             {/* Main Dashboard Card */}
             <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 transform rotate-2 hover:rotate-0 transition-transform duration-500">

@@ -1,44 +1,45 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import DataTable from "react-data-table-component";
 import { FaFilter, FaCheck } from "react-icons/fa";
 import "./Progress.css";
+import api from "../../../api/api";
 
 function ProgressList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [Progress, setProgress] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Hardcoded progress data with useState to allow status updates
-  const [Progress, setProgress] = useState([
-    {
-      _id: "1",
-      name: "Lim Alcovendas",
-      taskName: "Sales Report Q1",
-      department: "Sales",
-      status: "On Progress",
-      hoursWorked: "48",
-      completionDate: "00-00-0000",
-    },
-    {
-      _id: "2",
-      name: "Mark Regie Magtangob",
-      taskName: "Client Presentation",
-      department: "Sales",
-      status: "On Progress",
-      hoursWorked: "24",
-      completionDate: "08-12-2025",
-    },
-    {
-      _id: "3",
-      name: "Ezekiel Olasiman",
-      taskName: "Marketing Campaign",
-      department: "Marketing",
-      status: "On Progress",
-      hoursWorked: "24",
-      completionDate: "08-12-2025",
-    },
-  ]);
+// fetch progress logs
+  useEffect(() => {
+    const fetchProgress = async () => {
+      try {
+        const res = await api.get("/progress");
+        // format data to ensure consistent structure
+        const mappedData = res.data.map(item => ({
+          _id: item._id,
+          name: item.userID?.username || "",
+          taskName: item.taskID?.taskName || "",
+          department: item.userID?.department?.departmentName || "",
+          status: item.progressStatus || "",
+          hoursWorked: item.hoursWorked || 0,
+          completionDate: item.completionDate
+            ? new Date(item.completionDate).toLocaleDateString("en-US")
+            : "00-00-0000",
+        }));
+        setProgress(mappedData);
+      } catch (err) {
+        console.error("Error fetching progress:", err);
+        setError("Failed to load progress data");
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchProgress();
+  }, []);
 
   const departments = [...new Set(Progress.map(emp => emp.department))].sort();
 
@@ -148,11 +149,13 @@ function ProgressList() {
           statusClass = "status-completed";
         } else if (status === "on progress" || status === "in progress") {
           statusClass = "status-on-progress";
+        } else if (status === "pending") {
+          statusClass = "status-pending";
         }
         
         return (
           <span className={statusClass}>
-            {row.status}
+            {row.status?.toUpperCase()}
           </span>
         );
       }
@@ -195,6 +198,9 @@ function ProgressList() {
       },
     },
   ];
+
+  if (loading) return <p>Loading progress...</p>;
+  if (error) return <p>{error}</p>;
 
   // Custom styles for the data table
   const customStyles = {

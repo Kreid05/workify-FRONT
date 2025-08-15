@@ -1,117 +1,36 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import DataTable from "react-data-table-component";
 import { FaFilter } from "react-icons/fa";
 import "./DepartmentList.css";
+import api from "../../../api/api";
 
 function DepartmentList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [departments, setDepartments] = useState([]);
 
-  // Hardcoded department data with useState to allow updates
-  const [departments, setDepartments] = useState([
-    {
-      _id: "1",
-      departmentName: "Sales",
-      jobTitle: "Sales Manager",
-    },
-    {
-      _id: "2",
-      departmentName: "Sales",
-      jobTitle: "Sales Representative",
-    },
-    {
-      _id: "3",
-      departmentName: "Sales",
-      jobTitle: "Account Executive",
-    },
-    {
-      _id: "4",
-      departmentName: "Marketing",
-      jobTitle: "Marketing Manager",
-    },
-    {
-      _id: "5",
-      departmentName: "Marketing",
-      jobTitle: "Digital Marketing Specialist",
-    },
-    {
-      _id: "6",
-      departmentName: "Marketing",
-      jobTitle: "Content Creator",
-    },
-    {
-      _id: "7",
-      departmentName: "Compliance",
-      jobTitle: "Compliance Officer",
-    },
-    {
-      _id: "8",
-      departmentName: "Compliance",
-      jobTitle: "Risk Analyst",
-    },
-    {
-      _id: "9",
-      departmentName: "Human Resources",
-      jobTitle: "HR Manager",
-    },
-    {
-      _id: "10",
-      departmentName: "Human Resources",
-      jobTitle: "Recruiter",
-    },
-    {
-      _id: "11",
-      departmentName: "Human Resources",
-      jobTitle: "HR Generalist",
-    },
-    {
-      _id: "12",
-      departmentName: "Finance",
-      jobTitle: "Financial Analyst",
-    },
-    {
-      _id: "13",
-      departmentName: "Finance",
-      jobTitle: "Accountant",
-    },
-    {
-      _id: "14",
-      departmentName: "Finance",
-      jobTitle: "Budget Manager",
-    },
-    {
-      _id: "15",
-      departmentName: "IT",
-      jobTitle: "Frontend Developer",
-    },
-    {
-      _id: "16",
-      departmentName: "IT",
-      jobTitle: "Backend Developer",
-    },
-    {
-      _id: "17",
-      departmentName: "IT",
-      jobTitle: "System Administrator",
-    },
-    {
-      _id: "18",
-      departmentName: "Operations",
-      jobTitle: "Operations Manager",
-    },
-    {
-      _id: "19",
-      departmentName: "Operations",
-      jobTitle: "Process Coordinator",
-    },
-    {
-      _id: "20",
-      departmentName: "Operations",
-      jobTitle: "Quality Assurance",
-    },
-  ]);
+  // fetch departments
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const { data } = await api.get("/department");
 
+        // ensure consistent formatting 
+        const formatted = data.map((dept) => ({
+          _id: dept._id || "",
+          departmentName: dept.departmentName || "",
+          jobTitle: dept.jobTitle || "",
+        }));
+
+        setDepartments(formatted);
+      } catch (err) {
+        console.error("Error fetching departments:", err);
+      }
+    };
+
+    fetchDepartments();
+  }, []);
   
   const uniqueDepartments = [...new Set(departments.map(dept => dept.departmentName))].sort();
 
