@@ -16,33 +16,42 @@ export default function Login() {
   const axiosPublic = useAxiosPublic();
 
   const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  e.preventDefault();
+  e.stopPropagation();
 
-    if (!email || !password) {
-      toast.error("Email and password are required.");
-      return;
+  if (!email || !password) {
+    toast.error("Email and password are required.");
+    return;
+  }
+
+  try {
+    setLoading(true);
+    const { data } = await axiosPublic.post("/auth/login", { email, password });
+
+    // store jwt token
+    localStorage.setItem("accessToken", data.token);
+
+    toast.success("Login successful!");
+
+    // redirect based on role
+    if (data.role === "admin" || data.role === "hr") {
+      navigate("/dashboard");
+    } else if (data.role === "employee") {
+      navigate("/dashboard/employee-dashboard");
+    } else {
+      navigate("/"); // fallback if role is unknown
     }
-
-    try {
-      setLoading(true);
-      const { data } = await axiosPublic.post("/auth/login", { email, password });
-
-      // store jwt token
-      localStorage.setItem("accessToken", data.token);
-
-      toast.success("Login successful!");
-      navigate(location.state?.from || "/dashboard");
-    } catch (err) {
-      if (err.response?.status === 403) {
-        toast.error("Your account has been disabled.");
-      } else {
-        toast.error(err.response?.data?.message || "Invalid email or password.");
-      }
-    } finally {
-      setLoading(false);
+  } catch (err) {
+    if (err.response?.status === 403) {
+      toast.error("Your account has been disabled.");
+    } else {
+      toast.error(err.response?.data?.message || "Invalid email or password.");
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <>

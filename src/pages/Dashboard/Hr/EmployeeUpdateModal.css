@@ -43,7 +43,7 @@
   background: linear-gradient(135deg, #003f7d 0%, #0056b3 100%);
   color: white;
   padding: 20px 25px;
-  border-radius: 12px 12px 0 0;
+  border-radius: 12px 0 0 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -108,7 +108,7 @@
   display: block;
   margin-bottom: 8px;
   color: #374151;
-  font-weight: 500;
+  font-weight: 900;
   font-size: 0.875rem;
 }
 

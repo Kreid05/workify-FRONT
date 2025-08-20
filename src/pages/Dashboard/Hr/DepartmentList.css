@@ -150,8 +150,8 @@
 
 
 .department-search-container {
-  margin: 5px 5px 25px 5px;
-  position: relative;
+  flex: 1;
+  min-width: 200px;
 }
 
 @media (min-width: 768px) {
@@ -161,10 +161,8 @@
 }
 
 .department-search-input {
-  width: 250%;
+  width: 100%;
   height: 45px;
-  max-width: 500%;
-  max-height: 100px;
   padding: 1rem;
   border-radius: 0.75rem;
   font-size: 0.875rem;
@@ -202,10 +200,55 @@
 
 .department-controls-container {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin: 5px 5px 5px 5px;
-  position: relative;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.add-department-button,
+.assign-department-button {
+  background-color: #ff5003;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  margin-left: 0.5rem;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-department-button:hover,
+.assign-department-button:hover {
+  background-color: #e04803;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 80, 3, 0.3);
+}
+
+.add-department-button:active,
+.assign-department-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(255, 80, 3, 0.2);
+}
+
+@media (max-width: 767px) {
+  .department-controls-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .add-department-button,
+  .assign-department-button {
+    width: 100%;
+    max-width: 200px;
+  }
 }
 
 .department-filter-container {
@@ -369,24 +412,48 @@
 }
 
 
-.department-action-button {
-  background-color: #fd7702;
-  color: #ffffff;
+.department-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.department-action-btn {
+  background: none;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  font-size: 0.875rem;
-  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.15s ease-in-out;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
 }
 
-.department-action-button:hover {
-  background-color: #ea6502;
+.department-action-btn.update-btn {
+  background-color: #ff5003;
+  color: white;
 }
 
+.department-action-btn.update-btn:hover {
+  background-color: #a03101;
+  color: white;
+}
 
-.department-modal-overlay {
+.department-action-btn.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.department-action-btn.delete-btn:hover {
+  background-color: #b02a37;
+  color: white;
+}
+
+/* Confirmation Modal Styles */
+.deleteDept-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -399,78 +466,64 @@
   z-index: 1000;
 }
 
-.department-modal-content {
+.deleteDept-modal-content {
   background: white;
   padding: 20px;
   border-radius: 8px;
-  max-width: 300px;
+  max-width: 400px;
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
-  position: relative;
+  text-align: center;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
-.department-modal-header {
+.deleteDept-modal-header {
   margin-top: 10px;
   margin-bottom: 10px;
   color: #333;
   font-size: 20px;
+  font-weight: 600;
   text-align: center;
 }
 
-.department-modal-close {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  font-size: 25px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #333;
-}
-
-.department-option {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  padding: 10px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-}
-
-.department-option:hover {
-  background-color: #f5f5f5;
-}
-
-.department-option input[type="radio"] {
-  margin-right: 10px;
-  transform: scale(1.2);
-}
-
-.department-option span {
-  font-size: 16px;
-  color: #333;
-}
-
-.department-modal-footer {
+.deleteDept-modal-footer {
   display: flex;
   justify-content: flex-end;
-  margin-top: 10px;
+  margin-top: 20px;
   gap: 10px;
 }
 
-.department-save-button {
-  padding: 10px 15px;
+.deleteDept-cancel-button {
+  padding: 10px 20px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
   transition: background-color 0.3s;
-  background-color: #0000ff;
+  background-color: #6c757d;
   color: white;
 }
 
-.department-save-button:hover {
-  background-color: #031273;
+.deleteDept-cancel-button:hover {
+  background-color: #5a6268;
+}
+
+.deleteDept-save-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+  background-color: #dc3545;
+  color: white;
+}
+
+.deleteDept-save-button:hover {
+  background-color: #c82333;
+}
+
+.deleteDept-action-btn svg {
+  font-size: 14px;
 }

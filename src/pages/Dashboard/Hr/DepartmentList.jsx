@@ -1,14 +1,23 @@
 import React, { useState , useEffect} from "react";
 import DataTable from "react-data-table-component";
-import { FaFilter } from "react-icons/fa";
+import { FaFilter, FaEdit, FaTrash } from "react-icons/fa";
 import "./DepartmentList.css";
 import api from "../../../api/api";
+import AddDepartmentModal from "./AddDepartmentModal";
+import UpdateDepartmentModal from "./UpdateDepartmentModal";
+import AssignDepartmentModal from "./AssignDepartmentModal";
 
 function DepartmentList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [departments, setDepartments] = useState([]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [selectedDepartmentForUpdate, setSelectedDepartmentForUpdate] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [departmentToDelete, setDepartmentToDelete] = useState(null);
 
   // fetch departments
   useEffect(() => {
@@ -61,13 +70,65 @@ function DepartmentList() {
     setIsFilterOpen(false);
   };
 
-  
+  const handleAddDepartment = (newDepartment) => {
+    setDepartments(prev => [...prev, newDepartment]);
+  };
+
+  const handleUpdateDepartment = async (id, updatedData) => {
+    try {
+      const response = await api.put(`/department/${id}`, updatedData);
+      setDepartments(prev => 
+        prev.map(dept => dept._id === id ? response.data : dept)
+      );
+    } catch (error) {
+      console.error("Error updating department:", error);
+      throw error;
+    }
+  };
+
+  const handleDeleteDepartment = (id) => {
+    setDepartmentToDelete(id);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!departmentToDelete) return;
+    
+    try {
+      await api.delete(`/department/${departmentToDelete}`);
+      setDepartments(prev => prev.filter(dept => dept._id !== departmentToDelete));
+      setShowDeleteConfirm(false);
+      setDepartmentToDelete(null);
+    } catch (error) {
+      console.error("Error deleting department:", error);
+      alert("Error deleting department. Please try again.");
+      setShowDeleteConfirm(false);
+      setDepartmentToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setDepartmentToDelete(null);
+  };
+
+  const handleOpenUpdateModal = (department) => {
+    setSelectedDepartmentForUpdate(department);
+    setIsUpdateModalOpen(true);
+  };
+
+  const handleAssignDepartment = (assignmentData) => {
+    console.log("Department assigned:", assignmentData);
+    // Here you can add logic to update the UI or make additional API calls if needed
+    // For now, we'll just log the assignment data
+  };
+
   const columns = [
     {
       name: "Department Name",
       selector: row => row.departmentName,
       sortable: true,
-      width: "50%",
+      width: "40%",
       sortFunction: (rowA, rowB) => {
         return rowA.departmentName.localeCompare(rowB.departmentName);
       },
@@ -76,10 +137,35 @@ function DepartmentList() {
       name: "Job Title",
       selector: row => row.jobTitle,
       sortable: true,
-      width: "50%",
+      width: "40%",
       sortFunction: (rowA, rowB) => {
         return rowA.jobTitle.localeCompare(rowB.jobTitle);
       },
+    },
+    {
+      name: "Actions",
+      cell: (row) => (
+        <div className="department-actions">
+          <button 
+            className="department-action-btn update-btn"
+            onClick={() => handleOpenUpdateModal(row)}
+            title="Update Department"
+          >
+            <FaEdit size={14} />
+          </button>
+          <button 
+            className="department-action-btn delete-btn"
+            onClick={() => handleDeleteDepartment(row._id)}
+            title="Delete Department"
+          >
+            <FaTrash size={14} />
+          </button>
+        </div>
+      ),
+      width: "20%",
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
     },
   ];
 
@@ -122,6 +208,18 @@ function DepartmentList() {
               className="department-search-input"
             />
           </div>
+          <button 
+            className="add-department-button"
+            onClick={() => setIsAddModalOpen(true)}
+          >
+            Add Department
+          </button>
+          <button 
+            className="assign-department-button"
+            onClick={() => setIsAssignModalOpen(true)}
+          >
+            Assign Department
+          </button>
           <div className="department-filter-container">
             <button 
               className={`department-filter-button ${selectedDepartment ? 'active' : ''}`}
@@ -165,6 +263,49 @@ function DepartmentList() {
           pointerOnHover
         />
       </div>
+      
+      <AddDepartmentModal 
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAddDepartment={handleAddDepartment}
+      />
+      <UpdateDepartmentModal 
+        isOpen={isUpdateModalOpen}
+        onClose={() => setIsUpdateModalOpen(false)}
+        department={selectedDepartmentForUpdate}
+        onUpdateDepartment={handleUpdateDepartment}
+      />
+      
+      <AssignDepartmentModal 
+        isOpen={isAssignModalOpen}
+        onClose={() => setIsAssignModalOpen(false)}
+        onAssignDepartment={handleAssignDepartment}
+      />
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="deleteDept-modal-overlay">
+          <div className="deleteDept-modal-content">
+            <h3 className="deleteDept-modal-header">Confirm Delete</h3>
+            <p>Are you sure you want to delete this department? This action cannot be undone.
+            </p>
+            <div className="deleteDept-modal-footer">
+              <button 
+                className="deleteDept-cancel-button" 
+                onClick={cancelDelete}
+              >
+                Cancel
+              </button>
+              <button 
+                className="deleteDept-save-button" 
+                onClick={confirmDelete}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

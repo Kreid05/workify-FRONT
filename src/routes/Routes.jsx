@@ -1,12 +1,10 @@
 import { createBrowserRouter } from "react-router";
 import MainLayout from "../layouts/MainLayout";
 import ContactUs from "../pages/ContactUs/ContactUs";
-import Feedback from "../pages/Dashboard/Admin/Feedback";
-import Payroll from "../pages/Dashboard/Admin/Payroll";
-import VerifiedEmployees from "../pages/Dashboard/Admin/VerifiedEmployees";
+import Inquiries from "../pages/Dashboard/Admin/Inquiries";
+import Users from "../pages/Dashboard/Admin/Users";
 import DashboardOverview from "../pages/Dashboard/DashboardOverview/DashboardOverview";
 import EmployeeDashboard from "../pages/Dashboard/DashboardOverview/EmployeeDashboard"; 
-import PaymentHistory from "../pages/Dashboard/Employee/PaymentHistory";
 import Task from "../pages/Dashboard/Employee/Task";
 import EmployeeDetails from "../pages/Dashboard/Hr/EmployeeDetails";
 import EmployeeList from "../pages/Dashboard/Hr/EmployeeList";
@@ -18,11 +16,7 @@ import Home from "../pages/Home/Home";
 import RegistrationPage from "../pages/SignUp/Register";
 import DashboardLayout from "./../layouts/DashboardLayout";
 import Login from "./../pages/Login/Login";
-import Payment from "./../pages/Payment/Payment";
-import AdminRoute from "./AdminRoute";
-import EmployeeRoute from "./EmployeeRoute";
-import HrRoute from "./HrRoute";
-import PrivateRoute from "./PrivateRoute";
+import RoleRoute from "./RoleRoute";
 
 const router = createBrowserRouter([
   {
@@ -30,129 +24,108 @@ const router = createBrowserRouter([
     element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
-      {
-        path: "/",
-        element: <Home />,
-      },
-      {
-        path: "/contact",
-        element: <ContactUs />,
-      },
-      {
-        path: "/login",
-        element: <Login />,
-      },
-      {
-        path: "/register",
-        element: <RegistrationPage />,
-      },
+      { path: "/", element: <Home /> },
+      { path: "/contact", element: <ContactUs /> },
+      { path: "/login", element: <Login /> },
+      { path: "/register", element: <RegistrationPage /> },
     ],
   },
+
   {
     path: "/dashboard",
-    element: <DashboardLayout />,
+    element: (
+      <RoleRoute allowed={["admin", "hr", "employee"]}>
+        <DashboardLayout />
+      </RoleRoute>
+    ),
     children: [
+      // 👇 admin/hr landing
       {
         index: true,
-        element: <DashboardOverview />,
+        element: (
+          <RoleRoute allowed={["admin", "hr"]}>
+            <DashboardOverview />
+          </RoleRoute>
+        ),
       },
-      {
-        path: "/dashboard/profile",
-        element: <Profile />,
-      },
-      
+
+      // 👇 employee landing
       {
         path: "employee-dashboard",
         element: (
-          <EmployeeRoute>
+          <RoleRoute allowed={["employee"]}>
             <EmployeeDashboard />
-          </EmployeeRoute>
+          </RoleRoute>
         ),
       },
-      // admin routes
+
+      { path: "profile", element: <Profile /> },
+
+      // shared
       {
-        path: "feedback",
+        path: "task",
         element: (
-          <AdminRoute>
-            <Feedback />
-          </AdminRoute>
-        ),
-      },
-      {
-        path: "all-employee-list",
-        element: (
-          <AdminRoute>
-            <VerifiedEmployees />
-          </AdminRoute>
-        ),
-      },
-      {
-        path: "payroll",
-        element: (
-          <AdminRoute>
-            <Payroll />
-          </AdminRoute>
-        ),
-      },
-      {
-        path: "payment/:id",
-        element: (
-          <AdminRoute>
-            <Payment />
-          </AdminRoute>
-        ),
-      },
-      //  HR routes
-      {
-        path: "employee-list",
-        element: (
-          <HrRoute>
-            <EmployeeList />
-          </HrRoute>
-        ),
-      },
-      {
-        path: "department",
-        element: (
-          <HrRoute>
-            <DepartmentList />
-          </HrRoute>
-        ),
-      },
-      {
-        path: "details/:email",
-        element: (
-          <HrRoute>
-            <EmployeeDetails />
-          </HrRoute>
+          <RoleRoute allowed={["employee", "hr", "admin"]}>
+            <Task />
+          </RoleRoute>
         ),
       },
       {
         path: "progress",
         element: (
-          <HrRoute>
+          <RoleRoute allowed={["employee", "hr", "admin"]}>
             <Progress />
-          </HrRoute>
+          </RoleRoute>
         ),
       },
-      //employee
+
+      // admin/hr only
       {
-        path: "task",
+        path: "inquiries",
         element: (
-          <EmployeeRoute>
-            <Task />
-          </EmployeeRoute>
+          <RoleRoute allowed={["admin", "hr"]}>
+            <Inquiries />
+          </RoleRoute>
         ),
       },
       {
-        path: "payment-history",
+        path: "users",
         element: (
-          <EmployeeRoute>
-            <PaymentHistory />
-          </EmployeeRoute>
+          <RoleRoute allowed={["admin"]}>
+            <Users />
+          </RoleRoute>
         ),
-      },  
+      },
+      {
+        path: "employee-list",
+        element: (
+          <RoleRoute allowed={["admin", "hr"]}>
+            <EmployeeList />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: "department",
+        element: (
+          <RoleRoute allowed={["admin", "hr"]}>
+            <DepartmentList />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: "details/:email",
+        element: (
+          <RoleRoute allowed={["admin", "hr"]}>
+            <EmployeeDetails />
+          </RoleRoute>
+        ),
+      },
     ],
+  },
+
+  {
+    path: "/unauthorized",
+    element: <h1>Unauthorized Access</h1>,
   },
 ]);
 

@@ -1,5 +1,5 @@
 /* Modal Overlay */
-.addTask-modal-overlay {
+.addUser-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -14,7 +14,7 @@
 }
 
 /* Modal Container */
-.addTask-modal-container {
+.addUser-modal-container {
   background: white;
   border-radius: 12px;
   width: 90%;
@@ -37,7 +37,7 @@
 }
 
 /* Modal Header */
-.addTask-modal-header {
+.addUser-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -46,39 +46,44 @@
   margin-bottom: 24px;
 }
 
-.addTask-modal-header h2 {
+.addUser-modal-header h2 {
   margin: 0;
   color: #111827;
   font-size: 1.5rem;
   font-weight: 600;
 }
 
-.addTask-close-button {
+.addUser-close-button {
   background: none;
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #6b7280;
-  padding: 4px;
-  border-radius: 4px;
-  transition: all 0.2s;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
 }
 
-.addTask-close-button:hover {
+.addUser-close-button:hover {
   background-color: #f3f4f6;
   color: #374151;
 }
 
 /* Form Styles */
-.addTask-task-form {
+.addUser-form {
   padding: 0 24px 24px;
 }
 
-.addTask-form-group {
+.addUser-form-group {
   margin-bottom: 20px;
 }
 
-.addTask-form-group label {
+.addUser-form-group label {
   display: block;
   margin-bottom: 6px;
   font-weight: 500;
@@ -86,9 +91,9 @@
   font-size: 0.875rem;
 }
 
-.addTask-form-group input,
-.addTask-form-group textarea,
-.addTask-form-group select {
+.addUser-form-group input,
+.addUser-form-group textarea,
+.addUser-form-group select {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid #d1d5db;
@@ -99,29 +104,29 @@
   color: black;
 }
 
-.addTask-form-group input:focus,
-.addTask-form-group textarea:focus,
-.addTask-form-group select:focus {
+.addUser-form-group input:focus,
+.addUser-form-group textarea:focus,
+.addUser-form-group select:focus {
   outline: none;
   border-color: #fd7702;
   box-shadow: 0 0 0 3px rgba(246, 187, 59, 0.1);
 }
 
-.addTask-form-group textarea {
+.addUser-form-group textarea {
   resize: vertical;
   min-height: 80px;
 }
 
-.addTask-form-group select {
+.addUser-form-group select {
   cursor: pointer;
 }
 
 /* Dropdown Styles */
-.addTask-dropdown-container {
+.addUser-dropdown-container {
   position: relative;
 }
 
-.addTask-dropdown-menu {
+.addUser-dropdown-menu {
   position: absolute;
   top: 100%;
   left: 0;
@@ -136,7 +141,7 @@
   margin-top: 4px;
 }
 
-.addTask-dropdown-item {
+.addUser-dropdown-item {
   padding: 10px 12px;
   cursor: pointer;
   border-bottom: 1px solid #f3f4f6;
@@ -144,16 +149,16 @@
   transition: background-color 0.2s;
 }
 
-.addTask-dropdown-item:last-child {
+.addUser-dropdown-item:last-child {
   border-bottom: none;
 }
 
-.addTask-dropdown-item:hover {
+.addUser-dropdown-item:hover {
   background-color: #f9fafb;
 }
 
 /* Form Actions */
-.addTask-form-actions {
+.addUser-form-actions {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
@@ -162,8 +167,8 @@
   border-top: 1px solid #e5e7eb;
 }
 
-.addTask-cancel-button,
-.addTask-submit-button {
+.addUser-cancel-button,
+.addUser-submit-button {
   padding: 10px 20px;
   border-radius: 6px;
   font-size: 0.875rem;
@@ -173,84 +178,84 @@
   border: 1px solid;
 }
 
-.addTask-cancel-button {
+.addUser-cancel-button {
   background-color: white;
   border-color: #d1d5db;
   color: #374151;
 }
 
-.addTask-cancel-button:hover {
+.addUser-cancel-button:hover {
   background-color: #f9fafb;
   border-color: #9ca3af;
 }
 
-.addTask-submit-button {
+.addUser-submit-button {
   background-color: #003f7d;
   border-color: #003f7d;
   color: white;
 }
 
-.addTask-submit-button:hover {
+.addUser-submit-button:hover {
   background-color: #002347;
   border-color: #002347;
 }
 
-.addTask-submit-button:active {
+.addUser-submit-button:active {
   transform: translateY(1px);
 }
 
 /* Responsive Design */
 @media (max-width: 640px) {
-  .addTask-modal-container {
+  .addUser-modal-container {
     width: 95%;
     margin: 16px;
   }
   
-  .addTask-modal-header {
+  .addUser-modal-header {
     padding: 16px 16px 0;
   }
   
-  .addTask-task-form {
+  .addUser-form {
     padding: 0 16px 16px;
   }
   
-  .addTask-form-actions {
+  .addUser-form-actions {
     flex-direction: column;
   }
   
-  .addTask-cancel-button,
-  .addTask-submit-button {
+  .addUser-cancel-button,
+  .addUser-submit-button {
     width: 100%;
   }
 }
 
 /* Scrollbar Styles */
-.addTask-modal-container::-webkit-scrollbar {
+.addUser-modal-container::-webkit-scrollbar {
   width: 6px;
 }
 
-.addTask-modal-container::-webkit-scrollbar-track {
+.addUser-modal-container::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
 
-.addTask-modal-container::-webkit-scrollbar-thumb {
+.addUser-modal-container::-webkit-scrollbar-thumb {
   background: #c1c1c1;
   border-radius: 3px;
 }
 
-.addTask-modal-container::-webkit-scrollbar-thumb:hover {
+.addUser-modal-container::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
 
 /* Required Field Indicator */
-.addTask-form-group label::after {
+.addUser-form-group label::after {
   content: ' *';
   color: #ef4444;
   font-weight: normal;
 }
 
-.addTask-form-group label[for="description"]::after,
-.addTask-form-group label[for="assignedBy"]::after,
-.addTask-form-group label[for="department"]::after {
+.addUser-form-group label[for="description"]::after,
+.addUser-form-group label[for="assignedBy"]::after,
+.addUser-form-group label[for="department"]::after {
   content: '';
 }

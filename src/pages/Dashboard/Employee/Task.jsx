@@ -17,6 +17,7 @@ function Task() {
       taskName: "Website Redesign",
       description: "Complete redesign of company website with modern UI/UX",
       assignedTo: "John Doe",
+      department: "IT",
       dueDate: "2024-12-15",
       status: "Completed"
     },
@@ -25,6 +26,7 @@ function Task() {
       taskName: "Database Migration",
       description: "Migrate user data from old database to new system",
       assignedTo: "Jane Smith",
+      department: "IT",
       dueDate: "2024-12-10",
       status: "Completed"
     },
@@ -33,6 +35,7 @@ function Task() {
       taskName: "Mobile App Testing",
       description: "Perform comprehensive testing on iOS and Android apps",
       assignedTo: "Mike Johnson",
+      department: "IT",
       dueDate: "2024-12-20",
       status: "Pending"
     },
@@ -41,6 +44,7 @@ function Task() {
       taskName: "Security Audit",
       description: "Conduct security vulnerability assessment for all systems",
       assignedTo: "Sarah Wilson",
+      department: "IT",
       dueDate: "2024-12-08",
       status: "Completed"
     },
@@ -49,6 +53,7 @@ function Task() {
       taskName: "API Documentation",
       description: "Create comprehensive API documentation for developers",
       assignedTo: "David Brown",
+      department: "IT",
       dueDate: "2024-12-18",
       status: "Pending"
     },
@@ -57,6 +62,7 @@ function Task() {
       taskName: "User Training",
       description: "Conduct training sessions for new software features",
       assignedTo: "Emily Davis",
+      department: "IT",
       dueDate: "2024-12-25",
       status: "Pending"
     }
@@ -105,7 +111,7 @@ function Task() {
       name: "Task Name",
       selector: row => row.taskName,
       sortable: true,
-      width: "20%",
+      width: "15%",
     },
     {
       name: "Description",
@@ -117,20 +123,27 @@ function Task() {
       name: "Assigned To",
       selector: row => row.assignedTo,
       sortable: true,
+      width: "14%",
+    },
+    {
+      name: "Department",
+      selector: row => row.department,
+      sortable: true,
+      center: true,
       width: "15%",
     },
     {
       name: "Due Date",
       selector: row => row.dueDate,
       sortable: true,
-      width: "15%",
+      width: "12%",
     },
     {
       name: "Status",
       selector: row => row.status,
       sortable: true,
       center: true,
-      width: "20%",
+      width: "14%",
       cell: row => (
         <span className={`task-status-badge status-${row.status.toLowerCase().replace(' ', '-')}`}>
           {row.status}

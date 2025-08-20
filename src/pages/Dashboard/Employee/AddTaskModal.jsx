@@ -6,7 +6,6 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
     taskName: '',
     description: '',
     assignedTo: '',
-    assignedBy: '',
     department: '',
     dueDate: ''
   });
@@ -92,7 +91,6 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
       taskName: '',
       description: '',
       assignedTo: '',
-      assignedBy: '',
       department: '',
       dueDate: ''
     });
@@ -106,7 +104,6 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
       taskName: '',
       description: '',
       assignedTo: '',
-      assignedBy: '',
       department: '',
       dueDate: ''
     });
@@ -126,7 +123,7 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
         
         <form onSubmit={handleSubmit} className="addTask-task-form">
           <div className="addTask-form-group">
-            <label htmlFor="taskName">Task Name *</label>
+            <label htmlFor="taskName">Task Name</label>
             <input
               type="text"
               id="taskName"
@@ -151,7 +148,7 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
           </div>
 
           <div className="addTask-form-group">
-            <label htmlFor="assignedTo">Assigned To *</label>
+            <label htmlFor="assignedTo">Assigned To</label>
             <div className="addTask-dropdown-container">
               <input
                 type="text"
@@ -177,18 +174,6 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
                 </div>
               )}
             </div>
-          </div>
-
-          <div className="addTask-form-group">
-            <label htmlFor="assignedBy">Assigned By</label>
-            <input
-              type="text"
-              id="assignedBy"
-              name="assignedBy"
-              value={formData.assignedBy}
-              onChange={handleInputChange}
-              placeholder="Enter assigner's name"
-            />
           </div>
 
           <div className="addTask-form-group">

@@ -8,7 +8,7 @@ const PaymentHistory = () => {
       <div className="w-64 h-64">
         <Lottie animationData={coding} loop={true} />
       </div>
-      <p className="mt-4 text-lg text-black-700">This page was under development</p>
+      <p className="mt-4 text-lg text-black-700">This page is under development</p>
     </div>
   );
 };
