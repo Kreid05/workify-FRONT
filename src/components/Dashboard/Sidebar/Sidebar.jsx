@@ -8,6 +8,11 @@ import {
   FaUsers,
   FaSignOutAlt,
   FaBuilding,
+  FaClock,
+  FaFileAlt,
+  FaCalendarAlt,
+  FaChevronDown,
+  FaChevronRight,
 } from "react-icons/fa";
 import { RxDashboard } from "react-icons/rx";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -16,6 +21,7 @@ import "./Sidebar.css";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [attendanceOpen, setAttendanceOpen] = useState(false);
   const navigate = useNavigate();
   const role = getUserRole(); 
 
@@ -26,6 +32,10 @@ const Sidebar = () => {
 
   const handleLogoClick = () => {
     navigate("/");
+  };
+
+  const toggleAttendance = () => {
+    setAttendanceOpen(!attendanceOpen);
   };
 
   return (
@@ -118,6 +128,62 @@ const Sidebar = () => {
 
                   <li>
                     <NavLink
+                      to="/dashboard/schedule"
+                      className={({ isActive }) =>
+                        isActive ? "nav-item active" : "nav-item"
+                      }
+                    >
+                      <FaCalendarAlt className="nav-icon" /> 
+                      <span>Schedule</span>
+                    </NavLink>
+                  </li>
+                  
+                  {/* attendance dropdown */}
+                  <li>
+                    <div 
+                      className="nav-item dropdown-toggle"
+                      onClick={toggleAttendance}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <FaClock className="nav-icon" />
+                      <span>Attendance</span>
+                      {attendanceOpen ? (
+                        <FaChevronDown className="dropdown-icon" />
+                      ) : (
+                        <FaChevronRight className="dropdown-icon" />
+                      )}
+                    </div>
+
+                    {attendanceOpen && (
+                      <ul className="dropdown-menu">
+                        <li>
+                          <NavLink
+                            to="/dashboard/admin-attendance-logs"
+                            className={({ isActive }) =>
+                              isActive ? "nav-item sub-item active" : "nav-item sub-item"
+                            }
+                          >
+                            <FaClock  className="nav-icon" />
+                            <span> Logs</span>
+                          </NavLink>
+                        </li>
+                        <li>
+                          <NavLink
+                            to="/dashboard/admin-attendance-report"
+                            className={({ isActive }) =>
+                              isActive ? "nav-item sub-item active" : "nav-item sub-item"
+                            }
+                          >
+                            <FaFileAlt className="nav-icon" />
+                            <span>Report</span>
+                          </NavLink>
+                        </li>
+                      </ul>
+                    )}
+                  </li>
+
+                  <li>
+                    <NavLink
                       to="/dashboard/task"
                       className={({ isActive }) =>
                         isActive ? "nav-item active" : "nav-item"
@@ -164,6 +230,50 @@ const Sidebar = () => {
                       <RxDashboard className="nav-icon" />
                       <span>Employee Dashboard</span>
                     </NavLink>
+                  </li>
+
+                  {/* attendance dropdown for employee */}
+                  <li>
+                    <div 
+                      className="nav-item dropdown-toggle"
+                      onClick={toggleAttendance}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <FaClock className="nav-icon" />
+                      <span>Attendance</span>
+                      {attendanceOpen ? (
+                        <FaChevronDown className="dropdown-icon" />
+                      ) : (
+                        <FaChevronRight className="dropdown-icon" />
+                      )}
+                    </div>
+
+                    {attendanceOpen && (
+                      <ul className="dropdown-menu">
+                        <li>
+                          <NavLink
+                            to="/dashboard/employee-attendance-logs"
+                            className={({ isActive }) =>
+                              isActive ? "nav-item sub-item active" : "nav-item sub-item"
+                            }
+                          >
+                            <FaClock  className="nav-icon" />
+                            <span>Logs</span>
+                          </NavLink>
+                        </li>
+                        <li>
+                          <NavLink
+                            to="/dashboard/employee-attendance-report"
+                            className={({ isActive }) =>
+                              isActive ? "nav-item sub-item active" : "nav-item sub-item"
+                            }
+                          >
+                            <FaFileAlt className="nav-icon" />
+                            <span>Report</span>
+                          </NavLink>
+                        </li>
+                      </ul>
+                    )}
                   </li>
 
                   <li>
