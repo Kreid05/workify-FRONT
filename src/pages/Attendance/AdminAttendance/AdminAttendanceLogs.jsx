@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './AdminAttendanceLogs.css';
-import AddLogsModal from './AddLogsModal';
+import AddLogsModal from './Modals/AddLogsModal';
 
 const AdminAttendanceLogs = () => {
   const [selectedDepartment, setSelectedDepartment] = useState('All Departments');

@@ -1,24 +1,23 @@
 import { createBrowserRouter } from "react-router";
 import MainLayout from "../layouts/MainLayout";
 import ContactUs from "../pages/ContactUs/ContactUs";
-import Inquiries from "../pages/Dashboard/Admin/Inquiries";
-import Users from "../pages/Dashboard/Admin/Users";
-import AdminAttendanceLogs from "../pages/Dashboard/Admin/AdminAttendanceLogs";
-import AdminAttendanceReport from "../pages/Dashboard/Admin/AdminAttendanceReport";
-import SchedulingPage from "../pages/Dashboard/Admin/SchedulingPage";
+import Inquiries from "../pages/Inquiries/Inquiries";
+import Users from "../pages/Users/Users";
+import AdminAttendanceLogs from "../pages/Attendance/AdminAttendance/AdminAttendanceLogs";
+import AdminAttendanceReport from "../pages/Attendance/AdminAttendance/AdminAttendanceReport";
+import SchedulingPage from "../pages/Schedule/SchedulingPage";
 import DashboardOverview from "../pages/Dashboard/DashboardOverview/DashboardOverview";
-import EmployeeDashboard from "../pages/Dashboard/DashboardOverview/EmployeeDashboard"; 
-import Task from "../pages/Dashboard/Employee/Task";
-import EmployeeAttendanceLogs from "../pages/Dashboard/Employee/EmployeeAttendanceLogs";
-import EmployeeAttendanceReport from "../pages/Dashboard/Employee/EmployeeAttendanceReport";
-import EmployeeDetails from "../pages/Dashboard/Hr/EmployeeDetails";
-import EmployeeList from "../pages/Dashboard/Hr/EmployeeList";
-import Progress from "../pages/Dashboard/Hr/Progress";
-import DepartmentList from "../pages/Dashboard/Hr/DepartmentList";
-import Profile from "../pages/Dashboard/Profile/Profile";
+import EmployeeDashboard from "../pages/Dashboard/EmployeeDashboard/EmployeeDashboard"; 
+import Task from "../pages/Task/Task";
+import EmployeeAttendanceLogs from "../pages/Attendance/EmployeeAttendance/EmployeeAttendanceLogs";
+import EmployeeAttendanceReport from "../pages/Attendance/EmployeeAttendance/EmployeeAttendanceReport";
+import EmployeeDetails from "../pages/EmployeeList/EmployeeDetails";
+import EmployeeList from "../pages/EmployeeList/EmployeeList";
+import Progress from "../pages/Progress/Progress";
+import DepartmentList from "../pages/Departments/DepartmentList";
+import Profile from "../pages/Profile/Profile";
 import ErrorPage from "../pages/ErrorPage";
 import Home from "../pages/Home/Home";
-import RegistrationPage from "../pages/SignUp/Register";
 import DashboardLayout from "./../layouts/DashboardLayout";
 import Login from "./../pages/Login/Login";
 import RoleRoute from "./RoleRoute";
@@ -32,7 +31,6 @@ const router = createBrowserRouter([
       { path: "/", element: <Home /> },
       { path: "/contact", element: <ContactUs /> },
       { path: "/login", element: <Login /> },
-      { path: "/register", element: <RegistrationPage /> },
     ],
   },
 

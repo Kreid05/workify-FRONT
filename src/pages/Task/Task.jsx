@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import DataTable from "react-data-table-component";
 import { FaFilter } from "react-icons/fa";
-import AddTaskModal from "./AddTaskModal";
+import AddTaskModal from "./Modals/AddTaskModal";
 import "./Task.css";
 
 function Task() {

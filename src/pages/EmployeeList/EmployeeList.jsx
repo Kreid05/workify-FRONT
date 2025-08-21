@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import { FaFilter, FaEdit } from "react-icons/fa";
 import EmployeeDetails from "./EmployeeDetails";
-import EmployeeUpdateModal from "./EmployeeUpdateModal";
+import EmployeeUpdateModal from "./Modals/EmployeeUpdateModal";
 import "./EmployeeList.css";
-import api from "../../../api/api";
+import api from "../../api/api";
 
 function EmployeeList() {
   

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import PersonalInfoEdit from "./PersonalInfoEdit";
-import ParentsInfoEdit from "./ParentsInfoEdit";
-import EmergencyInfoEdit from "./EmergencyInfoEdit";
+import PersonalInfoEdit from "./InfoEditModals/PersonalInfoEdit";
+import ParentsInfoEdit from "./InfoEditModals/ParentsInfoEdit";
+import EmergencyInfoEdit from "./InfoEditModals/EmergencyInfoEdit";
 import "./EmployeeDetails.css";
 
 function EmployeeDetails({ employee, onClose, onSectionUpdate, currentUser }) {

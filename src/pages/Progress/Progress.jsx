@@ -2,7 +2,7 @@ import React, { useState , useEffect} from "react";
 import DataTable from "react-data-table-component";
 import { FaFilter, FaCheck } from "react-icons/fa";
 import "./Progress.css";
-import api from "../../../api/api";
+import api from "../../api/api";
 
 function ProgressList() {
   const [searchTerm, setSearchTerm] = useState("");

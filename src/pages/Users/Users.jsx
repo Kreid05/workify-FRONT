@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import { FaFilter, FaEdit, FaBan, FaCheckCircle } from "react-icons/fa";
-import AddUserModal from "./AddUsersModal";
-import UserUpdateModal from "./UpdateUsersModal";
+import AddUserModal from "./Modals/AddUsersModal";
+import UserUpdateModal from "./Modals/UpdateUsersModal";
 import "./Users.css";
-import api from "../../../api/api";
+import api from "../../api/api";
 
 const Users = () => {
   const [searchTerm, setSearchTerm] = useState("");

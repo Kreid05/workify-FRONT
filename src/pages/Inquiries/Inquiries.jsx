@@ -1,6 +1,6 @@
 import Lottie from "lottie-react";
 import React, { useState } from "react";
-import coding from "../../../assets/Coding.json";
+import coding from "../../assets/Coding.json";
 
 const Inquiries = () => {
   return (

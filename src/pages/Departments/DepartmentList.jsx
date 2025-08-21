@@ -2,10 +2,10 @@ import React, { useState , useEffect} from "react";
 import DataTable from "react-data-table-component";
 import { FaFilter, FaEdit, FaTrash } from "react-icons/fa";
 import "./DepartmentList.css";
-import api from "../../../api/api";
-import AddDepartmentModal from "./AddDepartmentModal";
-import UpdateDepartmentModal from "./UpdateDepartmentModal";
-import AssignDepartmentModal from "./AssignDepartmentModal";
+import api from "../../api/api";
+import AddDepartmentModal from "./Modals/AddDepartmentModal";
+import UpdateDepartmentModal from "./Modals/UpdateDepartmentModal";
+import AssignDepartmentModal from "./Modals/AssignDepartmentModal";
 
 function DepartmentList() {
   const [searchTerm, setSearchTerm] = useState("");

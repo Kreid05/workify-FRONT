@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./EmployeeDetails.css";
+import "../EmployeeDetails.css";
 
 function ParentsInfoEdit({ employee, onSave, onClose }) {
   const [formData, setFormData] = useState({

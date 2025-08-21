@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './SchedulingPage.css';
-import ScheduleInformationModal from './ScheduleInformationModal';
-import EditScheduleModal from './EditScheduleModal';
-import ViewDetailsModal from './ViewDetailsModal';
+import ScheduleInformationModal from './Modals/ScheduleInformationModal';
+import EditScheduleModal from './Modals/EditScheduleModal';
+import ViewDetailsModal from './Modals/ViewDetailsModal';
 
 const SchedulingPage = () => {
   const [schedules, setSchedules] = useState([]);
