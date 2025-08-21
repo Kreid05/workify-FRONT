@@ -1,58 +1,63 @@
 import React, { useState, useEffect } from 'react';
 import './AddTaskModal.css';
+import api from "../../../api/api";
 
 const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
   const [formData, setFormData] = useState({
-    taskName: '',
-    description: '',
-    assignedTo: '',
-    department: '',
-    dueDate: ''
+    taskName: "",
+    description: "",
+    assignedTo: "",
+    assignedToId: "",
+    dueDate: "",
   });
-  
+
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  // Mock departments - replace with actual data from your backend
-  const departments = [
-    'IT',
-    'HR',
-    'Finance',
-    'Marketing',
-    'Operations',
-    'Sales',
-    'Customer Service'
-  ];
-
-  // Fetch employees for the dropdown
+  // fetch all employees
   useEffect(() => {
-    // Replace this with actual API call to fetch employees
-    const mockEmployees = [
-      { id: 1, name: 'John Doe', email: 'john@company.com' },
-      { id: 2, name: 'Jane Smith', email: 'jane@company.com' },
-      { id: 3, name: 'Mike Johnson', email: 'mike@company.com' },
-      { id: 4, name: 'Sarah Williams', email: 'sarah@company.com' }
-    ];
-    setEmployees(mockEmployees);
+    const fetchEmployees = async () => {
+      try {
+        const res = await api.get("/emp-info/all");
+        console.log("Employees fetched:", res.data);
+        setEmployees(res.data);
+      } catch (err) {
+        console.error("Error fetching employees:", err);
+      }
+    };
+    fetchEmployees();
   }, []);
 
+  // format date to MM/DD/YYYY for backend
+  const formatDate = (dateStr) => {
+    const d = new Date(dateStr);
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${month}/${day}/${year}`;
+  };
+
+  // handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
-    // Handle assignedTo search
-    if (name === 'assignedTo') {
+    if (name === "assignedTo") {
       if (value) {
-        const filtered = employees.filter(emp => 
-          emp.name.toLowerCase().includes(value.toLowerCase()) ||
-          emp.email.toLowerCase().includes(value.toLowerCase())
-        );
+        const filtered = employees.filter((emp) => {
+          const fullName = `${emp.firstName || ""} ${emp.lastName || ""}`.toLowerCase();
+          const email = emp?.userID?.email?.toLowerCase() || "";
+          return (
+            fullName.includes(value.toLowerCase()) ||
+            email.includes(value.toLowerCase())
+          );
+        });
         setFilteredEmployees(filtered);
-        setShowDropdown(true);
+        setShowDropdown(filtered.length > 0);
       } else {
         setFilteredEmployees([]);
         setShowDropdown(false);
@@ -60,52 +65,94 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
     }
   };
 
+  // select employee from dropdown
   const handleEmployeeSelect = (employee) => {
-    setFormData(prev => ({
+    const displayName =
+      `${employee.firstName || ""} ${employee.lastName || ""}`.trim() ||
+      employee.userID?.email ||
+      "Unknown";
+
+    setFormData((prev) => ({
       ...prev,
-      assignedTo: employee.name
+      assignedTo: displayName,             
+      assignedToId: employee.userID?._id || "" 
     }));
     setShowDropdown(false);
   };
 
-  const handleSubmit = (e) => {
+  // submit task
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validate required fields
-    if (!formData.taskName || !formData.assignedTo || !formData.dueDate) {
-      alert('Please fill in all required fields');
+
+    if (
+      !formData.taskName ||
+      !formData.description ||
+      !formData.assignedToId ||
+      !formData.dueDate
+    ) {
+      alert("Please fill in all required fields");
       return;
     }
 
-    // Create task object
-    const newTask = {
-      ...formData,
-      assignedTo: employees.find(emp => emp.name === formData.assignedTo)?.id || formData.assignedTo,
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const payload = {
+        taskName: formData.taskName,
+        description: formData.description,
+        assignedTo: formData.assignedToId, // userID._id
+        dueDate: formatDate(formData.dueDate), // backend requires MM/DD/YYYY
+      };
 
-    onAddTask(newTask);
-    
-    // Reset form
-    setFormData({
-      taskName: '',
-      description: '',
-      assignedTo: '',
-      department: '',
-      dueDate: ''
-    });
-    
-    onClose();
+      console.log("Sending payload:", payload);
+
+      const res = await api.post("/tasks/create", payload);
+      console.log("Response:", res.data);
+
+      const formatEmployeeName = (emp) => {
+        if (!emp) return "Unknown";
+        return (
+          emp.username ||
+          `${emp.firstName || ""} ${emp.lastName || ""}`.trim() ||
+          emp.email ||
+          "Unknown"
+        );
+      };
+
+      const newTask = {
+        id: res.data._id,
+        taskName: res.data.taskName,
+        description: res.data.description,
+        assignedTo: formatEmployeeName(res.data.assignedTo),
+        assignedBy: res.data.assignedBy?.username || "",
+        department: res.data.department?.departmentName || "",  
+        dueDate: new Date(res.data.dueDate).toLocaleDateString(),
+        status: res.data.status,
+      };
+
+      if (onAddTask) onAddTask(newTask);
+
+      // reset form
+      setFormData({
+        taskName: "",
+        description: "",
+        assignedTo: "",
+        assignedToId: "",
+        dueDate: "",
+      });
+
+      onClose();
+    } catch (err) {
+      console.error("Error creating task:", err.response?.data || err);
+      alert("Failed to create task");
+    }
   };
 
   const handleClose = () => {
-    // Reset form when closing
     setFormData({
-      taskName: '',
-      description: '',
-      assignedTo: '',
-      department: '',
-      dueDate: ''
+      taskName: "",
+      description: "",
+      assignedTo: "",
+      assignedToId: "",
+      dueDate: "",
     });
     setShowDropdown(false);
     onClose();
@@ -160,39 +207,30 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
                 placeholder="Type to search employee"
                 autoComplete="off"
               />
-              {showDropdown && filteredEmployees.length > 0 && (
-                <div className="addTask-dropdown-menu">
-                  {filteredEmployees.map(employee => (
-                    <div
-                      key={employee.id}
-                      className="addTask-dropdown-item"
-                      onClick={() => handleEmployeeSelect(employee)}
-                    >
-                      {employee.name} ({employee.email})
-                    </div>
-                  ))}
-                </div>
-              )}
+                {showDropdown && filteredEmployees.length > 0 && (
+                  <div className="addTask-dropdown-menu">
+                    {filteredEmployees.map((employee) => {
+                      const displayName =
+                          `${employee.firstName || ""} ${employee.lastName || ""}`.trim() ||
+                          employee.userID?.email ||
+                          "Unknown";
+                      return (
+                        <div
+                          key={employee._id}
+                          className="addTask-dropdown-item"
+                          onClick={() => handleEmployeeSelect(employee)}
+                        >
+                          {displayName}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
             </div>
-          </div>
+          </div>  
 
           <div className="addTask-form-group">
-            <label htmlFor="department">Department</label>
-            <select
-              id="department"
-              name="department"
-              value={formData.department}
-              onChange={handleInputChange}
-            >
-              <option value="">Select Department</option>
-              {departments.map(dept => (
-                <option key={dept} value={dept}>{dept}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="addTask-form-group">
-            <label htmlFor="dueDate">Due Date *</label>
+            <label htmlFor="dueDate">Due Date</label>
             <input
               type="date"
               id="dueDate"
