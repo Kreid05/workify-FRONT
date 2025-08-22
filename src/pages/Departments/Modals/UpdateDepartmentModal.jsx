@@ -4,14 +4,14 @@ import "./UpdateDepartmentModal.css";
 function UpdateDepartmentModal({ isOpen, onClose, department, onUpdateDepartment }) {
   const [formData, setFormData] = useState({
     departmentName: "",
-    jobTitle: "",
+    jobTitles: [""],
   });
 
   useEffect(() => {
     if (department) {
       setFormData({
         departmentName: department.departmentName || "",
-        jobTitle: department.jobTitle || "",
+        jobTitles: department.jobTitles && department.jobTitles.length > 0 ? department.jobTitles : [""],
       });
     }
   }, [department]);
@@ -21,6 +21,31 @@ function UpdateDepartmentModal({ isOpen, onClose, department, onUpdateDepartment
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const handleJobTitleChange = (index, value) => {
+    const updated = [...formData.jobTitles];
+    updated[index] = value;
+    setFormData((prev) => ({
+      ...prev,
+      jobTitles: updated,
+    }));
+  };
+
+  const addJobTitle = () => {
+    setFormData((prev) => ({
+      ...prev,
+      jobTitles: [...prev.jobTitles, ""],
+    }));
+  };
+
+  const removeJobTitle = (index) => {
+    const updated = [...formData.jobTitles];
+    updated.splice(index, 1);
+    setFormData((prev) => ({
+      ...prev,
+      jobTitles: updated.length > 0 ? updated : [""],
     }));
   };
 
@@ -61,16 +86,33 @@ function UpdateDepartmentModal({ isOpen, onClose, department, onUpdateDepartment
           </div>
 
           <div className="form-group">
-            <label htmlFor="jobTitle">Job Title</label>
-            <input
-              type="text"
-              id="jobTitle"
-              name="jobTitle"
-              value={formData.jobTitle}
-              onChange={handleChange}
-              required
-              className="form-input"
-            />
+            <label>Job Titles</label>
+            {formData.jobTitles.map((jt, index) => (
+              <div key={index} className="jobtitle-row">
+                <input
+                  type="text"
+                  value={jt}
+                  onChange={(e) => handleJobTitleChange(index, e.target.value)}
+                  required
+                  className="form-input"
+                />
+                <button
+                  type="button"
+                  className="remove-jobtitle-btn"
+                  onClick={() => removeJobTitle(index)}
+                  disabled={formData.jobTitles.length === 1}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="add-jobtitle-btn"
+              onClick={addJobTitle}
+            >
+              + Add Job Title
+            </button>
           </div>
 
           <div className="form-actions">

@@ -85,26 +85,26 @@ function Task() {
       name: "Description",
       selector: row => row.description,
       sortable: true,
-      width: "20%",
+      width: "15%",
     },
     {
       name: "Assigned To",
       selector: row => row.assignedTo,
       sortable: true,
-      width: "12%",
+      width: "11%",
     },
     {
       name: "Assigned By",
       selector: row => row.assignedBy,
       sortable: true,
-      width: "12%",
+      width: "11%",
     },
     {
       name: "Department",
       selector: row => row.department,
       sortable: true,
       center: "true",
-      width: "15%",
+      width: "12%",
     },
     {
       name: "Due Date",
@@ -117,7 +117,7 @@ function Task() {
       selector: row => row.status,
       sortable: true,
       center: "true",
-      width: "14%",
+      width: "9%",
       cell: row => (
         <span className={`task-status-badge status-${row.status.toLowerCase().replace(' ', '-')}`}>
           {row.status}

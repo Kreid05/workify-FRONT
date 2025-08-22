@@ -91,7 +91,7 @@ useEffect(() => {
           name: `${p.firstName || ""} ${p.middleName ? p.middleName + " " : ""}${p.lastName || ""}`.trim(),
           email: u.email || "",
           department: dept.departmentName || "",
-          jobTitle: dept.jobTitle || "",
+          jobTitle: u.jobTitle || "",
           hiredDate: fmtMDY(p.hireDate),
 
           // ids to keep around
@@ -189,9 +189,7 @@ useEffect(() => {
       selector: row => row.jobTitle,
       sortable: true,
       width: "15%",
-      sortFunction: (rowA, rowB) => {
-        return rowA.jobTitle.localeCompare(rowB.jobTitle);
-      },
+      sortFunction: (a, b) => a.jobTitle.localeCompare(b.jobTitle),
     },
     {
       name: "Hired Date",

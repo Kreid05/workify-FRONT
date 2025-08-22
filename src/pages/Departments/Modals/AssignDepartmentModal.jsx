@@ -4,114 +4,132 @@ import api from '../../../api/api';
 
 const AssignDepartmentModal = ({ isOpen, onClose, onAssignDepartment }) => {
   const [formData, setFormData] = useState({
-    username: '',
-    department: '',
-    jobTitle: ''
+    userId: "",
+    employeeName: "",
+    departmentId: "",
+    jobTitle: "",
   });
+
+  const [employees, setEmployees] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [jobTitles, setJobTitles] = useState([]);
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
-  // Mock departments data - will be replaced with actual API call
-  const mockDepartments = [
-    { _id: '1', departmentName: 'Human Resources', jobTitles: ['HR Manager', 'HR Specialist', 'Recruiter', 'HR Coordinator'] },
-    { _id: '2', departmentName: 'Information Technology', jobTitles: ['Software Engineer', 'IT Manager', 'System Administrator', 'DevOps Engineer'] },
-    { _id: '3', departmentName: 'Finance', jobTitles: ['Accountant', 'Finance Manager', 'Financial Analyst', 'Bookkeeper'] },
-    { _id: '4', departmentName: 'Marketing', jobTitles: ['Marketing Manager', 'Digital Marketer', 'Content Writer', 'SEO Specialist'] },
-    { _id: '5', departmentName: 'Sales', jobTitles: ['Sales Manager', 'Sales Representative', 'Account Executive', 'Business Development'] }
-  ];
-
+  // fetch employees & departments
   useEffect(() => {
-    // Fetch departments when modal opens
-    const fetchDepartments = async () => {
+    const fetchData = async () => {
       try {
-        // In production, this would be an API call
-        setDepartments(mockDepartments);
+        const resUsers = await api.get("/emp-info/all");
+        setEmployees(resUsers.data);
+
+        const resDept = await api.get("/department");
+        setDepartments(resDept.data);
       } catch (err) {
-        console.error('Error fetching departments:', err);
-        setDepartments(mockDepartments); // Fallback to mock data
+        console.error("Error fetching data:", err);
       }
     };
 
-    if (isOpen) {
-      fetchDepartments();
-    }
+    if (isOpen) fetchData();
   }, [isOpen]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
-    if (name === 'department') {
-      const selectedDept = departments.find(dept => dept.departmentName === value);
-      setJobTitles(selectedDept ? selectedDept.jobTitles : []);
-      setFormData(prev => ({
-        ...prev,
-        department: value,
-        jobTitle: '' // Reset job title when department changes
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
+
+    // search employee typing
+    if (name === "employeeName") {
+      setFormData((prev) => ({ ...prev, employeeName: value }));
+
+      if (value) {
+        const filtered = employees.filter((emp) => {
+          const fullName = `${emp.firstName || ""} ${emp.lastName || ""}`.toLowerCase();
+          const email = emp?.userID?.email?.toLowerCase() || "";
+          return (
+            fullName.includes(value.toLowerCase()) ||
+            email.includes(value.toLowerCase())
+          );
+        });
+        setFilteredEmployees(filtered);
+        setShowDropdown(filtered.length > 0);
+      } else {
+        setFilteredEmployees([]);
+        setShowDropdown(false);
+      }
+      return;
     }
-    
-    if (error) setError('');
+
+    // normal select changes
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "departmentId") {
+      const dept = departments.find((d) => d._id === value);
+      setJobTitles(dept ? dept.jobTitles : []);
+      setFormData((prev) => ({ ...prev, jobTitle: "" }));
+    }
+
+    if (error) setError("");
+  };
+
+  const handleEmployeeSelect = (employee) => {
+    const displayName =
+      `${employee.firstName || ""} ${employee.lastName || ""}`.trim() ||
+      employee.userID?.email ||
+      "Unknown";
+
+    setFormData((prev) => ({
+      ...prev,
+      employeeName: displayName,
+      userId: employee.userID?._id || employee._id,
+    }));
+    setShowDropdown(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!formData.username.trim() || !formData.department || !formData.jobTitle) {
-      setError('Please fill in all required fields');
+
+    if (!formData.userId || !formData.departmentId || !formData.jobTitle) {
+      setError("Please select an employee, a department, and a job title");
       return;
     }
 
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
-      // Mock assignment - in production this would be an API call
-      const assignmentData = {
-        username: formData.username.trim(),
-        department: formData.department,
+      const payload = {
+        userId: formData.userId,
+        departmentId: formData.departmentId,
         jobTitle: formData.jobTitle,
-        assignedAt: new Date().toISOString()
       };
 
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Call parent callback with assignment data
-      onAssignDepartment(assignmentData);
-      
-      // Reset form
-      setFormData({
-        username: '',
-        department: '',
-        jobTitle: ''
-      });
-      
+      const res = await api.put("/user-department/assign", payload);
+      onAssignDepartment(res.data);
+
+      // reset
+      setFormData({ userId: "", employeeName: "", departmentId: "", jobTitle: "" });
+      setJobTitles([]);
       onClose();
     } catch (err) {
-      console.error('Error assigning department:', err);
-      setError('Failed to assign department. Please try again.');
+      console.error("Error assigning department:", err);
+      setError(err.response?.data?.message || "Failed to assign department");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleClose = () => {
-    setFormData({
-      username: '',
-      department: '',
-      jobTitle: ''
-    });
+    setFormData({ userId: "", employeeName: "", departmentId: "", jobTitle: "" });
     setJobTitles([]);
-    setError('');
+    setError("");
     onClose();
   };
+
+  const selectedDepartment = departments.find(
+    (dept) => dept._id === formData.departmentId
+  );
+
 
   if (!isOpen) return null;
 
@@ -122,42 +140,60 @@ const AssignDepartmentModal = ({ isOpen, onClose, onAssignDepartment }) => {
           <h2>Assign Department to User</h2>
           <button className="assign-department-close-button" onClick={handleClose}>×</button>
         </div>
-        
-        {error && (
-          <div className="assign-department-error-message">
-            {error}
-          </div>
-        )}
-        
+
+        {error && <div className="assign-department-error-message">{error}</div>}
+
         <form onSubmit={handleSubmit} className="assign-department-form">
+          {/* Employee Search Input */}
           <div className="assign-department-form-group">
-            <label htmlFor="username">Username</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleInputChange}
-              placeholder="Enter username"
-              required
-              disabled={isLoading}
-            />
+            <label htmlFor="employeeName">Employee</label>
+            <div className="assign-department-dropdown-container">
+              <input
+                type="text"
+                id="employeeName"
+                name="employeeName"
+                value={formData.employeeName}
+                onChange={handleInputChange}
+                required
+                placeholder="Type to search employee"
+                autoComplete="off"
+                disabled={isLoading}
+              />
+              {showDropdown && filteredEmployees.length > 0 && (
+                <div className="assign-department-dropdown-menu">
+                  {filteredEmployees.map((employee) => {
+                    const displayName =
+                      `${employee.firstName || ""} ${employee.lastName || ""}`.trim() ||
+                      employee.userID?.email ||
+                      "Unknown";
+                    return (
+                      <div
+                        key={employee._id}
+                        className="assign-department-dropdown-item"
+                        onClick={() => handleEmployeeSelect(employee)}
+                      >
+                        {displayName}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="assign-department-form-group">
-            <label htmlFor="department">Department</label>
+            <label htmlFor="departmentId">Department</label>
             <select
-              id="department"
-              name="department"
-              value={formData.department}
+              name="departmentId"
+              value={formData.departmentId}
               onChange={handleInputChange}
               required
               disabled={isLoading}
             >
-              <option value="">Select Department</option>
-              {departments.map((dept) => (
-                <option key={dept._id} value={dept.departmentName}>
-                  {dept.departmentName}
+              <option value="">Select department</option>
+              {departments.map((d) => (
+                <option key={d._id} value={d._id}>
+                  {d.departmentName}
                 </option>
               ))}
             </select>
@@ -165,21 +201,24 @@ const AssignDepartmentModal = ({ isOpen, onClose, onAssignDepartment }) => {
 
           <div className="assign-department-form-group">
             <label htmlFor="jobTitle">Job Title</label>
-            <select
-              id="jobTitle"
-              name="jobTitle"
-              value={formData.jobTitle}
-              onChange={handleInputChange}
-              required
-              disabled={isLoading || !formData.department}
-            >
-              <option value="">Select Job Title</option>
-              {jobTitles.map((title) => (
-                <option key={title} value={title}>
-                  {title}
-                </option>
-              ))}
-            </select>
+            {(selectedDepartment?.jobTitles?.length ?? 0) > 0 ? (
+              <select
+                id="jobTitle"
+                name="jobTitle"
+                value={formData.jobTitle}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">Select Job Title</option>
+                {selectedDepartment.jobTitles.map((jt, index) => (
+                  <option key={index} value={jt}>
+                    {jt}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <p>No job titles available for this department</p>
+            )}
           </div>
 
           <div className="assign-department-form-actions">
@@ -196,7 +235,7 @@ const AssignDepartmentModal = ({ isOpen, onClose, onAssignDepartment }) => {
               className="assign-department-submit-button"
               disabled={isLoading}
             >
-              {isLoading ? 'Assigning...' : 'Assign Department'}
+              {isLoading ? 'Assigning...' : 'Assign'}
             </button>
           </div>
         </form>

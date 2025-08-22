@@ -29,7 +29,7 @@ function DepartmentList() {
         const formatted = data.map((dept) => ({
           _id: dept._id || "",
           departmentName: dept.departmentName || "",
-          jobTitle: dept.jobTitle || "",
+          jobTitles: Array.isArray(dept.jobTitles) ? dept.jobTitles : [],
         }));
 
         setDepartments(formatted);
@@ -134,8 +134,8 @@ function DepartmentList() {
       },
     },
     {
-      name: "Job Title",
-      selector: row => row.jobTitle,
+      name: "Job Titles",
+      selector:  row => row.jobTitles.join(", "),
       sortable: true,
       width: "40%",
       sortFunction: (rowA, rowB) => {
