@@ -38,6 +38,10 @@ const StatsSection = ({
           </div> 
           <div className="clock-times"> 
             <div className="clock-time-item"> 
+              <div>Status</div> 
+              <div>{currentStatus}</div> 
+            </div>
+            <div className="clock-time-item"> 
               <div>Clock-In Time</div> 
               <div>{formatTimeForDisplay(clockInTime)}</div> 
             </div> 

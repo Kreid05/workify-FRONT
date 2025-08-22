@@ -6,6 +6,7 @@ import AttendanceRecord from './AttendanceRecord';
 import TasksSection from './TasksSection';
 import CurrentTimeSection from './CurrentTimeSection';
 import './EmployeeDashboard.css';
+import api from "../../../api/api";
 
 const EmployeeDashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -14,7 +15,7 @@ const EmployeeDashboard = () => {
   const [clockType, setClockType] = useState('in');
   const [clockInTime, setClockInTime] = useState(null);
   const [clockOutTime, setClockOutTime] = useState(null);
-  const [currentStatus, setCurrentStatus] = useState('Clocked Out');
+  const [currentStatus, setCurrentStatus] = useState('--');
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
   const timeframes = ['This Week', 'This Month'];
@@ -24,6 +25,35 @@ const EmployeeDashboard = () => {
       setCurrentTime(new Date());
     }, 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const fetchTodayAttendance = async () => {
+      try {
+        const userId = localStorage.getItem("userId"); 
+        if (!userId) {
+          console.warn("No userId found in localStorage");
+          return;
+        }
+
+        const res = await api.get(`/attendance/today?userId=${userId}`);
+        
+        if (res.data) {
+          if (res.data.clockInAt) {
+            setClockInTime(new Date(res.data.clockInAt));
+            setCurrentStatus("Clocked In");
+          }
+          if (res.data.clockOutAt) {
+            setClockOutTime(new Date(res.data.clockOutAt));
+            setCurrentStatus("Clocked Out");
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch today's attendance", err);
+      }
+    };
+
+    fetchTodayAttendance();
   }, []);
 
   const formatTime = (date) => {
@@ -58,14 +88,13 @@ const EmployeeDashboard = () => {
     setShowClockModal(false);
   };
 
-  const handleClockSuccess = (clockData) => {
-    if (clockData.type === 'in') {
-      setClockInTime(clockData.datetime);
-      setClockOutTime(null);
-      setCurrentStatus('Clocked In');
-    } else {
-      setClockOutTime(clockData.datetime);
-      setCurrentStatus('Clocked Out');
+  const handleClockSuccess = (data) => {
+    if (data.message === "Clocked In") {
+      setClockInTime(new Date(data.clockInAt));
+      setCurrentStatus("Clocked In");
+    } else if (data.message === "Clocked Out") {
+      setClockOutTime(new Date(data.clockOutAt));
+      setCurrentStatus("Clocked Out");
     }
   };
 

@@ -11,6 +11,9 @@ import EmployeeDashboard from "../pages/Dashboard/EmployeeDashboard/EmployeeDash
 import Task from "../pages/Task/Task";
 import EmployeeAttendanceLogs from "../pages/Attendance/EmployeeAttendance/EmployeeAttendanceLogs";
 import EmployeeAttendanceReport from "../pages/Attendance/EmployeeAttendance/EmployeeAttendanceReport";
+import EmployeeLeaveManagement from "../pages/LeaveManagement/EmployeeLeave/EmployeeLeaveManagement";
+import AdminLeaveRequest from "../pages/LeaveManagement/AdminLeave/AdminLeaveRequest";
+import AdminLeaveBalance from "../pages/LeaveManagement/AdminLeave/AdminLeaveBalances";
 import EmployeeDetails from "../pages/EmployeeList/EmployeeDetails";
 import EmployeeList from "../pages/EmployeeList/EmployeeList";
 import Progress from "../pages/Progress/Progress";
@@ -123,6 +126,25 @@ const router = createBrowserRouter([
           </RoleRoute>
         ),
       },
+
+      // admin/hr leave management
+      {
+        path: "leave-request",
+        element: (
+          <RoleRoute allowed={["admin", "hr"]}>
+            <AdminLeaveRequest />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: "leave-balance",
+        element: (
+          <RoleRoute allowed={["admin", "hr"]}>
+            <AdminLeaveBalance />
+          </RoleRoute>
+        ),
+      },
+
       {
         path: "details/:email",
         element: (
@@ -162,6 +184,14 @@ const router = createBrowserRouter([
         element: (
           <RoleRoute allowed={["employee"]}>
             <EmployeeAttendanceReport />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: "employee-leave-management",
+        element: (
+          <RoleRoute allowed={["employee"]}>
+            <EmployeeLeaveManagement />
           </RoleRoute>
         ),
       },

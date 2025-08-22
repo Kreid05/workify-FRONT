@@ -11,8 +11,10 @@ import {
   FaClock,
   FaFileAlt,
   FaCalendarAlt,
+  FaCalendarCheck, 
   FaChevronDown,
   FaChevronRight,
+  FaWallet,
 } from "react-icons/fa";
 import { RxDashboard } from "react-icons/rx";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -22,6 +24,7 @@ import "./Sidebar.css";
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [attendanceOpen, setAttendanceOpen] = useState(false);
+  const [leaveOpen, setLeaveOpen] = useState(false);
   const navigate = useNavigate();
   const role = getUserRole(); 
 
@@ -36,6 +39,10 @@ const Sidebar = () => {
 
   const toggleAttendance = () => {
     setAttendanceOpen(!attendanceOpen);
+  };
+
+  const toggleLeave = () => {
+    setLeaveOpen(!leaveOpen);
   };
 
   return (
@@ -182,6 +189,50 @@ const Sidebar = () => {
                     )}
                   </li>
 
+                  {/* leave management dropdown */}
+                  <li>
+                    <div 
+                      className="nav-item dropdown-toggle"
+                      onClick={toggleLeave}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <FaCalendarCheck className="nav-icon" />
+                      <span>Leave Management</span>
+                      {leaveOpen ? (
+                        <FaChevronDown className="dropdown-icon" />
+                      ) : (
+                        <FaChevronRight className="dropdown-icon" />
+                      )}
+                    </div>
+
+                    {leaveOpen && (
+                      <ul className="dropdown-menu">
+                        <li>
+                          <NavLink
+                            to="/dashboard/leave-request"
+                            className={({ isActive }) =>
+                              isActive ? "nav-item sub-item active" : "nav-item sub-item"
+                            }
+                          >
+                            <FaCalendarCheck className="nav-icon" />
+                            <span>Leave Request</span>
+                          </NavLink>
+                        </li>
+                        <li>
+                          <NavLink
+                            to="/dashboard/leave-balance"
+                            className={({ isActive }) =>
+                              isActive ? "nav-item sub-item active" : "nav-item sub-item"
+                            }
+                          >
+                            <FaWallet className="nav-icon" />
+                            <span>Leave Balance</span>
+                          </NavLink>
+                        </li>
+                      </ul>
+                    )}
+                  </li>
+
                   <li>
                     <NavLink
                       to="/dashboard/task"
@@ -274,6 +325,19 @@ const Sidebar = () => {
                         </li>
                       </ul>
                     )}
+                  </li>
+
+                  {/* leave management dropdown for employee */}
+                  <li>
+                    <NavLink
+                      to="/dashboard/employee-leave-management"
+                      className={({ isActive }) =>
+                        isActive ? "nav-item active" : "nav-item"
+                      }
+                    >
+                      <FaCalendarCheck className="nav-icon" />
+                      <span>Leave Management</span>
+                    </NavLink>
                   </li>
 
                   <li>

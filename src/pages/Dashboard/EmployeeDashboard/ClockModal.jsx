@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Clock, Calendar, CheckCircle } from 'lucide-react';
 import './ClockModal.css';
+import api from "../../../api/api";
 
 const ClockModal = ({ isOpen, onClose, clockType, onClockSuccess }) => {
   const [userLocation, setUserLocation] = useState(null);
@@ -143,21 +144,16 @@ const ClockModal = ({ isOpen, onClose, clockType, onClockSuccess }) => {
       
       console.log('Video element found, setting up stream...');
       
-     
       if (videoElement.srcObject) {
         videoElement.srcObject = null;
       }
       
-    
-      videoElement.srcObject = mediaStream;
-      
-      
+      videoElement.srcObject = mediaStream;   
       videoElement.setAttribute('playsinline', '');
       videoElement.setAttribute('muted', '');
       videoElement.muted = true;
       videoElement.autoplay = true;
       
-     
       const onLoadedMetadata = () => {
         console.log('Video metadata loaded');
         setIsVideoReady(true);
@@ -165,7 +161,6 @@ const ClockModal = ({ isOpen, onClose, clockType, onClockSuccess }) => {
       };
       
       videoElement.addEventListener('loadedmetadata', onLoadedMetadata);
-      
       
       try {
         const playPromise = videoElement.play();
@@ -191,11 +186,9 @@ const ClockModal = ({ isOpen, onClose, clockType, onClockSuccess }) => {
     try {
   
       stopCamera();
-      
-     
       setIsCameraActive(true);
       setIsVideoReady(false);
-      
+
       console.log('Requesting camera permissions...');
       
       const mediaStream = await navigator.mediaDevices.getUserMedia({ 
@@ -209,8 +202,7 @@ const ClockModal = ({ isOpen, onClose, clockType, onClockSuccess }) => {
       
       console.log('Camera permission granted, got stream:', mediaStream);
       setStream(mediaStream);
-      
-   
+    
       setTimeout(async () => {
         try {
           await setupVideoStream(mediaStream);
@@ -250,27 +242,35 @@ const ClockModal = ({ isOpen, onClose, clockType, onClockSuccess }) => {
       const canvas = canvasRef.current;
       const video = videoRef.current;
       const context = canvas.getContext('2d');
-      
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      
- 
+
+      // resive canvas to a smaller resolution 
+      const maxWidth = 640;
+      const maxHeight = 480;
+      let width = video.videoWidth;
+      let height = video.videoHeight;
+
+      if (width > maxWidth) {
+        height = (maxWidth / width) * height;
+        width = maxWidth;
+      }
+      if (height > maxHeight) {
+        width = (maxHeight / height) * width;
+        height = maxHeight;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+
+      // mirror horizontally
       context.scale(-1, 1);
-      context.drawImage(video, -canvas.width, 0);
-      context.scale(-1, 1); 
-      
-      const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      context.drawImage(video, -width, 0, width, height);
+      context.setTransform(1, 0, 0, 1, 0, 0); // reset transform
+
+      const imageDataUrl = canvas.toDataURL('image/jpeg', 0.6); // quality 0.6
       setCapturedImage(imageDataUrl);
       setUploadedImage(null);
       stopCamera();
     } else {
-      console.error('Camera not ready:', {
-        videoRef: !!videoRef.current,
-        canvasRef: !!canvasRef.current,
-        isVideoReady,
-        videoWidth: videoRef.current?.videoWidth,
-        videoHeight: videoRef.current?.videoHeight
-      });
       alert('Camera not ready. Please wait a moment and try again.');
     }
   };
@@ -280,8 +280,37 @@ const ClockModal = ({ isOpen, onClose, clockType, onClockSuccess }) => {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setUploadedImage(e.target.result);
-        setCapturedImage(null);
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+
+          // target max dimensions
+          const maxWidth = 640;
+          const maxHeight = 480;
+          let { width, height } = img;
+
+          // scale down if too big
+          if (width > maxWidth) {
+            height = (maxWidth / width) * height;
+            width = maxWidth;
+          }
+          if (height > maxHeight) {
+            width = (maxHeight / height) * width;
+            height = maxHeight;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // export compressed JPEG (quality 0.6)
+          const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.6);
+
+          setUploadedImage(compressedDataUrl);
+          setCapturedImage(null);
+        };
       };
       reader.readAsDataURL(file);
     }
@@ -291,45 +320,56 @@ const ClockModal = ({ isOpen, onClose, clockType, onClockSuccess }) => {
     return capturedImage || uploadedImage;
   };
 
-  const handleSubmit = () => {
-    if (!userLocation) {
-      alert('Please allow location access to continue.');
-      return;
-    }
-    
-    if (!getCurrentImage()) {
-      alert('Please take a photo or upload an image to continue.');
-      return;
-    }
+  const handleSubmit = async () => {
+  if (!userLocation) {
+    alert("Please allow location access to continue.");
+    return;
+  }
 
-    const now = new Date();
-    const timeString = now.toLocaleTimeString('en-US', { 
+  const currentImage = getCurrentImage();
+  if (!currentImage) {
+    alert("Please take a photo or upload an image to continue.");
+    return;
+  }
+
+  try {
+    const payload = {
+      latitude: userLocation.latitude,
+      longitude: userLocation.longitude,
+      accuracy: userLocation.accuracy,
+      address: locationAddress,
+      base64Image: currentImage,
+    };
+
+    const endpoint = clockType === "in"
+      ? "/attendance/clock-in"
+      : "/attendance/clock-out";
+
+    const res = await api.post(endpoint, payload);
+
+    // set confirmation info
+    setConfirmedTime(new Date(res.data.clockInAt || res.data.clockOutAt).toLocaleTimeString("en-US", {
       hour12: false,
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-    const dateString = now.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-    
-    setConfirmedTime(timeString);
-    setConfirmedDate(dateString);
+      hour: "2-digit",
+      minute: "2-digit",
+    }));
+    setConfirmedDate(new Date(res.data.clockInAt || res.data.clockOutAt).toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }));
+
     setShowConfirmation(true);
-    
+
     if (onClockSuccess) {
-      onClockSuccess({
-        type: clockType,
-        time: timeString,
-        datetime: now,
-        location: userLocation,
-        address: locationAddress,
-        image: getCurrentImage()
-      });
+      onClockSuccess(res.data); // pass backend response
     }
-  };
+  } catch (err) {
+    console.error("Clock action failed:", err);
+    alert(err.response?.data?.message || "Failed to clock in/out.");
+  }
+};
 
   const handleConfirmationClose = () => {
     setShowConfirmation(false);

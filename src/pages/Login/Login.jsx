@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import technical from "../../assets/login.json";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import "./Login.css";
+import { jwtDecode } from "jwt-decode";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -16,42 +17,47 @@ export default function Login() {
   const axiosPublic = useAxiosPublic();
 
   const handleLoginSubmit = async (e) => {
-  e.preventDefault();
-  e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
 
-  if (!email || !password) {
-    toast.error("Email and password are required.");
-    return;
-  }
-
-  try {
-    setLoading(true);
-    const { data } = await axiosPublic.post("/auth/login", { email, password });
-
-    // store jwt token
-    localStorage.setItem("accessToken", data.token);
-
-    toast.success("Login successful!");
-
-    // redirect based on role
-    if (data.role === "admin" || data.role === "hr") {
-      navigate("/dashboard");
-    } else if (data.role === "employee") {
-      navigate("/dashboard/employee-dashboard");
-    } else {
-      navigate("/"); // fallback if role is unknown
+    if (!email || !password) {
+      toast.error("Email and password are required.");
+      return;
     }
-  } catch (err) {
-    if (err.response?.status === 403) {
-      toast.error("Your account has been disabled.");
-    } else {
-      toast.error(err.response?.data?.message || "Invalid email or password.");
-    }
-  } finally {
-    setLoading(false);
-  }
-};
 
+    try {
+      setLoading(true);
+      const { data } = await axiosPublic.post("/auth/login", { email, password });
+
+      // store jwt token
+      localStorage.setItem("accessToken", data.token);
+
+      // decode token to get userId
+      const decoded = jwtDecode(data.token);
+      if (decoded?.id) {
+        localStorage.setItem("userId", decoded.id);
+      }
+
+      toast.success("Login successful!");
+
+      // redirect based on role
+      if (data.role === "admin" || data.role === "hr") {
+        navigate("/dashboard");
+      } else if (data.role === "employee") {
+        navigate("/dashboard/employee-dashboard");
+      } else {
+        navigate("/"); // fallback if role is unknown
+      }
+    } catch (err) {
+      if (err.response?.status === 403) {
+        toast.error("Your account has been disabled.");
+      } else {
+        toast.error(err.response?.data?.message || "Invalid email or password.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -66,8 +72,8 @@ export default function Login() {
                 Welcome!
               </h1>
               <form onSubmit={handleLoginSubmit} className="login-form">
-                <div className="form-control">
-                  <label className="form-label">
+                <div className="login-form-control">
+                  <label className="login-form-label">
                     Email
                   </label>
                   <input
@@ -76,13 +82,13 @@ export default function Login() {
                     name="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="form-input"
+                    className="login-form-input"
                     required
                   />
                 </div>
 
-                <div className="form-control">
-                  <label className="form-label">
+                <div className="login-form-control">
+                  <label className="login-form-label">
                     Password
                   </label>
                   <input
@@ -91,21 +97,21 @@ export default function Login() {
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="form-input"
+                    className="login-form-input"
                     required
                   />
                 </div>
 
-                <div className="form-control login-buttons">
+                <div className="login-form-control login-buttons">
                   <button type="submit" className="sign-in-button">
                     Sign in
                   </button>
                 </div>
               </form>
-              <div className="text-center mt-4">
+              <div className="login-text-center mt-4">
                 <Link
                   to="/forgot-password"
-                  className="forgot-password"
+                  className="login-forgot-password"
                 >
                   Forgot password?
                 </Link>

@@ -64,11 +64,11 @@
   gap: 1rem;
 }
 
-.form-control {
+.login-form-control {
   margin-bottom: 0;
 }
 
-.form-label {
+.login-form-label {
   font-weight: 600;
   color: white;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -76,7 +76,7 @@
   display: block;
 }
 
-.form-input {
+.login-form-input {
   width: 100%;
   padding: 0.75rem 1rem;
   border: 2px solid transparent;
@@ -87,13 +87,13 @@
   transition: all 0.3s ease;
 }
 
-.form-input:focus {
+.login-form-input:focus {
   outline: none;
   border-color: #fd7702;
   box-shadow: 0 0 0 3px rgba(253, 119, 2, 0.2), inset 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
-.form-input::placeholder {
+.login-form-input::placeholder {
   color: rgba(100, 100, 100, 0.7);
 }
 
@@ -137,19 +137,7 @@
   color: white;
 }
 
-.register-link {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.8);
-  text-decoration: underline;
-  font-weight: 600;
-  transition: color 0.3s ease;
-}
-
-.register-link:hover {
-  color: white;
-}
-
-.text-center {
+.login-text-center {
   text-align: center;
 }
 
@@ -159,14 +147,6 @@
 
 .mt-6 {
   margin-top: 1.5rem;
-}
-
-.text-sm {
-  font-size: 0.875rem;
-}
-
-.text-gray-600 {
-  color: rgba(255, 255, 255, 0.7);
 }
 
 /* Responsive adjustments */
