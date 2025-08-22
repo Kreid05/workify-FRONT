@@ -136,6 +136,77 @@
   cursor: not-allowed;
 }
 
+/* Dropdown Container */
+.assign-department-dropdown-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Dropdown Menu */
+.assign-department-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 1001;
+  margin-top: -1px;
+}
+
+/* Dropdown Item */
+.assign-department-dropdown-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+  transition: all 0.2s ease;
+}
+
+.assign-department-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.assign-department-dropdown-item:hover {
+  background-color: #f9fafb;
+  color: #003f7d;
+}
+
+.assign-department-dropdown-item:active {
+  background-color: #e5e7eb;
+}
+
+/* Focus state for input when dropdown is visible */
+.assign-department-form-group input:focus + .assign-department-dropdown-menu {
+  border-color: #fd7702;
+  box-shadow: 0 0 0 3px rgba(246, 187, 59, 0.1);
+}
+
+/* Scrollbar styling for dropdown */
+.assign-department-dropdown-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.assign-department-dropdown-menu::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 0 0 6px 0;
+}
+
+.assign-department-dropdown-menu::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.assign-department-dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
 /* Form Actions */
 .assign-department-form-actions {
   display: flex;

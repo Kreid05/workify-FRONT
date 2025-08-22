@@ -1,0 +1,151 @@
+.inquiries-container {
+  padding: 1.5rem 0;
+  background-color: #f9fafb;
+}
+
+.inquiries-table-container {
+  background: white;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  width: 65%;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  justify-content: center;
+}
+
+.status-badge.pending {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.status-badge.approved {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #34d399;
+}
+
+.status-badge.declined {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #f87171;
+}
+
+/* Action Buttons */
+.approve-button {
+  background-color: #22c55e;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.approve-button:hover {
+  background-color: #16a34a;
+  transform: translateY(-1px);
+}
+
+.approve-button:active {
+  transform: translateY(0);
+}
+
+.decline-button {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.decline-button:hover {
+  background-color: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.decline-button:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .inquiries-container {
+    padding: 16px;
+  }
+  
+  .inquiries-table-container {
+    padding: 16px;
+  }
+  
+}
+
+/* Data Table Custom Styles */
+.rdt_TableHeadRow {
+  background-color: #003f7d !important;
+}
+
+.rdt_TableHeadRow .rdt_TableCol {
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+.rdt_TableRow {
+  transition: background-color 0.2s;
+}
+
+.rdt_TableRow:hover {
+  background-color: #fd7702 !important;
+}
+
+.rdt_TableRow:hover .rdt_TableCell {
+  color: #ffffff !important;
+}
+
+/* Loading and Error States */
+.inquiries-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.inquiries-error {
+  background-color: #fee;
+  color: #c53030;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #fc8181;
+  margin-bottom: 24px;
+}
+
+.inquiries-error button {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 12px;
+}
+
+.inquiries-error button:hover {
+  background-color: #b91c1c;
+}

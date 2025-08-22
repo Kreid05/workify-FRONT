@@ -120,6 +120,80 @@
   border-top: 1px solid #e0e0e0;
 }
 
+/* Job Title Button */
+.add-jobtitle-btn {
+  background-color: #f8f9fa;
+  border: 1px dashed #d1d5db;
+  color: #374151;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  width: 40%;
+}
+
+.add-jobtitle-btn:hover:not(:disabled) {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+  color: #111827;
+}
+
+.add-jobtitle-btn:focus {
+  outline: none;
+  border-color: #fd7702;
+  box-shadow: 0 0 0 3px rgba(246, 187, 59, 0.1);
+}
+
+.add-jobtitle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f9fafb;
+}
+
+/* Job Title Row */
+.jobtitle-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.jobtitle-row input {
+  flex: 1;
+}
+
+.remove-jobtitle-btn {
+  background: none;
+  border: none;
+  color: #dc2626;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+  min-width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-jobtitle-btn:hover:not(:disabled) {
+  background-color: #fee2e2;
+}
+
+.remove-jobtitle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .cancel-button,
 .save-button {
   padding: 12px 24px;

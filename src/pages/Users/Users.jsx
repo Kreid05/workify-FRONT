@@ -131,7 +131,7 @@ const Users = () => {
       name: "Email",
       selector: row => row.email,
       sortable: true,
-      width: "20%",
+      width: "21%",
     },
     {
       name: "Role",

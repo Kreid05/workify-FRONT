@@ -125,6 +125,79 @@
   opacity: 0.6;
 }
 
+/* Job Title Button */
+.add-job-title-btn {
+  background-color: #f8f9fa;
+  border: 1px dashed #d1d5db;
+  color: #374151;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.add-job-title-btn:hover:not(:disabled) {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+  color: #111827;
+}
+
+.add-job-title-btn:focus {
+  outline: none;
+  border-color: #fd7702;
+  box-shadow: 0 0 0 3px rgba(246, 187, 59, 0.1);
+}
+
+.add-job-title-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f9fafb;
+}
+
+/* Job Title Row */
+.job-title-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.job-title-row input {
+  flex: 1;
+}
+
+.remove-job-title-btn {
+  background: none;
+  border: none;
+  color: #dc2626;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+  min-width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-job-title-btn:hover:not(:disabled) {
+  background-color: #fee2e2;
+}
+
+.remove-job-title-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Form Actions */
 .add-department-form-actions {
   display: flex;
