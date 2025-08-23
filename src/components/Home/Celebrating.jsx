@@ -58,7 +58,7 @@ function Celebrating() {
 
       {/* Main Content */}
       <div className="relative z-10 min-h-screen flex items-center">
-        <div className="container mx-auto px-4 md:px-8 lg:px-16">
+        <div className="container mx-auto px-4 md:px-8 lg:px-16 pt-8 pb-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             
             {/* Left Side - Placeholder Image */}
@@ -97,7 +97,7 @@ function Celebrating() {
               </div>
 
               {/* Content Text */}
-              <div className="space-y-6 text-lg text-[#E5E5E5] leading-relaxed">
+              <div className="space-y-6 text-lg text-[#000000] leading-relaxed">
                 <p>
                   For a decade, we've been dedicated to transforming the way businesses manage their people, 
                   streamlining workflows, simplifying payroll, and creating workplaces where teams thrive.
