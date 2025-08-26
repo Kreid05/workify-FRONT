@@ -16,6 +16,7 @@ const DashboardLayout = () => {
     if (path.includes('/dashboard/profile')) return 'Profile';
     if (path.includes('/dashboard/users')) return 'Users Management';
     if (path.includes('/dashboard/inquiries')) return 'Inquiries';
+    if (path.includes('/dashboard/employee-inquiries')) return 'Employee Inquiries';
     if (path.includes('/dashboard/task')) return 'Task';
     if (path.includes('/dashboard/payment-history')) return 'Payment History';
     if (path.includes('/dashboard/schedule')) return 'Scheduling Management';

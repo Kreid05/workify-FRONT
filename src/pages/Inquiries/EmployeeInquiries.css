@@ -1,0 +1,170 @@
+.employee-inquiries-container {
+  padding: 1.5rem 0;
+  background-color: #f9fafb;
+}
+
+.employee-inquiries-table-container {
+  background: white;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Table Header with Button */
+.table-header-with-button {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.table-header-with-button h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.submit-inquiry-button {
+  background-color: #ff5003;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  margin-left: 0.5rem;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.submit-inquiry-button:hover {
+  background-color: #e04803;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 80, 3, 0.3);
+}
+
+.submit-inquiry-button:active {
+  transform: translateY(0);
+}
+
+.button-icon {
+  font-size: 14px;
+}
+
+/* Status Badges */
+.employee-status-badge {
+  padding: 5px 15px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  width: 60%;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  justify-content: center;
+}
+
+.employee-status-badge.pending {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.employee-status-badge.approved {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #34d399;
+}
+
+.employee-status-badge.declined {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #f87171;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .employee-inquiries-container {
+    padding: 16px;
+  }
+  
+  .employee-inquiries-table-container {
+    padding: 16px;
+  }
+
+  .table-header-with-button {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .table-header-with-button h2 {
+    font-size: 1.25rem;
+  }
+
+  .submit-inquiry-button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+}
+
+/* Data Table Custom Styles */
+.rdt_TableHeadRow {
+  background-color: #003f7d !important;
+}
+
+.rdt_TableHeadRow .rdt_TableCol {
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+.rdt_TableRow {
+  transition: background-color 0.2s;
+}
+
+.rdt_TableRow:hover {
+  background-color: #fd7702 !important;
+}
+
+.rdt_TableRow:hover .rdt_TableCell {
+  color: #ffffff !important;
+}
+
+/* Loading and Error States */
+.employee-inquiries-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.employee-inquiries-error {
+  background-color: #fee;
+  color: #c53030;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #fc8181;
+  margin-bottom: 24px;
+}
+
+.employee-inquiries-error button {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 12px;
+}
+
+.employee-inquiries-error button:hover {
+  background-color: #b91c1c;
+}

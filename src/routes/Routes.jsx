@@ -2,12 +2,13 @@ import { createBrowserRouter } from "react-router";
 import MainLayout from "../layouts/MainLayout";
 import ContactUs from "../pages/ContactUs/ContactUs";
 import Inquiries from "../pages/Inquiries/Inquiries";
+import EmployeeInquiries from "../pages/Inquiries/EmployeeInquiries";
 import Users from "../pages/Users/Users";
 import AdminAttendanceLogs from "../pages/Attendance/AdminAttendance/AdminAttendanceLogs";
 import AdminAttendanceReport from "../pages/Attendance/AdminAttendance/AdminAttendanceReport";
 import SchedulingPage from "../pages/Schedule/SchedulingPage";
 import DashboardOverview from "../pages/Dashboard/DashboardOverview/DashboardOverview";
-import EmployeeDashboard from "../pages/Dashboard/EmployeeDashboard/EmployeeDashboard"; 
+import EmployeeDashboard from "../pages/Dashboard/EmployeeDashboard/EmployeeDashboard";
 import Task from "../pages/Task/Task";
 import EmployeeAttendanceLogs from "../pages/Attendance/EmployeeAttendance/EmployeeAttendanceLogs";
 import EmployeeAttendanceReport from "../pages/Attendance/EmployeeAttendance/EmployeeAttendanceReport";
@@ -89,7 +90,7 @@ const router = createBrowserRouter([
       {
         path: "inquiries",
         element: (
-          <RoleRoute allowed={["admin", "hr"]}>
+          <RoleRoute allowed={["admin", "hr",]}>
             <Inquiries />
           </RoleRoute>
         ),
@@ -192,6 +193,14 @@ const router = createBrowserRouter([
         element: (
           <RoleRoute allowed={["employee"]}>
             <EmployeeLeaveManagement />
+          </RoleRoute>
+        ),
+      },
+      {
+        path: "employee-inquiries",
+        element: (
+          <RoleRoute allowed={["employee"]}>
+            <EmployeeInquiries />
           </RoleRoute>
         ),
       },

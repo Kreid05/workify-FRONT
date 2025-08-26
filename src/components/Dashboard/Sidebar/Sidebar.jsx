@@ -350,6 +350,17 @@ const Sidebar = () => {
                       <FaChartLine className="nav-icon" /> <span>Progress</span>
                     </NavLink>
                   </li>
+
+                  <li>
+                    <NavLink
+                      to="/dashboard/employee-inquiries"
+                      className={({ isActive }) =>
+                        isActive ? "nav-item active" : "nav-item"
+                      }
+                    >
+                      <FaEnvelope className="nav-icon" /> <span>Inquiries</span>
+                    </NavLink>
+                  </li>
                 </>
               )}
             </ul>
