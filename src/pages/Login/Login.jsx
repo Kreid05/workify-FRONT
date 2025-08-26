@@ -38,6 +38,11 @@ export default function Login() {
         localStorage.setItem("userId", decoded.id);
       }
 
+      // store role
+      if (data.role) {
+        localStorage.setItem("userRole", data.role);
+      }
+
       toast.success("Login successful!");
 
       // redirect based on role

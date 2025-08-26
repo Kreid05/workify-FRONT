@@ -5,6 +5,13 @@ import "./Progress.css";
 import api from "../../api/api";
 
 function ProgressList() {
+  const userRole = localStorage.getItem("userRole") || "employee";
+  const [showLogModal, setShowLogModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [formData, setFormData] = useState({
+    hoursWorked: "",
+    completionDate: "",
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -20,6 +27,7 @@ function ProgressList() {
         // format data to ensure consistent structure
         const mappedData = res.data.map(item => ({
           _id: item._id,
+          taskID: item.taskID?._id || "",
           name: item.userID?.username || "",
           taskName: item.taskID?.taskName || "",
           department: item.userID?.department?.departmentName || "",
@@ -69,24 +77,56 @@ function ProgressList() {
   };
 
   
-  const handleMarkAsDone = (taskId) => {
-    setProgress(prevProgress => 
-      prevProgress.map(task => 
-        task._id === taskId 
-          ? { ...task, status: "Completed" }
-          : task
-      )
-    );
+  const handleMarkAsDone = (task) => {
+    console.log("Clicked row:", task);
+    setSelectedTask(task);
+    setFormData({ hoursWorked: "", completionDate: "" });
+    setShowLogModal(true);
   };
 
-  
   const parseDate = (dateString) => {
     const [month, day, year] = dateString.split('-').map(Number);
     return new Date(year, month - 1, day);
   };
 
- 
-  const columns = [
+  const handleSubmitProgress = async () => {
+    if (!selectedTask) return;
+
+    try {
+      const payload = {
+        taskID: selectedTask.taskID,
+        hoursWorked: Number(formData.hoursWorked),
+        completionDate: formData.completionDate,
+      };
+
+      console.log("Submitting payload:", payload);
+      const res = await api.post("/progress/log", payload);
+      console.log("Progress logged:", res.data); 
+
+      // refresh list after update
+      const updatedRes = await api.get("/progress");
+      const mappedData = updatedRes.data.map(item => ({
+        _id: item._id,
+        taskID: item.taskID?._id || "",
+        name: item.userID?.username || "",
+        taskName: item.taskID?.taskName || "",
+        department: item.userID?.department?.departmentName || "",
+        status: item.progressStatus || "",
+        hoursWorked: item.hoursWorked || 0,
+        completionDate: item.completionDate
+          ? new Date(item.completionDate).toLocaleDateString("en-US")
+          : "00-00-0000",
+      }));
+      setProgress(mappedData);
+
+      setShowLogModal(false);
+    } catch (err) {
+      console.error("Error logging progress:", err);
+      alert("Failed to log progress. Please try again.");
+    }
+  };
+
+  const baseColumns = [
     {
       name: "Name",
       selector: row => row.name,
@@ -160,44 +200,52 @@ function ProgressList() {
         );
       }
     },
-    {
-      name: "Action",
-      width: "13%",
-      center: true,
-      cell: (row) => {
-        const isCompleted = row.status?.toLowerCase() === "completed";
-        
-        return (
-          <button
-            style={{
-              backgroundColor: isCompleted ? '#6c757d' : '#028a0f',
-              color: 'white',
-              border: 'none',
-              padding: '0.5rem 0.75rem',
-              borderRadius: '20px',
-              cursor: isCompleted ? 'default' : 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '4px',
-              fontSize: '12px',
-              fontWeight: '600',
-              width: '100px', 
-              height: '32px', 
-              textAlign: 'center',
-              opacity: isCompleted ? 0.7 : 1,
-              transition: 'all 0.2s ease',
-            }}
-            onClick={() => !isCompleted && handleMarkAsDone(row._id)}
-            disabled={isCompleted}
-          >
-            <FaCheck size={12} />
-            {isCompleted ? "Done" : "Mark as Done"}
-          </button>
-        );
-      },
-    },
   ];
+  // hide action column for non-employees
+    if (userRole === "employee") {
+      baseColumns.push({
+          name: "Action",
+          width: "13%",
+          center: true,
+          cell: (row) => {
+            const status = row.status?.toLowerCase();
+            const isCompleted = status === "completed";
+            
+            return (
+              <button
+                style={{
+                  backgroundColor: isCompleted ? '#6c757d' : '#028a0f',
+                  color: 'white',
+                  border: 'none',
+                  padding: '0.5rem 0.75rem',
+                  borderRadius: '20px',
+                  cursor: isCompleted ? 'default' : 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '4px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  width: '100px', 
+                  height: '32px', 
+                  textAlign: 'center',
+                  opacity: isCompleted ? 0.7 : 1,
+                  transition: 'all 0.2s ease',
+                }}
+                onClick={() => handleMarkAsDone(row)}
+                disabled={isCompleted}
+              >
+                <FaCheck size={12} />
+                {isCompleted ? "Done" : "Mark as Done"}
+              </button>
+            );
+          },
+          ignoreRowClick: true,  
+          allowOverflow: true,  
+          button: true,
+        });
+    }
+    const columns = baseColumns;
 
   if (loading) return <p>Loading progress...</p>;
   if (error) return <p>{error}</p>;
@@ -283,6 +331,40 @@ function ProgressList() {
           paginationRowsPerPageOptions={[6, 12, 18, 24]}
           pointerOnHover
         />
+
+        {showLogModal && (
+          <div className="progress-log-backdrop">
+            <div className="progress-log-modal">
+              <h3>Log Progress</h3>
+              <div>
+                <label>Hours Worked</label>
+                <input
+                  type="number"
+                  value={formData.hoursWorked}
+                  onChange={(e) =>
+                    setFormData({ ...formData, hoursWorked: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <label>Completion Date</label>
+                <input
+                  type="date"
+                  value={formData.completionDate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, completionDate: e.target.value })
+                  }
+                />
+              </div>
+              <div className="progress-log-actions">
+                <button onClick={handleSubmitProgress}>Submit</button>
+                <button onClick={() => setShowLogModal(false)}>Cancel</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+
       </div>
     </div>
   );

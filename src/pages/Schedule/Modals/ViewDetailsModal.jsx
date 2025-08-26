@@ -2,46 +2,56 @@ import React from 'react';
 import './ViewDetailsModal.css';
 
 const ViewDetailsModal = ({ schedule, onClose }) => {
-  const formatWorkDays = (days) => {
-    const dayMap = {
-      'S': 'Sunday',
-      'M': 'Monday',
-      'T': 'Tuesday',
-      'W': 'Wednesday',
-      'Th': 'Thursday',
-      'F': 'Friday',
-      'Sa': 'Saturday'
-    };
 
-    if (!days || days.length === 0) return 'No days selected';
-    if (days.length === 5 && ['M', 'T', 'W', 'Th', 'F'].every(d => days.includes(d))) {
-      return 'Monday - Friday';
-    }
-    if (days.length === 7) return 'Monday - Sunday';
-    
-    return days.map(d => dayMap[d]).join(', ');
-  };
+const dayMap = {
+  'S': 'Sunday',
+  'M': 'Monday',
+  'T': 'Tuesday',
+  'W': 'Wednesday',
+  'Th': 'Thursday',
+  'F': 'Friday',
+  'Sa': 'Saturday'
+};
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Not set';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+const getScheduleSummary = (days) => {
+  if (!days || days.length === 0) return 'N/A';
+  const weekdays = ['M', 'T', 'W', 'Th', 'F'];
+  const allDays = ['S', ...weekdays, 'Sa'];
+  if (days.length === 5 && weekdays.every(d => days.includes(d))) return 'Monday - Friday';
+  if (days.length === 7 && allDays.every(d => days.includes(d))) return 'Sunday - Saturday';
+  return days.map(d => dayMap[d]).join(', ');
+};
 
-  const formatTime = (timeString) => {
-    if (!timeString) return 'Not set';
-    const [hours, minutes] = timeString.split(':');
-    const hour = parseInt(hours);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour % 12 || 12;
-    return `${displayHour}:${minutes} ${ampm}`;
-  };
+const formatDate = (dateString) => {
+  if (!dateString) return 'Not set';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
 
-  if (!schedule) return null;
+const formatTime = (timeString) => {
+  if (!timeString) return 'Not set';
+  const [hours, minutes] = timeString.split(':');
+  const hour = parseInt(hours);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const displayHour = hour % 12 || 12;
+  return `${displayHour}:${minutes} ${ampm}`;
+};
+
+const getWorkDaysShort = (days) => {
+  if (!days || days.length === 0) return 'N/A';
+  return days.join(', ');
+};
+
+const getTimeRange = (start, end) => {
+  if (!start || !end) return 'N/A';
+  return `${start} - ${end}`;
+};
+
+if (!schedule) return null;
 
   return (
     <div className="view-modal-overlay">
@@ -80,26 +90,19 @@ const ViewDetailsModal = ({ schedule, onClose }) => {
             </div>
           </div>
 
-          <div className="details-section">
-            <h3>Employee Information</h3>
-            <div className="details-grid">
-              <div className="detail-item">
-                <label>Employee Name</label>
-                <span>{schedule.employeeName || 'N/A'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Employee Number</label>
-                <span>{schedule.employeeNo || 'N/A'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Department</label>
-                <span>{schedule.department || 'N/A'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Job Title</label>
-                <span>{schedule.jobTitle || 'N/A'}</span>
-              </div>
-            </div>
+          <div className="view-section">
+            <h3>Assigned Employees</h3>
+            <ul>
+              {schedule.employees && schedule.employees.length > 0 ? (
+                schedule.employees.map(emp => (
+                  <li key={emp._id}>
+                    {emp.firstName} {emp.lastName} ({emp.employeeNo}) - {emp.email} {emp.jobTitle && `| ${emp.jobTitle}`} {emp.department && `| ${emp.department}`}
+                  </li>
+                ))
+              ) : (
+                <li>No employees assigned</li>
+              )}
+            </ul>
           </div>
 
           <div className="details-section">
@@ -107,11 +110,11 @@ const ViewDetailsModal = ({ schedule, onClose }) => {
             <div className="details-grid">
               <div className="detail-item">
                 <label>Work Days</label>
-                <span>{formatWorkDays(schedule.workDays)}</span>
+                <span>{getWorkDaysShort(schedule.workDays)}</span>
               </div>
               <div className="detail-item">
                 <label>Schedule Summary</label>
-                <span>{schedule.day || 'N/A'}</span>
+                <span>{getScheduleSummary(schedule.workDays)}</span>
               </div>
               <div className="detail-item">
                 <label>Work Start Time</label>
@@ -134,7 +137,7 @@ const ViewDetailsModal = ({ schedule, onClose }) => {
               </div>
               <div className="detail-item">
                 <label>Time Range</label>
-                <span>{schedule.time || 'N/A'}</span>
+                <span>{getTimeRange(schedule.workStart, schedule.workEnd)}</span>
               </div>
             </div>
           </div>

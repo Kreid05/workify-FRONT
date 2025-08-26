@@ -1,77 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AdminAttendanceLogs.css';
 import AddLogsModal from './Modals/AddLogsModal';
+import api from "../../../api/api";
 
 const AdminAttendanceLogs = () => {
   const [selectedDepartment, setSelectedDepartment] = useState('All Departments');
-  const [selectedDate, setSelectedDate] = useState('2024-02-02');
+  const [selectedDate, setSelectedDate] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [editingRow, setEditingRow] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [attendanceData, setAttendanceData] = useState([]);
 
-  const [attendanceData, setAttendanceData] = useState([
-    {
-      id: 1,
-      employeeName: 'Regine Hambiol',
-      department: 'IT',
-      date: '2024-02-02',
-      clockIn: '09:00',
-      clockOut: '17:30',
-      status: 'Present',
-      totalHrs: '8.5',
-      regularHrs: '8.0',
-      overtime: '0.5'
-    },
-    {
-      id: 2,
-      employeeName: 'Lim Alcovendas',
-      department: 'HR',
-      date: '2024-02-02',
-      clockIn: '08:45',
-      clockOut: '17:15',
-      status: 'Present',
-      totalHrs: '8.5',
-      regularHrs: '8.0',
-      overtime: '0.5'
-    },
-    {
-      id: 3,
-      employeeName: 'Klei Ishia Pagatpatan',
-      department: 'Finance',
-      date: '2024-02-02',
-      clockIn: '09:15',
-      clockOut: '18:00',
-      status: 'Late',
-      totalHrs: '8.75',
-      regularHrs: '8.0',
-      overtime: '0.75'
-    },
-    {
-      id: 4,
-      employeeName: 'Ezekiel Olasiman',
-      department: 'Operations',
-      date: '2024-02-02',
-      clockIn: '--',
-      clockOut: '--',
-      status: 'Absent',
-      totalHrs: '0',
-      regularHrs: '0',
-      overtime: '0'
-    },
-    {
-      id: 5,
-      employeeName: 'Kai Cruz',
-      department: 'IT',
-      date: '2024-02-02',
-      clockIn: '09:00',
-      clockOut: '13:00',
-      status: 'Half Day',
-      totalHrs: '4.0',
-      regularHrs: '4.0',
-      overtime: '0'
+  // fetch attendance logs
+  useEffect(() => {
+    // build query params based on filters
+    let params = {};
+    // only filter dept if not all dept
+    if (selectedDepartment && selectedDepartment !== "All Departments") {
+      params.department = selectedDepartment;
     }
-  ]);
+    // only filter date if selectedDate is not empty
+    if (selectedDate) {
+      params.date = selectedDate;
+    }
+
+    api.get("/attendance-logs", { params })
+      .then(res => {
+        console.log("Attendance logs from backend:", res.data);
+        const logs = res.data.map((log, idx) => ({
+          id: log._id, 
+          employeeName: log.employeeName,
+          department: log.department,
+          date: log.date,
+          clockIn: log.clockIn,
+          clockOut: log.clockOut,
+          status: log.status,
+          totalHrs: Number(log.totalHrs ?? 0).toFixed(1),
+          regularHrs: Math.min(Number(log.totalHrs ?? 0), 8).toFixed(1), 
+          overtime: Number(log.overtime ?? 0).toFixed(1)
+        }));
+        setAttendanceData(logs);
+      })
+      .catch(err => {
+        console.error("Error fetching attendance logs:", err);
+        setAttendanceData([]); 
+      });
+  }, [selectedDepartment, selectedDate]);
 
   const handleEdit = (id) => {
     setEditingRow(id);
@@ -99,33 +74,41 @@ const AdminAttendanceLogs = () => {
   };
 
   const handleSaveNewLog = (newLogData) => {
-    const newId = Math.max(...attendanceData.map(item => item.id)) + 1;
+    const { clockIn, clockOut } = newLogData;
+    const calculated = calculateHours(clockIn, clockOut);
+
+    const newId = Math.max(0, ...attendanceData.map(item => item.id)) + 1;
     const newLogEntry = {
       id: newId,
-      ...newLogData
+      ...newLogData,
+      ...calculated 
     };
 
     setAttendanceData(prev => [...prev, newLogEntry]);
     setShowAddModal(false);
   };
 
-  const calculateHours = (clockIn, clockOut) => {
+  const calculateHours = (clockIn, clockOut, status = "Present") => {
     if (clockIn === '--' || clockOut === '--' || !clockIn || !clockOut) {
       return { totalHrs: '0', regularHrs: '0', overtime: '0' };
     }
-    
+
     const startTime = new Date(`2024-01-01 ${clockIn}`);
     const endTime = new Date(`2024-01-01 ${clockOut}`);
     const diffMs = endTime - startTime;
     const totalHours = diffMs / (1000 * 60 * 60);
-    
-    const regularHrs = Math.min(totalHours, 8);
-    const overtime = Math.max(0, totalHours - 8);
-    
+
+    let regularCap = 8;
+    if (status === "Half Day") regularCap = 4;
+    if (status === "Absent" || status === "Leave") regularCap = 0;
+
+    const regularHrs = Math.min(totalHours, regularCap);
+    const overtime = Math.max(0, totalHours - regularCap);
+
     return {
-      totalHrs: totalHours.toFixed(1),
-      regularHrs: regularHrs.toFixed(1),
-      overtime: overtime.toFixed(1)
+      totalHrs: parseFloat(totalHours.toFixed(1)),
+      regularHrs: parseFloat(regularHrs.toFixed(1)),
+      overtime: parseFloat(overtime.toFixed(1))
     };
   };
 
@@ -133,7 +116,8 @@ const AdminAttendanceLogs = () => {
     const [editData, setEditData] = useState({
       clockIn: item.clockIn,
       clockOut: item.clockOut,
-      status: item.status
+      status: item.status,
+      date: item.date
     });
 
     const handleInputChange = (field, value) => {
@@ -143,16 +127,39 @@ const AdminAttendanceLogs = () => {
       }));
     };
 
-    const handleSaveClick = () => {
-      const calculatedHours = calculateHours(editData.clockIn, editData.clockOut);
-      handleSave(item.id, { ...editData, ...calculatedHours });
+    const handleSaveClick = async () => {
+    const calculatedHours = calculateHours(editData.clockIn, editData.clockOut);
+
+    // build update payload for backend
+    const payload = {
+      clockIn: editData.clockIn,
+      clockOut: editData.clockOut,
+      status: editData.status,
+      date: editData.date,
+      ...calculatedHours
     };
+
+    try {
+      await api.put(`/attendance-logs/${item.id}`, payload);
+      handleSave(item.id, { ...editData, ...calculatedHours }); // update frontend state
+    } catch (err) {
+      alert("Error updating attendance log: " + (err.response?.data?.message || err.message));
+    }
+  };
 
     return (
       <tr className="edit-row">
         <td>{item.employeeName}</td>
         <td>{item.department}</td>
         <td>{item.date}</td>
+        <td>
+          <input 
+            type="date" 
+            value={editData.date || ''}
+            onChange={e => handleInputChange('date', e.target.value)}
+            className="edit-input"
+          />
+        </td>
         <td>
           <input 
             type="time" 

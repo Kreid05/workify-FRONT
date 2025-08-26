@@ -1,69 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './EmployeeAttendanceLogs.css';
+import api from "../../../api/api";
 
 const EmployeeAttendanceLogs = () => {
   const [selectedDate, setSelectedDate] = useState('2024-02-02');
   const [searchTerm, setSearchTerm] = useState('');
   const [entriesPerPage, setEntriesPerPage] = useState(6);
   const [currentPage, setCurrentPage] = useState(1);
+  const [attendanceData, setAttendanceData] = useState([]);
 
-  const attendanceData = [
-    {
-      id: 1,
-      date: '2024-02-01',
-      clockIn: '09:00',
-      clockOut: '17:30',
-      status: 'Present'
-    },
-    {
-      id: 2,
-      date: '2024-02-02',
-      clockIn: '08:45',
-      clockOut: '17:15',
-      status: 'Present'
-    },
-    {
-      id: 3,
-      date: '2024-02-03',
-      clockIn: '09:15',
-      clockOut: '18:00',
-      status: 'Late'
-    },
-    {
-      id: 4,
-      date: '2024-02-04',
-      clockIn: '--',
-      clockOut: '--',
-      status: 'Leave'
-    },
-    {
-      id: 5,
-      date: '2024-02-05',
-      clockIn: '09:00',
-      clockOut: '13:00',
-      status: 'Half Day'
-    },
-    {
-      id: 6,
-      date: '2024-02-06',
-      clockIn: '09:00',
-      clockOut: '17:00',
-      status: 'Present'
-    },
-    {
-      id: 7,
-      date: '2024-02-07',
-      clockIn: '08:30',
-      clockOut: '17:45',
-      status: 'Present'
-    }
-  ];
+  useEffect(() => {
+    // build query params based on filters
+    let params = {};
+    if (selectedDate) params.date = selectedDate;
 
+    api.get("/attendance-logs", { params }) 
+      .then(res => {
+        // map backend
+        const logs = res.data.map((log, idx) => {
+          const calculated = calculateHours(log.clockIn, log.clockOut, log.status);
+
+          return {
+            id: log._id,
+            date: log.date,
+            clockIn: log.clockIn,
+            clockOut: log.clockOut,
+            status: log.status,
+            ...calculated
+          };
+        });
+        setAttendanceData(logs);
+      })
+      .catch(err => {
+        console.error("Error fetching employee attendance logs:", err);
+        setAttendanceData([]);
+      });
+  }, [selectedDate]);
+
+  // filtering
   const filteredData = attendanceData.filter(item =>
     item.date.includes(searchTerm) || 
     item.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const calculateHours = (clockIn, clockOut, status = "Present") => {
+    if (clockIn === '--' || clockOut === '--' || !clockIn || !clockOut) {
+      return { totalHrs: '0', regularHrs: '0', overtime: '0' };
+    }
+
+    const startTime = new Date(`2024-01-01 ${clockIn}`);
+    const endTime = new Date(`2024-01-01 ${clockOut}`);
+    const diffMs = endTime - startTime;
+    const totalHours = diffMs / (1000 * 60 * 60);
+
+    let regularCap = 8;
+    if (status === "Half Day") regularCap = 4;
+    if (status === "Absent" || status === "Leave") regularCap = 0;
+
+    const regularHrs = Math.min(totalHours, regularCap);
+    const overtime = Math.max(0, totalHours - regularCap);
+
+    return {
+      totalHrs: parseFloat(totalHours.toFixed(1)),
+      regularHrs: parseFloat(regularHrs.toFixed(1)),
+      overtime: parseFloat(overtime.toFixed(1))
+    };
+  };
   
   const totalPages = Math.ceil(filteredData.length / entriesPerPage);
   const startIndex = (currentPage - 1) * entriesPerPage;
@@ -76,7 +78,7 @@ const EmployeeAttendanceLogs = () => {
 
   const handleEntriesPerPageChange = (value) => {
     setEntriesPerPage(parseInt(value));
-    setCurrentPage(1); // Reset to first page
+    setCurrentPage(1); 
   };
 
   return (
@@ -133,6 +135,9 @@ const EmployeeAttendanceLogs = () => {
               <th>Clock In <span className="sort-arrows">⇅</span></th>
               <th>Clock Out <span className="sort-arrows">⇅</span></th>
               <th>Status <span className="sort-arrows">⇅</span></th>
+              <th>Total Hrs</th>
+              <th>Regular Hrs</th>
+              <th>Overtime</th>
             </tr>
           </thead>
           <tbody>
@@ -146,6 +151,9 @@ const EmployeeAttendanceLogs = () => {
                     {item.status}
                   </span>
                 </td>
+                <td>{item.totalHrs}</td>
+                <td>{item.regularHrs}</td>
+                <td>{item.overtime}</td>
               </tr>
             ))}
           </tbody>
@@ -154,42 +162,20 @@ const EmployeeAttendanceLogs = () => {
 
       <div className="table-footer">
         <div className="showing-info">
-          {filteredData.length === 0 ? (
-            "Showing 0 to 0 of 0 entries"
-          ) : (
-            `${startIndex + 1}-${Math.min(endIndex, filteredData.length)} of ${filteredData.length}`
-          )}
+          Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
         </div>
         <div className="pagination">
-          <div className="pagination-text">
-            Rows per page:
-            <select 
-              value={entriesPerPage}
-              onChange={(e) => handleEntriesPerPageChange(e.target.value)}
-              className="pagination-select"
+          <button className="page-btn" disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>Previous</button>
+          {[...Array(totalPages).keys()].map(pageNum => (
+            <button
+              key={pageNum + 1}
+              className={`page-btn${currentPage === pageNum + 1 ? " active" : ""}`}
+              onClick={() => handlePageChange(pageNum + 1)}
             >
-              <option value={6}>6</option>
-              <option value={12}>12</option>
-              <option value={18}>18</option>
-              <option value={24}>24</option>
-            </select>
-          </div>
-          <div className="pagination-controls">
-            <button 
-              className="page-btn" 
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              ‹
+              {pageNum + 1}
             </button>
-            <button 
-              className="page-btn" 
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages || totalPages === 0}
-            >
-              ›
-            </button>
-          </div>
+          ))}
+          <button className="page-btn" disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>Next</button>
         </div>
       </div>
     </div>

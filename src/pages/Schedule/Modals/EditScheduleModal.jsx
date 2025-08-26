@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './EditScheduleModal.css';
+import api from "../../../api/api";
 
 const EditScheduleModal = ({ schedule, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -7,31 +8,58 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
     scheduleDescription: '',
     startDate: '',
     endDate: '',
-    scheduleType: 'Full Time',
+    scheduleType: '',
     workDays: [],
-    workStart: '07:30',
-    workEnd: '16:00',
-    latenessGrace: 15,
-    absenceGrace: 30,
+    workStart: '00:00',
+    workEnd: '00:00',
+    latenessGrace: 10,
+    absenceGrace: 20,
     employeeName: '',
     employeeNo: '',
     department: '',
     jobTitle: ''
   });
 
+  const [availableEmployees, setAvailableEmployees] = useState([]);
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
+
+  // fetch all employees for selection
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const { data } = await api.get("/emp-info/all");
+        setAvailableEmployees(data);
+      } catch (err) {
+        console.error("Error fetching employees:", err);
+      }
+    };
+    fetchEmployees();
+  }, []);
+
   useEffect(() => {
     if (schedule) {
+      // is this right?? the code below
+    setSelectedEmployees(schedule.employees ? schedule.employees.map(e => e._id) : []);
+    const formatDate = (dateStr) => {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      // pad month and day
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${d.getFullYear()}-${month}-${day}`;
+    };
+    
       setFormData({
         scheduleName: schedule.scheduleName || '',
         scheduleDescription: schedule.scheduleDescription || '',
-        startDate: schedule.startDate || '',
-        endDate: schedule.endDate || '',
-        scheduleType: schedule.scheduleType || 'Full Time',
+        startDate: formatDate(schedule.startDate) || '',
+        endDate: formatDate(schedule.endDate) || '',
+        scheduleType: schedule.scheduleType || '',
         workDays: schedule.workDays || [],
-        workStart: schedule.workStart || '07:30',
-        workEnd: schedule.workEnd || '16:00',
-        latenessGrace: schedule.latenessGrace || 15,
-        absenceGrace: schedule.absenceGrace || 30,
+        workStart: schedule.workStart || '00:00',
+        workEnd: schedule.workEnd || '00:00',
+        latenessGrace: schedule.latenessGrace || 10,
+        absenceGrace: schedule.absenceGrace || 20,
         employeeName: schedule.employeeName || '',
         employeeNo: schedule.employeeNo || '',
         department: schedule.department || '',
@@ -39,6 +67,14 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
       });
     }
   }, [schedule]);
+
+  const handleEmployeeToggle = (id) => {
+    setSelectedEmployees(prev =>
+      prev.includes(id)
+        ? prev.filter(eid => eid !== id)
+        : [...prev, id]
+    );
+  };
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -71,20 +107,39 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
     if (days.length === 5 && ['M', 'T', 'W', 'Th', 'F'].every(d => days.includes(d))) {
       return 'Monday - Friday';
     }
-    if (days.length === 7) return 'Monday - Sunday';
+    if (days.length === 7) return 'Sunday - Saturday';
     
     return days.map(d => dayMap[d]).join(', ');
   };
 
-  const handleSave = () => {
-    const updatedSchedule = {
-      ...schedule,
-      ...formData,
-      day: formatWorkDays(formData.workDays),
-      time: `${formData.workStart} - ${formData.workEnd}`
-    };
+  const handleSave = async () => {
+    if (!schedule || !schedule._id) {
+      alert("Schedule ID is missing. Cannot update.");
+      return;
+    }
+    try {
+      const payload = {
+        scheduleName: formData.scheduleName,
+        scheduleDescription: formData.scheduleDescription,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        scheduleType: formData.scheduleType,
+        workDays: formData.workDays,
+        workStart: formData.workStart,
+        workEnd: formData.workEnd,
+        latenessGrace: formData.latenessGrace,
+        absenceGrace: formData.absenceGrace,
+        selectedEmployees: selectedEmployees,
+      };
 
-    onSave(updatedSchedule);
+      const { data } = await api.put(`/schedule/${schedule._id}`, payload);
+
+      onSave(data.schedule); 
+      onClose();
+    } catch (err) {
+      console.error("Error updating schedule:", err);
+      alert("Failed to update schedule");
+    }
   };
 
   const isFormValid = () => {
@@ -158,50 +213,18 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
           </div>
 
           <div className="edit-section">
-            <h3>Employee Information</h3>
-            <div className="form-grid">
-              <div className="form-group">
-                <label>Employee Name</label>
-                <input
-                  type="text"
-                  value={formData.employeeName}
-                  onChange={(e) => handleInputChange('employeeName', e.target.value)}
-                  placeholder="Employee name"
-                  disabled
-                />
-              </div>
-              <div className="form-group">
-                <label>Employee No.</label>
-                <input
-                  type="text"
-                  value={formData.employeeNo}
-                  onChange={(e) => handleInputChange('employeeNo', e.target.value)}
-                  placeholder="Employee number"
-                  disabled
-                />
-              </div>
-            </div>
-            <div className="form-grid">
-              <div className="form-group">
-                <label>Department</label>
-                <input
-                  type="text"
-                  value={formData.department}
-                  onChange={(e) => handleInputChange('department', e.target.value)}
-                  placeholder="Department"
-                  disabled
-                />
-              </div>
-              <div className="form-group">
-                <label>Job Title</label>
-                <input
-                  type="text"
-                  value={formData.jobTitle}
-                  onChange={(e) => handleInputChange('jobTitle', e.target.value)}
-                  placeholder="Job title"
-                  disabled
-                />
-              </div>
+            <h3>Assign Employees</h3>
+            <div className="employee-list">
+              {availableEmployees.map(emp => (
+                <label key={emp._id} style={{ display: "block", marginBottom: 4 }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedEmployees.includes(emp._id)}
+                    onChange={() => handleEmployeeToggle(emp._id)}
+                  />
+                  {emp.firstName} {emp.lastName} ({emp.employeeNo})
+                </label>
+              ))}
             </div>
           </div>
 

@@ -3,8 +3,10 @@ import './SchedulingPage.css';
 import ScheduleInformationModal from './Modals/ScheduleInformationModal';
 import EditScheduleModal from './Modals/EditScheduleModal';
 import ViewDetailsModal from './Modals/ViewDetailsModal';
+import api from "../../api/api";
 
 const SchedulingPage = () => {
+  const [rawSchedules, setRawSchedules] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -13,76 +15,42 @@ const SchedulingPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredSchedules, setFilteredSchedules] = useState([]);
 
-  // Sample data
+ // fetch schedules
   useEffect(() => {
-    const sampleSchedules = [
-      {
-        id: 1,
-        employeeName: 'Lim Alcovendas',
-        employeeNo: 'EM25001',
-        day: 'Monday - Friday',
-        time: '07:30 - 16:00',
-        scheduleType: 'Full Time',
-        department: 'IT',
-        jobTitle: 'Frontend Developer',
-        scheduleName: 'Development Team Schedule',
-        scheduleDescription: 'Standard working hours for development team',
-        startDate: '2025-01-01',
-        endDate: '2025-12-31',
-        workDays: ['M', 'T', 'W', 'T', 'F'],
-        workStart: '07:30',
-        workEnd: '16:00',
-        latenessGrace: 15,
-        absenceGrace: 30
-      },
-      {
-        id: 2,
-        employeeName: 'Klei Ishia Pagatpatan',
-        employeeNo: 'EM25002',
-        day: 'Monday - Wednesday',
-        time: '08:00 - 12:00',
-        scheduleType: 'Half Day',
-        department: 'IT',
-        jobTitle: 'Frontend Developer',
-        scheduleName: 'Half Day Morning Shift',
-        scheduleDescription: 'Morning shift for part-time employees',
-        startDate: '2025-01-01',
-        endDate: '2025-12-31',
-        workDays: ['M', 'T', 'W'],
-        workStart: '08:00',
-        workEnd: '12:00',
-        latenessGrace: 10,
-        absenceGrace: 20
+    const fetchSchedules = async () => {
+      try {
+        const { data } = await api.get("/schedule");
+        setRawSchedules(data); // <-- store originals
+        setFilteredSchedules(data); // <-- use originals for table
+      } catch (err) {
+        console.error("Error fetching schedules:", err);
       }
-    ];
-    setSchedules(sampleSchedules);
-    setFilteredSchedules(sampleSchedules);
+    };
+    fetchSchedules();
   }, []);
 
-
+  // filtering
   useEffect(() => {
-    const filtered = schedules.filter(schedule =>
-      schedule.employeeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      schedule.employeeNo.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredSchedules(filtered);
-  }, [searchTerm, schedules]);
+    if (!searchTerm) {
+      setFilteredSchedules(rawSchedules);
+    } else {
+      setFilteredSchedules(
+        rawSchedules.filter(schedule =>
+          schedule.scheduleName.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    }
+  }, [searchTerm, rawSchedules]);
 
   const handleAddSchedule = (newSchedule) => {
-    const scheduleWithId = {
-      ...newSchedule,
-      id: schedules.length + 1
-    };
-    const updatedSchedules = [...schedules, scheduleWithId];
-    setSchedules(updatedSchedules);
+    setRawSchedules(prev => [...prev, newSchedule]);
     setIsModalOpen(false);
   };
 
   const handleUpdateSchedule = (updatedSchedule) => {
-    const updatedSchedules = schedules.map(schedule =>
-      schedule.id === updatedSchedule.id ? updatedSchedule : schedule
+    setRawSchedules(prev =>
+      prev.map(sch => sch._id === updatedSchedule._id ? updatedSchedule : sch)
     );
-    setSchedules(updatedSchedules);
     setIsEditModalOpen(false);
     setSelectedSchedule(null);
   };
@@ -99,16 +67,8 @@ const SchedulingPage = () => {
 
   return (
     <div className="scheduling-page">
-      <div className="top-section">
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Search by username, email, or department..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-        </div>
+      <div className="page-header">
+        <h1>Employee Scheduling</h1>
         <button 
           className="btn-add-schedule"
           onClick={() => setIsModalOpen(true)}
@@ -117,11 +77,28 @@ const SchedulingPage = () => {
         </button>
       </div>
 
+      <div className="search-filter-section">
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search by Schedule Name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+          <div className="filter-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M3 4H21V6H3V4ZM7 10H17V12H7V10ZM9 16H15V18H9V16Z" fill="#002347"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
       <div className="table-container">
         <table className="schedules-table">
           <thead>
             <tr>
-              <th>Employee Name</th>
+              <th>Schedule Name</th>
               <th>Day</th>
               <th>Time</th>
               <th>Schedule Type</th>
@@ -131,10 +108,10 @@ const SchedulingPage = () => {
           <tbody>
             {filteredSchedules.length > 0 ? (
               filteredSchedules.map((schedule) => (
-                <tr key={schedule.id}>
-                  <td>{schedule.employeeName}</td>
-                  <td>{schedule.day}</td>
-                  <td>{schedule.time}</td>
+                <tr key={schedule._id}>
+                  <td>{schedule.scheduleName}</td>
+                  <td>{schedule.workDays && schedule.workDays.length > 0 ? schedule.workDays.join(', ') : 'No days selected'}</td>
+                  <td>{`${schedule.workStart} - ${schedule.workEnd}`}</td>
                   <td>{schedule.scheduleType}</td>
                   <td>
                     <div className="action-buttons">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './ScheduleInformationModal.css';
+import api from "../../../api/api";
 
 const ScheduleInformationModal = ({ onClose, onSave }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -21,25 +22,38 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredEmployees, setFilteredEmployees] = useState([]);
 
-  // Sample employees data - replace with actual API call
+  // fetch employees
   useEffect(() => {
-    const employees = [
-      { id: 'EM25001', name: 'Lim Alcovendas', email: 'emp@example.com', department: 'IT', jobTitle: 'Frontend Developer' },
-      { id: 'EM25002', name: 'Regine Mae Hambiol', email: 'emp2@example.com', department: 'IT', jobTitle: 'UI/UX Designer' },
-      { id: 'EM25003', name: 'Zeke Russel Olasiman', email: 'emp3@example.com', department: 'IT', jobTitle: 'Backend Developer' },
-      { id: 'EM25004', name: 'Klei Ishia Elarde Pagatpatan', email: 'emp4@example.com', department: 'IT', jobTitle: 'Frontend Developer' }
-    ];
-    setAvailableEmployees(employees);
-    setFilteredEmployees(employees);
+    const fetchEmployees = async () => {
+      try {
+        const res = await api.get("/emp-info/all");
+        console.log("Employees fetched:", res.data);
+
+        // map the response
+        const employees = res.data.map(emp => ({
+          id: emp._id, // personalInfo _id
+          employeeNo: emp.employeeNo,
+          name: `${emp.firstName} ${emp.lastName}`,
+          email: emp.userID?.email || "",
+          department: emp.userID?.department?.departmentName || "",
+          jobTitle: emp.userID?.jobTitle || ""
+        }));
+
+        setAvailableEmployees(employees);
+        setFilteredEmployees(employees);
+      } catch (err) {
+        console.error("Error fetching employees:", err);
+      }
+    };
+
+    fetchEmployees();
   }, []);
 
+
   useEffect(() => {
-    const filtered = availableEmployees.filter(emp =>
-      emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.id.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredEmployees(filtered);
-  }, [searchTerm, availableEmployees]);
+    setFilteredEmployees(availableEmployees);
+  }, [availableEmployees]);
+
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -78,29 +92,32 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
     }
   };
 
-  const handleSave = () => {
-    // Format the data for the main table
-    const formattedSchedules = formData.selectedEmployees.map(employee => ({
-      employeeName: employee.name,
-      employeeNo: employee.id,
-      day: formatWorkDays(formData.workDays),
-      time: `${formData.workStart} - ${formData.workEnd}`,
-      scheduleType: formData.scheduleType,
-      department: employee.department,
-      jobTitle: employee.jobTitle,
-      scheduleName: formData.scheduleName,
-      scheduleDescription: formData.scheduleDescription,
-      startDate: formData.startDate,
-      endDate: formData.endDate,
-      workDays: formData.workDays,
-      workStart: formData.workStart,
-      workEnd: formData.workEnd,
-      latenessGrace: formData.latenessGrace,
-      absenceGrace: formData.absenceGrace
-    }));
+  const handleSave = async () => {
+    try {
+      const payload = {
+        scheduleName: formData.scheduleName,
+        scheduleDescription: formData.scheduleDescription,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        scheduleType: formData.scheduleType,
+        workDays: formData.workDays,
+        workStart: formData.workStart,
+        workEnd: formData.workEnd,
+        latenessGrace: formData.latenessGrace,
+        absenceGrace: formData.absenceGrace,
+        selectedEmployees: formData.selectedEmployees.map(emp => emp.id) // array of pInfoId
+      };
 
-    // Save each employee schedule
-    formattedSchedules.forEach(schedule => onSave(schedule));
+      const res = await api.post("/schedule/create", payload);
+      console.log("Schedule created:", res.data);
+
+      // push the new schedule into parent table
+      onSave(res.data.schedule);
+      onClose(); // close modal
+    } catch (err) {
+      console.error("Error saving schedule:", err);
+      alert("Failed to save schedule.");
+    }
   };
 
   const formatWorkDays = (days) => {
@@ -118,7 +135,7 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
     if (days.length === 5 && ['M', 'T', 'W', 'Th', 'F'].every(d => days.includes(d))) {
       return 'Monday - Friday';
     }
-    if (days.length === 7) return 'Monday - Sunday';
+    if (days.length === 7) return 'Sunday - Saturday';
     
     return days.map(d => dayMap[d]).join(', ');
   };
@@ -329,7 +346,7 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
                               onChange={() => handleEmployeeSelect(employee)}
                             />
                           </td>
-                          <td>{employee.id}</td>
+                          <td>{employee.employeeNo}</td>
                           <td>{employee.name}</td>
                           <td>{employee.email}</td>
                           <td>{employee.department}</td>

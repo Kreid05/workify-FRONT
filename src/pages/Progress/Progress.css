@@ -347,6 +347,64 @@ div[data-testid="table-row"]:hover > div {
   font-weight: 500;
 }
 
+.progress-log-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5); /* dark overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.progress-log-modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%; 
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  z-index: 10000;
+}
+
+.progress-log-actions {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.progress-log-actions button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.progress-log-actions button:first-child {
+  background: #007bff;
+  color: white;
+}
+
+.progress-log-actions button:last-child {
+  background: #6c757d;
+  color: white;
+}
+
+.progress-log-modal input {
+  display: block;
+  background: #f1f1f1;
+  border: 1px solid black;
+  color: black;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
 /* Responsive adjustments for filter */
 @media (max-width: 767px) {
   .progress-controls-container {
