@@ -1,14 +1,62 @@
-import React from 'react';
+import { useEffect, useState } from "react";
 import './AttendanceRecord.css';
+import api from "../../../api/api";
 
 const AttendanceRecord = () => {
-  const attendanceData = [
-    { date: '05-06-2024', clockIn: '--', clockOut: '--', status: 'ABSENT', totalHours: '0.00', regularHours: '0.00', overtime: '0.00' },
-    { date: '04-06-2024', clockIn: '--', clockOut: '--', status: 'ABSENT', totalHours: '0.00', regularHours: '0.00', overtime: '0.00' },
-    { date: '03-06-2024', clockIn: '--', clockOut: '--', status: 'ABSENT', totalHours: '0.00', regularHours: '0.00', overtime: '0.00' },
-    { date: '31-05-2024', clockIn: '08:02', clockOut: '17:15', status: 'PRESENT', totalHours: '9.13', regularHours: '8.00', overtime: '1.13' },
-    { date: '30-05-2024', clockIn: '08:15', clockOut: '17:00', status: 'PRESENT', totalHours: '8.45', regularHours: '8.45', overtime: '0.00' }
-  ];
+ const [attendanceData, setAttendanceData] = useState([]);
+
+ // fetch attendance
+ useEffect(() => {
+    api.get("/attendance-logs", { params: { limit: 5 } }) // limit it to 5
+      .then(res => {
+        // format and calculate hours for each log
+        const logs = res.data.map((log) => {
+          const calculated = calculateHours(log.clockIn, log.clockOut, log.status);
+          // format date as DD-MM-YYYY 
+          const formattedDate = log.date
+            ? new Date(log.date).toLocaleDateString('en-GB').replace(/\//g, '-')
+            : "--";
+          return {
+            date: formattedDate,
+            clockIn: log.clockIn || "--",
+            clockOut: log.clockOut || "--",
+            status: log.status ? log.status.toUpperCase() : "--",
+            totalHours: calculated.totalHrs,
+            regularHours: calculated.regularHrs,
+            overtime: calculated.overtime,
+          };
+        });
+        setAttendanceData(logs);
+      })
+      .catch(err => {
+        console.error("Error fetching dashboard attendance records:", err);
+        setAttendanceData([]);
+      });
+  }, []);
+
+// calculate hours
+const calculateHours = (clockIn, clockOut, status = "PRESENT") => {
+  if (clockIn === '--' || clockOut === '--' || !clockIn || !clockOut) {
+    return { totalHrs: '0.0', regularHrs: '0.0', overtime: '0.0' };
+  }
+  const startTime = new Date(`2024-01-01 ${clockIn}`);
+  const endTime = new Date(`2024-01-01 ${clockOut}`);
+  const diffMs = endTime - startTime;
+  const totalHours = diffMs / (1000 * 60 * 60);
+
+  let regularCap = 8;
+  if (status.toUpperCase() === "HALF DAY") regularCap = 4;
+  if (status.toUpperCase() === "ABSENT" || status.toUpperCase() === "LEAVE") regularCap = 0;
+
+  const regularHrs = Math.min(totalHours, regularCap);
+  const overtime = Math.max(0, totalHours - regularCap);
+
+  return {
+    totalHrs: parseFloat(totalHours.toFixed(1)),
+    regularHrs: parseFloat(regularHrs.toFixed(1)),
+    overtime: parseFloat(overtime.toFixed(1))
+  };
+};
 
   return (
     <div className="card-white">

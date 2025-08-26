@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import {
   LineChart,
@@ -11,15 +11,50 @@ import {
 } from "recharts";
 import { FaClipboardList, FaCreditCard, FaUsers } from "react-icons/fa";
 import "./DashboardOverview.css";
+import api from "../../../api/api";
 
 const DashboardOverview = () => {
   const navigate = useNavigate();
-  
-  // Hardcoded data for demo purposes
-  const remainingTasks = 7;
-  const completedTasks = 15;
+  const [remainingTasks, setRemainingTasks] = useState(0); 
+  const [completedTasks, setCompletedTasks] = useState(0);
+  const [pendingTasks, setPendingTasks] = useState(0);
+  const [pendingTaskCount, setPendingTaskCount] = useState(0);
+  const [totalTaskCount, setTotalTaskCount] = useState(0);
+
+  // fetch tasks and calculate totals for stats
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const res = await api.get("/tasks");
+        let inProgress = 0;
+        let completed = 0;
+        let pending = 0;
+
+        res.data.forEach(task => {
+          const status = (task.status || "").toLowerCase();
+          if (status === "in progress") inProgress += 1;
+          if (status === "completed") completed += 1;
+          if (status === "pending") pending += 1;
+        });
+
+        setRemainingTasks(inProgress);
+        setCompletedTasks(completed);
+        setPendingTasks(pending);
+        setPendingTaskCount(pending); 
+        setTotalTaskCount(res.data.length); 
+      } catch (err) {
+        setRemainingTasks(0);
+        setCompletedTasks(0);
+        setPendingTasks(0);
+        setPendingTaskCount(0);
+        setTotalTaskCount(0);
+      }
+    };
+
+    fetchTasks();
+  }, []);
+
   const totalEmployees = 45;
-  const totalPaidEmployees = 38;
   const pendingPayments = 7;
   const pendingTotal = 45;
 
@@ -31,8 +66,8 @@ const DashboardOverview = () => {
     navigate('/dashboard/progress');
   };
 
-  const handleTotalPaidEmployeesClick = () => {
-    navigate('/dashboard/payment-history');
+  const handlePendingTasksClick = () => {
+    navigate('/dashboard/task');
   };
 
   const recentPayments = [
@@ -63,8 +98,8 @@ const DashboardOverview = () => {
     year: 2024,
   };
 
-  // Circular progress bar calculation
-  const progressPercent = (pendingPayments / pendingTotal) * 100;
+  // circular progress bar calculation
+  const progressPercent = totalTaskCount > 0 ? (pendingTaskCount / totalTaskCount) * 100 : 0;
 
   return (
     <div className="hr-dashboard-container">
@@ -77,7 +112,7 @@ const DashboardOverview = () => {
           <div className="hr-stat-number">{remainingTasks}</div>
           <FaClipboardList className="stat-icon" />
         </div>
-        <div className="hr-stat-subtext">On progress tasks</div>
+        <div className="hr-stat-subtext">In progress tasks</div>
         <div className="hr-stat-link">Progress &rarr;</div>
       </div>
 
@@ -93,23 +128,23 @@ const DashboardOverview = () => {
         <div className="hr-stat-link">Details &rarr;</div>
       </div>
 
-      <div className="hr-stat-card stat-card-totalPaid" onClick={handleTotalPaidEmployeesClick} style={{ cursor: 'pointer' }}>
+      <div className="hr-stat-card stat-card-totalPaid" onClick={handlePendingTasksClick} style={{ cursor: 'pointer' }}>
         <div className="hr-stat-header">
-          <h3>Total Paid Employees</h3>
+          <h3>Pending Tasks</h3>
         </div>
         <div className="hr-stat-main">
-          <div className="hr-stat-number">{totalPaidEmployees}</div>
-          <FaCreditCard className="stat-icon" />
+          <div className="hr-stat-number">{pendingTasks}</div>
+          <FaClipboardList className="stat-icon" />
         </div>
         <div className="hr-stat-subtext">
-          Already paid the salaries of the employees
+          Pending Tasks
         </div>
-        <div className="hr-stat-link">Payment History &rarr;</div>
+        <div className="hr-stat-link">Details &rarr;</div>
       </div>
 
           <div className="hr-stat-card stat-card-pendingPayments">
           <div className="hr-stat-header">
-            <h3>Pending Payments</h3>
+            <h3>Pending Tasks</h3>
           </div>
           <div className="hr-semi-circle-progress-container">
             <svg
@@ -139,12 +174,12 @@ const DashboardOverview = () => {
                 dominantBaseline="middle"
                 className="hr-progress-text-semi"
               >
-                {pendingPayments}/{pendingTotal}
+                {pendingTaskCount}/{totalTaskCount}
               </text>
             </svg>
           </div>
           <div className="hr-stat-subtext-small">
-            Employees has not yet given their salary
+            Pending Tasks out of Total Tasks
           </div>
         </div>
       </div>
