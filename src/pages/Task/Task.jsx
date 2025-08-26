@@ -30,7 +30,7 @@ function Task() {
           assignedTo: task.assignedTo?.username || "",
           assignedBy: task.assignedBy?.username || "",
           department: task.department?.departmentName || "",
-          dueDate: new Date(task.dueDate).toLocaleDateString(),
+          dueDate: task.dueDate,
           status: task.status,
         }));
         setTasks(mappedTasks);
@@ -72,7 +72,7 @@ function Task() {
     const taskWithId = {
       ...newTask,
       id: String(tasks.length + 1),
-      status: "Pending" // Default status for new tasks
+      status: "In Progress" // Default status for new tasks
     };
     
     // Add the new task to the existing tasks
@@ -167,7 +167,7 @@ function Task() {
     },
     {
       name: "Due Date",
-      selector: row => row.dueDate,
+      selector: row => new Date(row.dueDate).toLocaleDateString(),
       sortable: true,
       width: "10%",
       minWidth: "90px",

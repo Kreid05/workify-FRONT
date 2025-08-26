@@ -1,109 +1,135 @@
 import React, { useState, useEffect } from "react";
 import "./UpdateTaskModal.css";
-
-// Hardcoded user data for testing
-const HARDCODED_USERS = [
-  { _id: "1", username: "john.doe", email: "john.doe@company.com" },
-  { _id: "2", username: "jane.smith", email: "jane.smith@company.com" },
-  { _id: "3", username: "mike.johnson", email: "mike.johnson@company.com" },
-  { _id: "4", username: "sarah.wilson", email: "sarah.wilson@company.com" },
-  { _id: "5", username: "david.brown", email: "david.brown@company.com" }
-];
+import api from "../../../api/api";
 
 const UpdateTaskModal = ({ isOpen, onClose, task, onUpdateTask }) => {
   const [formData, setFormData] = useState({
     taskName: "",
     description: "",
-    assignedTo: "", // user ID
-    assignedToDisplay: "", // display name
-    dueDate: ""
+    assignedTo: "", 
+    assignedToId: "",
+    dueDate: "",
+    status: "",
   });
-  const [users] = useState(HARDCODED_USERS);
-  const [filteredUsers, setFilteredUsers] = useState([]);
+
+  const [employees, setEmployees] = useState([]);
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // fetch all employees for dropdown
   useEffect(() => {
-    if (task) {
-      // For hardcoded mode, we'll use the assignedTo string directly
-      const assignedToValue = task.assignedTo || "";
-      const assignedToDisplay = task.assignedTo || "Unknown";
+    const fetchEmployees = async () => {
+      try {
+        const res = await api.get("/emp-info/all");
+        setEmployees(res.data);
+      } catch (err) {
+        console.error("Error fetching employees:", err);
+      }
+    };
+    fetchEmployees();
+  }, []);
 
-      setFormData({
-        taskName: task.taskName || "",
-        description: task.description || "",
-        assignedTo: assignedToValue,
-        assignedToDisplay: assignedToDisplay,
-        dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : ""
-      });
+  // prefill form 
+  useEffect(() => {
+  if (task) {
+    let fullName = "";
+
+    // if task.assignedTo is an object, extract what needed
+    if (typeof task.assignedTo === "object" && task.assignedTo !== null) {
+      fullName = `${task.assignedTo.username || ""}`; 
+      // or use firstName + lastName 
+    } else {
+      fullName = task.assignedTo || "";
     }
-  }, [task]);
 
-  // select user from dropdown
-  const handleUserSelect = (user) => {
-    const displayName = user.username || user.email || "Unknown";
+    setFormData({
+      taskName: task.taskName || "",
+      description: task.description || "",
+      assignedTo: fullName,                // always string for input
+      assignedToId:
+        typeof task.assignedTo === "object"
+          ? task.assignedTo._id
+          : task.assignedToId || "",
+      dueDate: task.dueDate
+        ? task.dueDate.split("T")[0] // ISO format "YYYY-MM-DD"
+        : "",
+      status: task.status || "in progress",
+    });
+  }
+}, [task]);
 
-    setFormData(prev => ({
-      ...prev,
-      assignedTo: user._id,
-      assignedToDisplay: displayName
-    }));
-    setShowDropdown(false);
-  };
-
+  // filter employees when typing
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
-    if (name === "assignedToDisplay") {
+    if (name === "assignedTo") {
       if (value) {
-        const filtered = users.filter(user => {
-          const username = user.username?.toLowerCase() || "";
-          const email = user.email?.toLowerCase() || "";
+        const filtered = employees.filter((emp) => {
+          const fullName = `${emp.firstName || ""} ${emp.lastName || ""}`.toLowerCase();
+          const email = emp?.userID?.email?.toLowerCase() || "";
           return (
-            username.includes(value.toLowerCase()) ||
+            fullName.includes(value.toLowerCase()) ||
             email.includes(value.toLowerCase())
           );
         });
-        setFilteredUsers(filtered);
+        setFilteredEmployees(filtered);
         setShowDropdown(filtered.length > 0);
       } else {
-        setFilteredUsers([]);
+        setFilteredEmployees([]);
         setShowDropdown(false);
       }
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    try {
-      const updatedTask = {
-        taskName: formData.taskName,
-        description: formData.description,
-        assignedTo: formData.assignedToDisplay, // Use display name for hardcoded mode
-        dueDate: formData.dueDate,
-        status: task.status // Keep the existing status
-      };
-
-      // Call the update function with hardcoded data
-      onUpdateTask(task.id, updatedTask);
-      onClose();
-    } catch (err) {
-      console.error("Error updating task:", err);
-      setError("Failed to update task");
-    } finally {
-      setLoading(false);
-    }
+  // when selecting employee from dropdown
+  const handleEmployeeSelect = (emp) => {
+    const fullName = `${emp.firstName || ""} ${emp.lastName || ""}`;
+    setFormData((prev) => ({
+      ...prev,
+      assignedTo: fullName,
+      assignedToId: emp._id, // save actual MongoDB id
+    }));
+    setShowDropdown(false);
   };
 
-  if (!isOpen) return null;
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    // build payload that matches backend schema
+    const payload = {
+      taskName: formData.taskName,
+      description: formData.description,
+      assignedTo: formData.assignedToId, // 
+      dueDate: new Date(formData.dueDate).toISOString(), // standardize
+      status: formData.status,
+    };
+
+    const res = await api.put(`/tasks/${task.id}`, payload);
+
+    // normalize for parent
+    const updatedTask = {
+      ...res.data,
+      assignedTo: `${res.data.assignedTo?.firstName || ""} ${res.data.assignedTo?.lastName || ""}`.trim(),
+      assignedBy: `${res.data.assignedBy?.firstName || ""} ${res.data.assignedBy?.lastName || ""}`.trim(),
+      department: res.data.department?.departmentName || "",
+      dueDate: new Date(res.data.dueDate).toLocaleDateString(),
+    };
+
+    onUpdateTask(task.id, updatedTask);
+    onClose();
+  } catch (err) {
+    console.error("Error updating task:", err);
+  }
+};
+
+if (!isOpen) return null;
 
   return (
     <div className="update-task-modal-overlay">
@@ -147,29 +173,29 @@ const UpdateTaskModal = ({ isOpen, onClose, task, onUpdateTask }) => {
           </div>
 
           <div className="update-task-form-group">
-            <label htmlFor="assignedToDisplay">Assigned To</label>
+            <label htmlFor="assignedTo">Assigned To</label>
             <div className="update-task-dropdown-container">
               <input
                 type="text"
-                id="assignedToDisplay"
-                name="assignedToDisplay"
-                value={formData.assignedToDisplay}
+                id="assignedTo"
+                name="assignedTo"
+                value={formData.assignedTo}
                 onChange={handleInputChange}
                 required
                 placeholder="Type to search employee"
                 autoComplete="off"
               />
-              {showDropdown && filteredUsers.length > 0 && (
+              {showDropdown && filteredEmployees.length > 0 && (
                 <div className="update-task-dropdown-menu">
-                  {filteredUsers.map((user) => {
-                    const displayName = user.username || user.email || "Unknown";
+                  {filteredEmployees.map((emp) => {
+                    const fullName = `${emp.firstName || ""} ${emp.lastName || ""}`;
                     return (
                       <div
-                        key={user._id}
+                        key={emp._id}
                         className="update-task-dropdown-item"
-                        onClick={() => handleUserSelect(user)}
+                        onClick={() => handleEmployeeSelect(emp)}
                       >
-                        {displayName}
+                        {fullName}
                       </div>
                     );
                   })}
@@ -190,6 +216,20 @@ const UpdateTaskModal = ({ isOpen, onClose, task, onUpdateTask }) => {
             />
           </div>
 
+        <div className="update-task-form-group">
+            <label htmlFor="status">Status</label>
+            <select
+              id="status"
+              name="status"
+              value={formData.status}
+              onChange={handleInputChange}
+              required
+            >
+              <option value="in progress">In Progress</option>
+              <option value="pending">Pending</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
 
           <div className="update-task-modal-actions">
             <button

@@ -99,31 +99,22 @@ const SchedulingPage = () => {
 
   return (
     <div className="scheduling-page">
-      <div className="page-header">
-        <h1>Employee Scheduling</h1>
+      <div className="top-section">
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search by username, email, or department..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+        </div>
         <button 
           className="btn-add-schedule"
           onClick={() => setIsModalOpen(true)}
         >
           Add Schedule
         </button>
-      </div>
-
-      <div className="search-filter-section">
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Search by Employee Name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-          <div className="filter-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M3 4H21V6H3V4ZM7 10H17V12H7V10ZM9 16H15V18H9V16Z" fill="#002347"/>
-            </svg>
-          </div>
-        </div>
       </div>
 
       <div className="table-container">

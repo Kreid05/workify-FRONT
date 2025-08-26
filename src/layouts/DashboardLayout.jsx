@@ -18,7 +18,13 @@ const DashboardLayout = () => {
     if (path.includes('/dashboard/inquiries')) return 'Inquiries';
     if (path.includes('/dashboard/task')) return 'Task';
     if (path.includes('/dashboard/payment-history')) return 'Payment History';
-    
+    if (path.includes('/dashboard/schedule')) return 'Scheduling Management';
+    if (path.includes('/dashboard/admin-attendance-logs')) return 'Attendance Management';
+    if (path.includes('/dashboard/admin-attendance-report')) return 'Attendance Management';
+    if (path.includes('/dashboard/employee-attendance-logs')) return 'Attendance Management';
+    if (path.includes('/dashboard/employee-attendance-report')) return 'Attendance Management';
+    if (path.includes('/dashboard/leave-request')) return 'Leave Management';
+    if (path.includes('/dashboard/leave-balance')) return 'Leave Management'; 
    
     return 'Dashboard';
   };
