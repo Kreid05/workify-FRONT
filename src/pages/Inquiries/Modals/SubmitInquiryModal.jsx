@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './SubmitInquiryModal.css';
+import api from '../../../api/api';
 
 const SubmitInquiryModal = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -7,6 +8,7 @@ const SubmitInquiryModal = ({ isOpen, onClose, onSubmit }) => {
     type: '',
     description: ''
   });
+  const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
 
@@ -18,12 +20,28 @@ const SubmitInquiryModal = ({ isOpen, onClose, onSubmit }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.requestName && formData.type && formData.description) {
-      onSubmit(formData);
+    if (!formData.requestName || !formData.type || !formData.description) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    setLoading(true);
+
+    try {
+      // post to backend
+      const res = await api.post("/inquiries/create", {
+        requestName: formData.requestName,
+        type: formData.type,
+        description: formData.description
+      });
+      if (onSubmit) onSubmit(res.data);
       setFormData({ requestName: '', type: '', description: '' });
       onClose();
+    } catch (err) {
+      alert("Error submitting inquiry: " + (err.response?.data?.message || err.message));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,12 +82,12 @@ const SubmitInquiryModal = ({ isOpen, onClose, onSubmit }) => {
               required
             >
               <option value="">Select Type</option>
-              <option value="Time Off">Time Off</option>
-              <option value="Resources">Resources</option>
-              <option value="Development">Development</option>
-              <option value="Finance">Finance</option>
-              <option value="IT">IT</option>
-              <option value="Other">Other</option>
+              <option value="Leave Request">Leave Request</option>
+              <option value="Overtime Request">Overtime Request</option>
+              <option value="Information Update">Information Update</option>
+              <option value="Timesheet Correction">Timesheet Correction</option>
+              <option value="Document Request">Document Request</option>
+              <option value="Others">Others</option>
             </select>
           </div>
 
@@ -97,8 +115,9 @@ const SubmitInquiryModal = ({ isOpen, onClose, onSubmit }) => {
             <button 
               type="submit" 
               className="submit-confirm-button"
+              disabled={loading}
             >
-              Submit Inquiry
+              {loading ? "Submitting..." : "Submit Inquiry"}
             </button>
           </div>
         </form>

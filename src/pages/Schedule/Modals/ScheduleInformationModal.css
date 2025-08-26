@@ -1,4 +1,4 @@
-.modal-overlay {
+.addSchedule-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -12,7 +12,7 @@
   padding: 20px;
 }
 
-.modal-container {
+.addSchedule-modal-container {
   background: white;
   border-radius: 8px;
   width: 100%;
@@ -21,10 +21,9 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.modal-header {
+.addSchedule-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -34,13 +33,13 @@
   color: white;
 }
 
-.modal-header h2 {
+.addSchedule-modal-header h2 {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
 }
 
-.close-button {
+.addSchedule-close-button {
   background: none;
   border: none;
   font-size: 24px;
@@ -55,19 +54,31 @@
   border-radius: 4px;
 }
 
-.close-button:hover {
+.addSchedule-close-button:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.steps-indicator {
+.addSchedule-steps-indicator {
   display: flex;
   justify-content: center;
   padding: 20px;
+  gap: 25px;
   background-color: #f8f9fa;
   border-bottom: 1px solid #e5e5e5;
+
 }
 
-.step {
+.addSchedule-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 10px; /* Adjusted margin for even spacing */
+  color: #666;
+  position: relative;
+  width: 100px;
+}
+
+.addSchedule-step {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -76,25 +87,25 @@
   position: relative;
 }
 
-.step.active {
+.addSchedule-step.active {
   color: #002347;
 }
 
-.step:not(:last-child)::after {
+.addSchedule-step:not(:last-child)::after {
   content: '';
   position: absolute;
   top: 15px;
-  right: -40px;
-  width: 80px;
+  right: -100px;
+  width: 140px;
   height: 2px;
   background-color: #ddd;
 }
 
-.step.active:not(:last-child)::after {
+.addSchedule-step.active:not(:last-child)::after {
   background-color: #002347;
 }
 
-.step-number {
+.addSchedule-step-number {
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -108,34 +119,35 @@
   margin-bottom: 8px;
 }
 
-.step.active .step-number {
+.addSchedule-step.active
+.addSchedule-step-number {
   background-color: #002347;
 }
 
-.step-label {
+.addSchedule-step-label {
   font-size: 12px;
   font-weight: 500;
   text-align: center;
 }
 
-.modal-content {
+.addSchedule-modal-content {
   flex: 1;
   overflow-y: auto;
   padding: 24px;
 }
 
-.step-content h3 {
+.addSchedule-step-content h3 {
   margin: 0 0 20px 0;
   color: #002347;
   font-size: 18px;
   font-weight: 600;
 }
 
-.form-group {
+.addSchedule-form-group {
   margin-bottom: 20px;
 }
 
-.form-group label {
+.addSchedule-form-group label {
   display: block;
   margin-bottom: 6px;
   font-weight: 500;
@@ -143,42 +155,45 @@
   font-size: 14px;
 }
 
-.form-group input,
-.form-group textarea,
-.form-group select {
+.addSchedule-form-group input,
+.addSchedule-form-group textarea,
+.addSchedule-form-group select {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  background-color: white;
+  color: black;
+}
+
+.addSchedule-form-group input:focus,
+.addSchedule-form-group textarea:focus,
+.addSchedule-form-group select:focus {
   outline: none;
-  box-sizing: border-box;
+  border-color: #fd7702;
+  box-shadow: 0 0 0 3px rgba(246, 187, 59, 0.1);
 }
 
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-  border-color: #002347;
-}
-
-.form-group textarea {
+.addSchedule-form-group textarea {
   resize: vertical;
   min-height: 80px;
 }
 
-.form-row {
+.addSchedule-form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
-.schedule-type-options {
+.addSchedule-schedule-type-options {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 5px;
 }
 
-.radio-option {
+.addSchedule-radio-option {
   display: flex;
   flex-direction: column;
   padding: 16px;
@@ -188,34 +203,34 @@
   transition: border-color 0.2s;
 }
 
-.radio-option:hover {
+.addSchedule-radio-option:hover {
   border-color: #002347;
 }
 
-.radio-option input[type="radio"] {
+.addSchedule-radio-option input[type="radio"] {
   width: auto;
   margin-right: 8px;
   margin-bottom: 4px;
 }
 
-.radio-option span {
+.addSchedule-radio-option span {
   font-weight: 500;
   color: #333;
   margin-bottom: 4px;
 }
 
-.radio-option small {
+.addSchedule-radio-option small {
   color: #666;
   font-size: 12px;
 }
 
-.work-days {
+.addSchedule-work-days {
   display: flex;
   gap: 8px;
   margin-top: 8px;
 }
 
-.day-button {
+.addSchedule-day-button {
   width: 40px;
   height: 40px;
   border: 1px solid #ddd;
@@ -227,58 +242,61 @@
   transition: all 0.2s;
 }
 
-.day-button:hover {
+.addSchedule-day-button:hover {
   border-color: #002347;
 }
 
-.day-button.selected {
+.addSchedule-day-button.selected {
   background-color: #002347;
   border-color: #002347;
   color: white;
 }
 
-.employees-section {
+.addSchedule-employees-section {
   max-height: 400px;
   overflow-y: auto;
 }
 
-.search-container {
+.addSchedule-search-container {
   margin-bottom: 16px;
 }
 
-.search-input {
+.addSchedule-search-input {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  background-color: white;
+  color: black;
+}
+
+.addSchedule-search-input:focus {
   outline: none;
-  box-sizing: border-box;
+  border-color: #fd7702;
+  box-shadow: 0 0 0 3px rgba(246, 187, 59, 0.1);
 }
 
-.search-input:focus {
-  border-color: #002347;
-}
-
-.employees-table-container {
+.addSchedule-employees-table-container {
   max-height: 300px;
   overflow-y: auto;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
-.employees-table {
+.addSchedule-employees-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.employees-table thead {
+.addSchedule-employees-table thead {
   background-color: #002347;
   position: sticky;
   top: 0;
 }
 
-.employees-table thead th {
+.addSchedule-employees-table thead th {
   color: white;
   padding: 12px;
   text-align: left;
@@ -287,46 +305,47 @@
   border: none;
 }
 
-.employees-table tbody tr {
+.addSchedule-employees-table tbody tr {
   border-bottom: 1px solid #f0f0f0;
 }
 
-.employees-table tbody tr:hover {
+.addSchedule-employees-table tbody tr:hover {
   background-color: #f8f9fa;
 }
 
-.employees-table tbody td {
+.addSchedule-employees-table tbody td {
   padding: 12px;
   font-size: 12px;
   color: #333;
   vertical-align: middle;
 }
 
-.employees-table input[type="checkbox"] {
+.addSchedule-employees-table input[type="checkbox"] {
   width: auto;
   margin: 0;
+  cursor: pointer;
 }
 
-.selected-employees {
+.addSchedule-selected-employees {
   margin-top: 12px;
   padding: 8px 0;
   font-size: 14px;
   color: #666;
 }
 
-.modal-footer {
+.addSchedule-modal-footer {
   border-top: 1px solid #e5e5e5;
   padding: 16px 24px;
   background-color: #f8f9fa;
 }
 
-.footer-buttons {
+.addSchedule-footer-buttons {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
 }
 
-.btn-primary {
+.addSchedule-btn-primary {
   background-color: #002347;
   color: white;
   border: none;
@@ -338,16 +357,16 @@
   transition: background-color 0.2s;
 }
 
-.btn-primary:hover:not(:disabled) {
+.addSchedule-btn-primary:hover:not(:disabled) {
   background-color: #003a66;
 }
 
-.btn-primary:disabled {
+.addSchedule-btn-primary:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-.btn-secondary {
+.addSchedule-btn-secondary {
   background-color: #FF5003;
   color: white;
   border: none;
@@ -359,11 +378,11 @@
   transition: background-color 0.2s;
 }
 
-.btn-secondary:hover {
+.addSchedule-btn-secondary:hover {
   background-color: #e6460a;
 }
 
-.btn-cancel {
+.addSchedule-btn-cancel {
   background-color: transparent;
   color: #666;
   border: 1px solid #ddd;
@@ -375,48 +394,47 @@
   transition: all 0.2s;
 }
 
-.btn-cancel:hover {
+.addSchedule-btn-cancel:hover {
   border-color: #999;
   color: #333;
 }
 
 @media (max-width: 768px) {
-  .modal-overlay {
+  .addSchedule-modal-overlay {
     padding: 10px;
   }
   
-  .modal-container {
+  .addSchedule-modal-container {
     max-width: 100%;
     max-height: 95vh;
   }
   
-  .steps-indicator {
+  .addSchedule-steps-indicator {
     padding: 16px 10px;
   }
   
-  .step {
+  .addSchedule-step {
     margin: 0 10px;
   }
   
-  .step:not(:last-child)::after {
+  .addSchedule-step:not(:last-child)::after {
     width: 60px;
-    right: -35px;
   }
   
-  .step-label {
+  .addSchedule-step-label {
     font-size: 10px;
   }
   
-  .form-row {
+  .addSchedule-form-row {
     grid-template-columns: 1fr;
     gap: 12px;
   }
   
-  .work-days {
+  .addSchedule-work-days {
     justify-content: center;
   }
   
-  .footer-buttons {
+  .addSchedule-footer-buttons {
     flex-wrap: wrap;
     justify-content: center;
   }

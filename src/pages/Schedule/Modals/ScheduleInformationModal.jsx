@@ -154,33 +154,33 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-container">
-        <div className="modal-header">
+    <div className="addSchedule-modal-overlay">
+      <div className="addSchedule-modal-container">
+        <div className="addSchedule-modal-header">
           <h2>Create Schedule</h2>
-          <button className="close-button" onClick={onClose}>×</button>
+          <button className="addSchedule-close-button" onClick={onClose}>×</button>
         </div>
 
-        <div className="steps-indicator">
-          <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
-            <span className="step-number">1</span>
-            <span className="step-label">Schedule Information</span>
+        <div className="addSchedule-steps-indicator">
+          <div className={`addSchedule-step ${currentStep >= 1 ? 'active' : ''}`}>
+            <span className="addSchedule-step-number">1</span>
+            <span className="addSchedule-step-label">Schedule Information</span>
           </div>
-          <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
-            <span className="step-number">2</span>
-            <span className="step-label">Time Details</span>
+          <div className={`addSchedule-step ${currentStep >= 2 ? 'active' : ''}`}>
+            <span className="addSchedule-step-number">2</span>
+            <span className="addSchedule-step-label">Time Details</span>
           </div>
-          <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
-            <span className="step-number">3</span>
-            <span className="step-label">Employees</span>
+          <div className={`addSchedule-step ${currentStep >= 3 ? 'active' : ''}`}>
+            <span className="addSchedule-step-number">3</span>
+            <span className="addSchedule-step-label">Employees</span>
           </div>
         </div>
 
-        <div className="modal-content">
+        <div className="addSchedule-modal-content">
           {currentStep === 1 && (
-            <div className="step-content">
+            <div className="addSchedule-step-content">
               <h3>Schedule Details</h3>
-              <div className="form-group">
+              <div className="addSchedule-form-group">
                 <label>Schedule Name *</label>
                 <input
                   type="text"
@@ -189,7 +189,7 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
                   placeholder="Enter schedule name"
                 />
               </div>
-              <div className="form-group">
+              <div className="addSchedule-form-group">
                 <label>Schedule Description *</label>
                 <textarea
                   value={formData.scheduleDescription}
@@ -198,8 +198,8 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
                   rows="4"
                 />
               </div>
-              <div className="form-row">
-                <div className="form-group">
+              <div className="addSchedule-form-row">
+                <div className="addSchedule-form-group">
                   <label>Schedule Start Date *</label>
                   <input
                     type="date"
@@ -207,7 +207,7 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
                     onChange={(e) => handleInputChange('startDate', e.target.value)}
                   />
                 </div>
-                <div className="form-group">
+                <div className="addSchedule-form-group">
                   <label>Schedule End Date</label>
                   <input
                     type="date"
@@ -216,10 +216,10 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
                   />
                 </div>
               </div>
-              <div className="form-group">
+              <div className="addSchedule-form-group">
                 <label>Schedule Type</label>
-                <div className="schedule-type-options">
-                  <label className="radio-option">
+                <div className="addSchedule-schedule-type-options">
+                  <label className="addSchedule-radio-option">
                     <input
                       type="radio"
                       name="scheduleType"
@@ -230,7 +230,7 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
                     <span>Full Time Schedule</span>
                     <small>Your employees would operate on set standard working hours.</small>
                   </label>
-                  <label className="radio-option">
+                  <label className="addSchedule-radio-option">
                     <input
                       type="radio"
                       name="scheduleType"
@@ -247,11 +247,11 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
           )}
 
           {currentStep === 2 && (
-            <div className="step-content">
+            <div className="addSchedule-step-content">
               <h3>Time Details</h3>
-              <div className="form-group">
+              <div className="addSchedule-form-group">
                 <label>Select The Work Days</label>
-                <div className="work-days">
+                <div className="addSchedule-work-days">
                   {['S', 'M', 'T', 'W', 'Th', 'F', 'Sa'].map(day => (
                     <button
                       key={day}
@@ -264,8 +264,8 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
                   ))}
                 </div>
               </div>
-              <div className="form-row">
-                <div className="form-group">
+              <div className="addSchedule-form-row">
+                <div className="addSchedule-form-group">
                   <label>Work starts *</label>
                   <input
                     type="time"
@@ -273,7 +273,7 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
                     onChange={(e) => handleInputChange('workStart', e.target.value)}
                   />
                 </div>
-                <div className="form-group">
+                <div className="addSchedule-form-group">
                   <label>Work ends *</label>
                   <input
                     type="time"
@@ -282,8 +282,8 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
                   />
                 </div>
               </div>
-              <div className="form-row">
-                <div className="form-group">
+              <div className="addSchedule-form-row">
+                <div className="addSchedule-form-group">
                   <label>Lateness starts after (mins) *</label>
                   <select
                     value={formData.latenessGrace}
@@ -295,7 +295,7 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
                     <option value={20}>20 mins</option>
                   </select>
                 </div>
-                <div className="form-group">
+                <div className="addSchedule-form-group">
                   <label>Absence starts after (mins) *</label>
                   <select
                     value={formData.absenceGrace}
@@ -312,20 +312,20 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
           )}
 
           {currentStep === 3 && (
-            <div className="step-content">
+            <div className="addSchedule-step-content">
               <h3>Add Employees</h3>
-              <div className="employees-section">
-                <div className="search-container">
+              <div className="addSchedule-employees-section">
+                <div className="addSchedule-search-container">
                   <input
                     type="text"
                     placeholder="Search by Employee Name..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="search-input"
+                    className="addSchedule-search-input"
                   />
                 </div>
-                <div className="employees-table-container">
-                  <table className="employees-table">
+                <div className="addSchedule-employees-table-container">
+                  <table className="addSchedule-employees-table">
                     <thead>
                       <tr>
                         <th>Select</th>
@@ -356,7 +356,7 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
                     </tbody>
                   </table>
                 </div>
-                <div className="selected-employees">
+                <div className="addSchedule-selected-employees">
                   <p>Selected: {formData.selectedEmployees.length} employees</p>
                 </div>
               </div>
@@ -364,19 +364,19 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
           )}
         </div>
 
-        <div className="modal-footer">
-          <div className="footer-buttons">
+        <div className="addSchedule-modal-footer">
+          <div className="addSchedule-footer-buttons">
             {currentStep > 1 && (
-              <button className="btn-secondary" onClick={handlePrevious}>
+              <button className="addSchedule-btn-secondary" onClick={handlePrevious}>
                 Previous
               </button>
             )}
-            <button className="btn-cancel" onClick={onClose}>
+            <button className="addSchedule-btn-cancel" onClick={onClose}>
               Cancel
             </button>
             {currentStep < 3 ? (
               <button 
-                className="btn-primary" 
+                className="addSchedule-btn-primary" 
                 onClick={handleNext}
                 disabled={!isStepValid()}
               >
@@ -384,7 +384,7 @@ const ScheduleInformationModal = ({ onClose, onSave }) => {
               </button>
             ) : (
               <button 
-                className="btn-primary" 
+                className="addSchedule-btn-primary" 
                 onClick={handleSave}
                 disabled={!isStepValid()}
               >

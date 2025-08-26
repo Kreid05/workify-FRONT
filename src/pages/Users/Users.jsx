@@ -166,7 +166,7 @@ const Users = () => {
       center: true,
       width: "13%",
       cell: (row) => (
-        <span className={`status-badge ${row.isDisabled ? 'disabled' : 'active'}`}>
+        <span className={`users-status-badge ${row.isDisabled ? 'disabled' : 'active'}`}>
           {row.isDisabled ? "Disabled" : "Active"}
         </span>
       ),

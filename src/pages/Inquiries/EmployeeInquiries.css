@@ -60,33 +60,38 @@
 
 /* Status Badges */
 .employee-status-badge {
-  padding: 5px 15px;
-  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
   font-size: 0.65rem;
-  font-weight: 600;
-  width: 60%;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05em;
+  min-width: 90px;
   text-align: center;
-  justify-content: center;
+  display: inline-block;
+  margin: 0 auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.employee-status-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .employee-status-badge.pending {
   background-color: #fef3c7;
   color: #92400e;
-  border: 1px solid #fcd34d;
 }
 
 .employee-status-badge.approved {
   background-color: #d1fae5;
   color: #065f46;
-  border: 1px solid #34d399;
 }
 
 .employee-status-badge.declined {
   background-color: #fee2e2;
   color: #991b1b;
-  border: 1px solid #f87171;
 }
 
 /* Responsive Design */

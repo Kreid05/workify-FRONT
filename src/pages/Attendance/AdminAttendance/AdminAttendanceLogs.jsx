@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './AdminAttendanceLogs.css';
 import AddLogsModal from './Modals/AddLogsModal';
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import api from "../../../api/api";
+import { FaFilter } from "react-icons/fa";
 
 const AdminAttendanceLogs = () => {
   const [selectedDepartment, setSelectedDepartment] = useState('All Departments');
@@ -11,6 +13,7 @@ const AdminAttendanceLogs = () => {
   const [editingRow, setEditingRow] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [attendanceData, setAttendanceData] = useState([]);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // fetch attendance logs
   useEffect(() => {
@@ -148,16 +151,15 @@ const AdminAttendanceLogs = () => {
   };
 
     return (
-      <tr className="edit-row">
+      <tr className="admin-attendance-edit-row">
         <td>{item.employeeName}</td>
         <td>{item.department}</td>
-        <td>{item.date}</td>
         <td>
           <input 
             type="date" 
             value={editData.date || ''}
             onChange={e => handleInputChange('date', e.target.value)}
-            className="edit-input"
+            className="admin-attendance-edit-input"
           />
         </td>
         <td>
@@ -165,7 +167,7 @@ const AdminAttendanceLogs = () => {
             type="time" 
             value={editData.clockIn !== '--' ? editData.clockIn : ''}
             onChange={(e) => handleInputChange('clockIn', e.target.value || '--')}
-            className="edit-input"
+            className="admin-attendance-edit-input"
           />
         </td>
         <td>
@@ -173,14 +175,14 @@ const AdminAttendanceLogs = () => {
             type="time" 
             value={editData.clockOut !== '--' ? editData.clockOut : ''}
             onChange={(e) => handleInputChange('clockOut', e.target.value || '--')}
-            className="edit-input"
+            className="admin-attendance-edit-input"
           />
         </td>
         <td>
           <select 
             value={editData.status}
             onChange={(e) => handleInputChange('status', e.target.value)}
-            className="edit-select"
+            className="admin-attendance-edit-select"
           >
             <option value="Present">Present</option>
             <option value="Absent">Absent</option>
@@ -193,9 +195,9 @@ const AdminAttendanceLogs = () => {
         <td>{calculateHours(editData.clockIn, editData.clockOut).regularHrs}</td>
         <td>{calculateHours(editData.clockIn, editData.clockOut).overtime}</td>
         <td>
-          <div className="action-buttons">
-            <button className="save-btn" onClick={handleSaveClick}>Save</button>
-            <button className="cancel-btn" onClick={handleCancel}>Cancel</button>
+          <div className="admin-attendance-action-buttons">
+            <button className="admin-attendance-save-btn" onClick={handleSaveClick}><FaCheckCircle size={16} /></button>
+            <button className="admin-attendance-cancel-btn" onClick={handleCancel}><FaTimesCircle size={16} /></button>
           </div>
         </td>
       </tr>
@@ -206,81 +208,98 @@ const AdminAttendanceLogs = () => {
     item.employeeName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Get unique departments from attendance data
+  const uniqueDepartments = [...new Set(attendanceData.map(item => item.department))].sort();
+  
+  const toggleFilter = () => {
+    setIsFilterOpen(!isFilterOpen);
+  };
+
+  const handleDepartmentSelect = (department) => {
+    setSelectedDepartment(department);
+    setIsFilterOpen(false);
+  };
+
+  const clearFilter = () => {
+    setSelectedDepartment('All Departments');
+    setIsFilterOpen(false);
+  };
+
   return (
     <div className="admin-attendance-logs">
-      <div className="page-header">
-        <h2>Daily Attendance Logs</h2>
-      </div>
-
-      <div className="filters-section">
-        <div className="filter-group">
-          <label>Department</label>
-          <select 
-            value={selectedDepartment}
-            onChange={(e) => setSelectedDepartment(e.target.value)}
-            className="filter-select"
-          >
-            <option value="All Departments">All Departments</option>
-            <option value="HR">HR</option>
-            <option value="IT">IT</option>
-            <option value="Finance">Finance</option>
-            <option value="Operations">Operations</option>
-          </select>
-        </div>
-
-        <div className="filter-group">
-          <label>Date</label>
-          <input 
-            type="date" 
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="date-input"
-          />
-        </div>
-
-        <button className="get-employees-btn">Get Employees</button>
-        <button className="add-logs-btn" onClick={handleAddLog}>Add Logs</button>
-      </div>
-
-      <div className="table-controls">
-        <div className="show-entries">
-          <label>Show </label>
-          <select 
-            value={entriesPerPage}
-            onChange={(e) => setEntriesPerPage(e.target.value)}
-            className="entries-select"
-          >
-            <option value={10}>10</option>
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-          </select>
-          <span> entries</span>
-        </div>
-
-        <div className="search-box">
-          <label>Search: </label>
+      <div className="admin-attendance-control-container">
+        <div className="admin-attendance-search-container">
           <input 
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
+            className="admin-attendance-search-input"
+            placeholder="Search employees..."
           />
         </div>
+
+        <div className="admin-attendance-filter-group">
+          <input 
+            type="date" 
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="admin-attendance-date-input"
+          />
+        </div>
+        
+        <div className="admin-attendance-filter-container">
+          <button 
+            className={`admin-attendance-filter-button ${selectedDepartment !== 'All Departments' ? 'active' : ''}`}
+            onClick={toggleFilter}
+          >
+            <FaFilter />
+          </button>
+          {isFilterOpen && (
+            <div className="admin-attendance-filter-dropdown">
+              <div className="admin-attendance-filter-dropdown-header">
+                <span>Filter by Department</span>
+                <button 
+                  className="admin-attendance-clear-filter-btn"
+                  onClick={clearFilter}
+                >
+                  Clear
+                </button>
+              </div>
+              <div
+                className={`admin-attendance-filter-option ${selectedDepartment === 'All Departments' ? 'selected' : ''}`}
+                onClick={() => handleDepartmentSelect('All Departments')}
+              >
+                All Departments
+              </div>
+              {uniqueDepartments.map((department) => (
+                <div
+                  key={department}
+                  className={`admin-attendance-filter-option ${selectedDepartment === department ? 'selected' : ''}`}
+                  onClick={() => handleDepartmentSelect(department)}
+                >
+                  {department}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <button className="admin-attendance-add-logs-btn" onClick={handleAddLog}>Add Logs</button>
       </div>
 
-      <div className="table-container">
-        <table className="attendance-table">
+      <div className="admin-attendance-table-container">
+        <table className="admin-attendance-table">
           <thead>
             <tr>
-              <th>Employee Name <span className="sort-arrows">⇅</span></th>
-              <th>Department <span className="sort-arrows">⇅</span></th>
-              <th>Date <span className="sort-arrows">⇅</span></th>
-              <th>Clock In <span className="sort-arrows">⇅</span></th>
-              <th>Clock Out <span className="sort-arrows">⇅</span></th>
-              <th>Status <span className="sort-arrows">⇅</span></th>
-              <th>Total Hrs <span className="sort-arrows">⇅</span></th>
-              <th>Regular Hrs <span className="sort-arrows">⇅</span></th>
-              <th>Overtime <span className="sort-arrows">⇅</span></th>
+              <th>Employee Name</th>
+              <th>Department</th>
+              <th>Date</th>
+              <th>Clock In</th>
+              <th>Clock Out</th>
+              <th>Status</th>
+              <th>Total Hrs</th>
+              <th>Regular Hrs</th>
+              <th>Overtime</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -296,7 +315,7 @@ const AdminAttendanceLogs = () => {
                   <td>{item.clockIn}</td>
                   <td>{item.clockOut}</td>
                   <td>
-                    <span className={`status-badge ${item.status.toLowerCase().replace(' ', '-')}`}>
+                    <span className={`admin-attendance-status-badge ${item.status.toLowerCase().replace(' ', '-')}`}>
                       {item.status}
                     </span>
                   </td>
@@ -305,7 +324,7 @@ const AdminAttendanceLogs = () => {
                   <td>{item.overtime}</td>
                   <td>
                     <button 
-                      className="update-btn"
+                      className="admin-attendance-update-btn"
                       onClick={() => handleEdit(item.id)}
                     >
                       Update
@@ -318,14 +337,27 @@ const AdminAttendanceLogs = () => {
         </table>
       </div>
 
-      <div className="table-footer">
-        <div className="showing-info">
+      <div className="admin-attendance-table-footer">
+        <div className="admin-attendance-show-entries">
+          <label>Show </label>
+          <select 
+            value={entriesPerPage}
+            onChange={(e) => setEntriesPerPage(e.target.value)}
+            className="admin-attendance-entries-select"
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+          </select>
+          <span> entries</span>
+        </div>
+        <div className="admin-attendance-showing-info">
           Showing 1 to {Math.min(entriesPerPage, filteredData.length)} of {filteredData.length} entries
         </div>
-        <div className="pagination">
-          <button className="page-btn">Previous</button>
-          <button className="page-btn active">1</button>
-          <button className="page-btn">Next</button>
+        <div className="admin-attendance-pagination">
+          <button className="admin-attendance-page-btn">Previous</button>
+          <button className="admin-attendance-page-btn active">1</button>
+          <button className="admin-attendance-page-btn">Next</button>
         </div>
       </div>
 

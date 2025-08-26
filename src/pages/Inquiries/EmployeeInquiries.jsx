@@ -1,28 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import DataTable from "react-data-table-component";
 import SubmitInquiryModal from "./Modals/SubmitInquiryModal";
 import "./EmployeeInquiries.css";
+import api from '../../api/api';
 
 const EmployeeInquiries = () => {
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
-  
-  // Hardcoded sample data for demonstration
-  const [employeeInquiries, setEmployeeInquiries] = useState([
-    {
-      id: 1,
-      requestName: "Leave Request",
-      type: "Time Off",
-      description: "Requesting 3 days of personal leave",
-      status: "Pending"
-    },
-    {
-      id: 2,
-      requestName: "Changing Parents Information",
-      type: "Other",
-      description: "Wrong spelling in my Mother's first name",
-      status: "Pending"
-    },
-  ]);
+  const [employeeInquiries, setEmployeeInquiries] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // fetch emp inquiries
+  useEffect(() => {
+    const fetchEmployeeInquiries = async () => {
+      setLoading(true);
+      try {
+        const res = await api.get("/inquiries"); 
+        setEmployeeInquiries(res.data);
+      } catch (err) {
+        alert("Error fetching your inquiries: " + (err.response?.data?.message || err.message));
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEmployeeInquiries();
+  }, []);
 
   const columns = [
     {
@@ -56,6 +57,8 @@ const EmployeeInquiries = () => {
       ),
     },
   ];
+
+  if (loading) return <div>Loading your inquiries...</div>;
 
   const handleSubmitInquiry = (inquiryData) => {
     const newInquiry = {

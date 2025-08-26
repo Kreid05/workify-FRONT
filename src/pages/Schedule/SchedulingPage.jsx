@@ -67,34 +67,28 @@ const SchedulingPage = () => {
 
   return (
     <div className="scheduling-page">
-      <div className="page-header">
-        <h1>Employee Scheduling</h1>
-        <button 
-          className="btn-add-schedule"
-          onClick={() => setIsModalOpen(true)}
-        >
-          Add Schedule
-        </button>
-      </div>
-
-      <div className="search-filter-section">
-        <div className="search-container">
+      <div className="schedule-control-container">
+        <div className="schedule-search-container">
           <input
             type="text"
             placeholder="Search by Schedule Name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
+            className="scheduling-search-input"
           />
-          <div className="filter-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M3 4H21V6H3V4ZM7 10H17V12H7V10ZM9 16H15V18H9V16Z" fill="#002347"/>
-            </svg>
-          </div>
+        </div>
+        
+        <div className="buttons-container">
+          <button 
+            className="btn-add-schedule"
+            onClick={() => setIsModalOpen(true)}
+          >
+            Add Schedule
+          </button>
         </div>
       </div>
 
-      <div className="table-container">
+      <div className="schedule-table-container">
         <table className="schedules-table">
           <thead>
             <tr>
@@ -114,7 +108,7 @@ const SchedulingPage = () => {
                   <td>{`${schedule.workStart} - ${schedule.workEnd}`}</td>
                   <td>{schedule.scheduleType}</td>
                   <td>
-                    <div className="action-buttons">
+                    <div className="schedule-action-buttons">
                       <button
                         className="btn-update"
                         onClick={() => handleEditClick(schedule)}

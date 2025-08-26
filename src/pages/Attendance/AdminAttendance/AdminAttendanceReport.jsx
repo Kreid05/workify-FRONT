@@ -100,7 +100,7 @@ const AdminAttendanceReport = () => {
     
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(
-        <th key={i} className="day-header">
+        <th key={i} className="adminAttendance-report-day-header">
           {i}
         </th>
       );
@@ -115,7 +115,7 @@ const AdminAttendanceReport = () => {
     for (let i = 1; i <= daysInMonth; i++) {
       const status = employee.attendance[i] || 'NM';
       days.push(
-        <td key={i} className={`attendance-cell ${getAttendanceColor(status)}`}>
+        <td key={i} className={`adminAttendance-report-attendance-cell ${getAttendanceColor(status)}`}>
           {status}
         </td>
       );
@@ -123,14 +123,14 @@ const AdminAttendanceReport = () => {
     
     return (
       <tr key={employee.id}>
-        <td className="employee-info">
-          <div className="employee-id">{employee.id}</div>
-          <div className="employee-name">{employee.name}</div>
+        <td className="adminAttendance-report-employee-info">
+          <div className="adminAttendance-report-employee-id">{employee.id}</div>
+          <div className="adminAttendance-report-employee-name">{employee.name}</div>
         </td>
         {days}
-        <td className="summary-cell present">{employee.totalPresent}</td>
-        <td className="summary-cell absent">{employee.totalAbsent}</td>
-        <td className="summary-cell leaves">{employee.totalLeaves}</td>
+        <td className="adminAttendance-report-summary-cell present">{employee.totalPresent}</td>
+        <td className="adminAttendance-report-summary-cell absent">{employee.totalAbsent}</td>
+        <td className="adminAttendance-report-summary-cell leaves">{employee.totalLeaves}</td>
       </tr>
     );
   };
@@ -183,39 +183,22 @@ const AdminAttendanceReport = () => {
 
   return (
     <div className="admin-attendance-report">
-      <div className="page-header">
-        <h2>Attendance Report</h2>
-        <div className="legend">
-          <div className="legend-item">
-            <span className="legend-color present"></span>
-            <span>Present (P)</span>
-          </div>
-          <div className="legend-item">
-            <span className="legend-color absent"></span>
-            <span>Absent (A)</span>
-          </div>
-          <div className="legend-item">
-            <span className="legend-color late"></span>
-            <span>Late (L)</span>
-          </div>
-          <div className="legend-item">
-            <span className="legend-color half-day"></span>
-            <span>Half Day (H)</span>
-          </div>
-          <div className="legend-item">
-            <span className="legend-color off-day"></span>
-            <span>Off Day (OFF)</span>
-          </div>
+      <div className="adminAttendance-report-control-container">
+        <div className="adminAttendance-report-search-container">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by name or ID..."
+            className="adminAttendance-report-search-input"
+          />
         </div>
-      </div>
 
-      <div className="filters-section">
-        <div className="filter-group">
-          <label>Year</label>
+        <div className="adminAttendance-report-filter-group">
           <select 
             value={selectedYear}
             onChange={(e) => setSelectedYear(e.target.value)}
-            className="filter-select"
+            className="adminAttendance-report-filter-select"
           >
             <option value="2024">2024</option>
             <option value="2023">2023</option>
@@ -223,43 +206,29 @@ const AdminAttendanceReport = () => {
           </select>
         </div>
 
-        <div className="filter-group">
-          <label>Month</label>
+        <div className="adminAttendance-report-filter-group">
           <select 
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
-            className="filter-select"
+            className="adminAttendance-report-filter-select"
           >
             {Object.keys(monthDays).map(month => (
               <option key={month} value={month}>{month}</option>
             ))}
           </select>
         </div>
-
-        <div className="filter-group">
-          <label>Search Employee</label>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by name or ID..."
-            className="filter-select"
-          />
-        </div>
-
-        <button className="show-report-btn">Show Report</button>
       </div>
 
-      <div className="report-container">
-        <div className="table-wrapper">
-          <table className="attendance-report-table">
+      <div className="adminAttendance-report-container">
+        <div className="adminAttendance-report-table-wrapper">
+          <table className="adminAttendance-report-table">
             <thead>
               <tr>
-                <th className="employee-header">Employee</th>
+                <th className="adminAttendance-report-header">Employee</th>
                 {renderCalendarDays()}
-                <th className="summary-header present">Total Present</th>
-                <th className="summary-header absent">Total Absent</th>
-                <th className="summary-header leaves">Total Leaves</th>
+                <th className="adminAttendance-report-summary-header present">Total Present</th>
+                <th className="adminAttendance-report-summary-header absent">Total Absent</th>
+                <th className="adminAttendance-report-summary-header leaves">Total Leaves</th>
               </tr>
             </thead>
             <tbody>
@@ -269,9 +238,34 @@ const AdminAttendanceReport = () => {
         </div>
       </div>
 
-      <div className="action-buttons">
-        <button className="export-btn" onClick={exportToExcel}>Export to Excel</button>
-        <button className="print-btn" onClick={exportToPDF}>Export PDF</button>
+      <div className="admin-attendance-table-footer">
+        <div className="adminAttendance-report-legend">
+          <div className="adminAttendance-report-legend-item">
+            <span className="adminAttendance-report-legend-color present"></span>
+            <span>Present (P)</span>
+          </div>
+          <div className="adminAttendance-report-legend-item">
+            <span className="adminAttendance-report-legend-color absent"></span>
+            <span>Absent (A)</span>
+          </div>
+          <div className="adminAttendance-report-legend-item">
+            <span className="adminAttendance-report-legend-color late"></span>
+            <span>Late (L)</span>
+          </div>
+          <div className="adminAttendance-report-legend-item">
+            <span className="adminAttendance-report-legend-color half-day"></span>
+            <span>Half Day (H)</span>
+          </div>
+          <div className="adminAttendance-report-legend-item">
+            <span className="adminAttendance-report-legend-color off-day"></span>
+            <span>Off Day (OFF)</span>
+          </div>
+        </div>
+
+        <div className="adminAttendance-report-action-buttons">
+          <button className="adminAttendance-report-export-btn" onClick={exportToExcel}>Export to Excel</button>
+          <button className="adminAttendance-report-print-btn" onClick={exportToPDF}>Export PDF</button>
+        </div>
       </div>
     </div>
   );

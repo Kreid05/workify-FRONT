@@ -1,77 +1,60 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import DataTable from "react-data-table-component";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import ApproveModal from "./Modals/ApproveModal";
 import DeclineModal from "./Modals/DeclineModal";
 import "./Inquiries.css";
+import api from "../../api/api";
 
 const Inquiries = () => {
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [isDeclineModalOpen, setIsDeclineModalOpen] = useState(false);
   const [selectedInquiry, setSelectedInquiry] = useState(null);
+  const [inquiries, setInquiries] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Hardcoded sample data for demonstration
-  const [inquiries, setInquiries] = useState([
-    {
-      id: 1,
-      name: "John Doe",
-      requestName: "Leave Request",
-      type: "Time Off",
-      description: "Requesting 3 days of personal leave",
-      status: "Pending"
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      requestName: "Equipment Request",
-      type: "Resources",
-      description: "Need a new laptop for remote work",
-      status: "Pending"
-    },
-    {
-      id: 3,
-      name: "Mike Johnson",
-      requestName: "Training Request",
-      type: "Development",
-      description: "Request to attend React conference",
-      status: "Pending"
-    },
-    {
-      id: 4,
-      name: "Sarah Wilson",
-      requestName: "Expense Reimbursement",
-      type: "Finance",
-      description: "Travel expenses for client meeting",
-      status: "Pending"
-    },
-    {
-      id: 5,
-      name: "David Brown",
-      requestName: "Access Request",
-      type: "IT",
-      description: "Need access to project management tool",
-      status: "Pending"
+  // fetch inquiries
+  useEffect(() => {
+    const fetchInquiries = async () => {
+      setLoading(true);
+      try {
+        const res = await api.get("/inquiries");
+        setInquiries(res.data);
+      } catch (err) {
+        alert("Error fetching inquiries: " + (err.response?.data?.message || err.message));
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInquiries();
+  }, []);
+
+  // approve inquiry
+  const handleApprove = async (inquiry) => {
+    try {
+      const res = await api.patch(`/inquiries/${inquiry._id}/approve`);
+      setInquiries(prev =>
+        prev.map(item =>
+          item._id === inquiry._id ? { ...item, status: res.data.status, declineNotes: "" } : item
+        )
+      );
+    } catch (err) {
+      alert("Error approving inquiry: " + (err.response?.data?.message || err.message));
     }
-  ]);
-
-  const handleApprove = (inquiry) => {
-    setInquiries(prev => 
-      prev.map(item => 
-        item.id === inquiry.id 
-          ? { ...item, status: "Approved" }
-          : item
-      )
-    );
   };
 
-  const handleDecline = (inquiry, notes) => {
-    setInquiries(prev => 
-      prev.map(item => 
-        item.id === inquiry.id 
-          ? { ...item, status: "Declined", declineNotes: notes }
-          : item
-      )
-    );
+  // decline inquiry
+  const handleDecline = async (inquiry, notes) => {
+    try {
+      const res = await api.patch(`/inquiries/${inquiry._id}/decline`, { declineNotes: notes });
+      setInquiries(prev =>
+        prev.map(item =>
+          item._id === inquiry._id ? { ...item, status: res.data.status, declineNotes: res.data.declineNotes } : item
+        )
+      );
+    } catch (err) {
+      alert("Error declining inquiry: " + (err.response?.data?.message || err.message));
+    }
   };
 
   const openApproveModal = (inquiry) => {
@@ -116,7 +99,7 @@ const Inquiries = () => {
       center: true,
       width: "15%",
       cell: (row) => (
-        <span className={`status-badge ${row.status.toLowerCase()}`}>
+        <span className={`inquiries-status-badge ${row.status.toLowerCase()}`}>
           {row.status}
         </span>
       ),

@@ -55,8 +55,6 @@ const DashboardOverview = () => {
   }, []);
 
   const totalEmployees = 45;
-  const pendingPayments = 7;
-  const pendingTotal = 45;
 
   const handleRemainingTasksClick = () => {
     navigate('/dashboard/progress');
@@ -70,22 +68,22 @@ const DashboardOverview = () => {
     navigate('/dashboard/task');
   };
 
-  const recentPayments = [
-    { name: "Chris Friedkly", amount: 50000, date: "August 11, 2025" },
-    { name: "Maggie Johnson", amount: 50000, date: "August 9, 2025" },
-    { name: "Gael Harry", amount: 50000, date: "August 9, 2025" },
-    { name: "Jenna Sullivan", amount: 50000, date: "August 5, 2025" },
+  const recentlyHired = [
+    { name: "Chris Friedkly", department: "Engineering", jobTitle: "Software Engineer", hiredDate: "August 11, 2025" },
+    { name: "Maggie Johnson", department: "Marketing", jobTitle: "Marketing Manager", hiredDate: "August 9, 2025" },
+    { name: "Gael Harry", department: "Finance", jobTitle: "Financial Analyst", hiredDate: "August 9, 2025" },
+    { name: "Jenna Sullivan", department: "HR", jobTitle: "HR Specialist", hiredDate: "August 5, 2025" },
   ];
 
-  const salaryHistoryData = [
-    { year: 2016, salary: 5000 },
-    { year: 2017, salary: 10000 },
-    { year: 2018, salary: 30000 },
-    { year: 2019, salary: 60000 },
-    { year: 2020, salary: 8000 },
-    { year: 2021, salary: 12000 },
-    { year: 2022, salary: 55000 },
-    { year: 2023, salary: 100000 },
+  const hiredHistoryData = [
+    { year: 2016, monthlyRate: 5 },
+    { year: 2017, monthlyRate: 8 },
+    { year: 2018, monthlyRate: 12 },
+    { year: 2019, monthlyRate: 15 },
+    { year: 2020, monthlyRate: 10 },
+    { year: 2021, monthlyRate: 18 },
+    { year: 2022, monthlyRate: 22 },
+    { year: 2023, monthlyRate: 25 },
   ];
 
   const topEmployeeMonth = {
@@ -185,30 +183,31 @@ const DashboardOverview = () => {
       </div>
 
       <div className="hr-dashboard-lower-row">
-        <div className="hr-recent-payments-card">
-          <h3>Recent Payments</h3>
-          <ul className="hr-recent-payments-list">
-            {recentPayments.map((payment, index) => (
-              <li key={index} className="recent-payment-item">
-                <div className="hr-payment-name">{payment.name}</div>
-                <div className="hr-payment-amount">₱ {payment.amount.toLocaleString()}</div>
-                <div className="hr-payment-date">{payment.date}</div>
+        <div className="hr-recently-hired-card">
+          <h3>Recently Hired</h3>
+          <ul className="hr-recently-hired-list">
+            {recentlyHired.map((employee, index) => (
+              <li key={index} className="recently-hired-item">
+                <div className="hr-hired-name">{employee.name}</div>
+                <div className="hr-hired-department">{employee.department}</div>
+                <div className="hr-hired-job-title">{employee.jobTitle}</div>
+                <div className="hr-hired-hired-date">{employee.hiredDate}</div>
               </li>
             ))}
           </ul>
-          <div className="hr-stat-link-orange">Payment History &rarr;</div>
+          <div className="hr-stat-link-orange">Hired History &rarr;</div>
         </div>
 
-        <div className="hr-salary-history-card">
-          <div className="hr-salary-history-header">
-            <h3>Salary History</h3>
+        <div className="hr-hired-history-card">
+          <div className="hr-hired-history-header">
+            <h3>Hired History</h3>
             <select className="hr-yearly-select" defaultValue="yearly">
               <option value="yearly">Yearly</option>
               <option value="monthly">Monthly</option>
             </select>
           </div>
           <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={salaryHistoryData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <LineChart data={hiredHistoryData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorSalary" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
@@ -221,7 +220,7 @@ const DashboardOverview = () => {
               <Tooltip />
               <Line
                 type="monotone"
-                dataKey="salary"
+                dataKey="monthlyRate"
                 stroke="#8884d8"
                 fillOpacity={1}
                 fill="url(#colorSalary)"

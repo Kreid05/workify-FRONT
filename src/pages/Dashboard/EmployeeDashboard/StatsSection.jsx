@@ -36,7 +36,14 @@ const StatsSection = ({
         let lateCount = 0;
         let absencesCount = 0;
         res.data.forEach(log => {
-          totalHours += calculateHours(log.clockIn, log.clockOut, log.status);
+          // total hours worked
+          if (log.clockIn && log.clockOut && log.clockIn !== '--' && log.clockOut !== '--') {
+            const start = new Date(`2024-01-01 ${log.clockIn}`);
+            const end = new Date(`2024-01-01 ${log.clockOut}`);
+            const diffMs = end - start;
+            const hours = diffMs / (1000 * 60 * 60);
+            totalHours += hours;
+          }
           if (log.status === "Late") lateCount += 1;
           if (log.status === "Absent") absencesCount += 1;
         });

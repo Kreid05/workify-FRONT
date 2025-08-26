@@ -90,19 +90,33 @@ if (!schedule) return null;
             </div>
           </div>
 
-          <div className="view-section">
+          <div className="details-section">
             <h3>Assigned Employees</h3>
-            <ul>
+            <div className="details-employee-list">
               {schedule.employees && schedule.employees.length > 0 ? (
                 schedule.employees.map(emp => (
-                  <li key={emp._id}>
-                    {emp.firstName} {emp.lastName} ({emp.employeeNo}) - {emp.email} {emp.jobTitle && `| ${emp.jobTitle}`} {emp.department && `| ${emp.department}`}
-                  </li>
+                  <div key={emp._id} className="details-employee-item">
+                    <div className="details-employee-info">
+                      <div className="details-employee-name">
+                        {emp.firstName} {emp.lastName}
+                      </div>
+                      <div className="employee-details">
+                        <span className="details-employee-id">ID: {emp.employeeNo}</span>
+                        <span className="details-employee-email">{emp.email}</span>
+                        {emp.jobTitle && <span className="details-employee-job">{emp.jobTitle}</span>}
+                        {emp.department && <span className="details-employee-dept">{emp.department}</span>}
+                      </div>
+                    </div>
+                  </div>
                 ))
               ) : (
-                <li>No employees assigned</li>
+                <div className="details-employee-item empty">
+                  <div className="details-employee-info">
+                    <div className="details-employee-name">No employees assigned</div>
+                  </div>
+                </div>
               )}
-            </ul>
+            </div>
           </div>
 
           <div className="details-section">

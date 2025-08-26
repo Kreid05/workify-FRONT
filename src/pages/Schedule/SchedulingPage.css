@@ -3,32 +3,22 @@
 .scheduling-page {
   padding: 20px;
   background-color: white;
-  max-height: 100%;
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
 }
 
-.top-section {
+.schedule-control-container {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 15px;
   margin-bottom: 20px;
-  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.search-filter-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.schedule-search-container {
   flex: 1;
-}
-
-.search-container {
-  position: relative;
-  flex: 1;
-  max-width: 400px;
+  min-width: 200px;
 }
 
 .buttons-container {
@@ -37,126 +27,56 @@
   gap: 12px;
 }
 
-.search-input {
+.scheduling-search-input {
   width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  outline: none;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
-  height: 44px;
-  color: #999;
+  height: 45px;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  color: #000000;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
 }
 
-.search-input::placeholder {
+.scheduling-search-input:focus {
+  outline: none;
+  border: 2px solid;
+  border-color: #ff5003;
+  box-shadow: 0 8px 20px rgba(255, 80, 3, 0.15);
+}
+
+.scheduling-search-input::placeholder {
   color: #999;
 }
 
 .btn-add-schedule {
-  background-color: #FF5003;
+  background-color: #ff5003;
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
   white-space: nowrap;
-  font-family: 'Poppins', sans-serif;
-}
-
-.btn-add-schedule:hover {
-  background-color: #e6460a;
-}
-
-.filter-container {
-  position: relative;
-}
-
-.filter-button {
-  background-color: #002347;
-  border: none;
-  padding: 12px;
-  border-radius: 6px;
-  cursor: pointer;
+  margin-left: 0.5rem;
+  height: 45px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 44px;
-  height: 44px;
 }
 
-.filter-button:hover {
-  background-color: #003a66;
+.btn-add-schedule:hover {
+  background-color: #e04803;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 80, 3, 0.3);
 }
 
-.filter-dropdown {
-  position: absolute;
-  top: 50px;
-  right: 0;
+.schedule-table-container {
   background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  min-width: 200px;
-}
-
-.filter-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.filter-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-  font-family: 'Poppins', sans-serif;
-}
-
-.clear-button {
-  background: none;
-  border: none;
-  color: #FF5003;
-  font-size: 14px;
-  cursor: pointer;
-  font-family: 'Poppins', sans-serif;
-}
-
-.clear-button:hover {
-  color: #e6460a;
-}
-
-.filter-option {
-  padding: 12px 16px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.filter-option:hover {
-  background-color: #f8f9fa;
-}
-
-.filter-option-text {
-  font-size: 14px;
-  color: #666;
-  font-family: 'Poppins', sans-serif;
-}
-
-.filter-option-text.selected {
-  color: #FF5003;
-  font-weight: 500;
-}
-
-.table-container {
-  background-color: white;
-  border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   overflow-x: auto;
@@ -203,17 +123,18 @@
   font-family: 'Poppins', sans-serif;
 }
 
-
 .schedules-table tbody td:last-child {
-  padding: 16px;
   font-size: 14px;
   color: #333;
   vertical-align: middle;
   font-family: 'Poppins', sans-serif;
   text-align: center;
+  justify-content: center;
+  align-items: center;
+  display: flex;
 }
 
-.action-buttons {
+.schedule-action-buttons {
   display: flex;
   gap: 8px;
   align-items: center;
@@ -360,15 +281,9 @@
     padding: 16px;
   }
   
-  .top-section {
+  .schedule-control-container {
     flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-  
-  .search-filter-container {
-    flex-wrap: wrap;
-    gap: 8px;
+    gap: 1rem;
   }
   
   .btn-add-schedule {
@@ -376,7 +291,7 @@
     text-align: center;
   }
   
-  .table-container {
+  .schedule-table-container {
     overflow-x: scroll;
   }
   
@@ -386,7 +301,7 @@
     align-items: center;
   }
   
-  .action-buttons {
+  .schedule-action-buttons {
     flex-direction: column;
     gap: 4px;
   }

@@ -24,7 +24,7 @@ import "./Sidebar.css";
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [attendanceOpen, setAttendanceOpen] = useState(false);
-  const [leaveOpen, setLeaveOpen] = useState(false);
+  // const [leaveOpen, setLeaveOpen] = useState(false);
   const navigate = useNavigate();
   const role = getUserRole(); 
 
@@ -41,9 +41,9 @@ const Sidebar = () => {
     setAttendanceOpen(!attendanceOpen);
   };
 
-  const toggleLeave = () => {
-    setLeaveOpen(!leaveOpen);
-  };
+  // const toggleLeave = () => {
+  //   setLeaveOpen(!leaveOpen);
+  // };
 
   return (
     <div className="sidebar-container">
@@ -174,7 +174,7 @@ const Sidebar = () => {
                             <span> Logs</span>
                           </NavLink>
                         </li>
-                        <li>
+                        {/* <li>
                           <NavLink
                             to="/dashboard/admin-attendance-report"
                             className={({ isActive }) =>
@@ -184,13 +184,13 @@ const Sidebar = () => {
                             <FaFileAlt className="nav-icon" />
                             <span>Report</span>
                           </NavLink>
-                        </li>
+                        </li> */}
                       </ul>
                     )}
                   </li>
 
                   {/* leave management dropdown */}
-                  <li>
+                  {/* <li>
                     <div 
                       className="nav-item dropdown-toggle"
                       onClick={toggleLeave}
@@ -231,7 +231,7 @@ const Sidebar = () => {
                         </li>
                       </ul>
                     )}
-                  </li>
+                  </li> */}
 
                   <li>
                     <NavLink
@@ -312,7 +312,7 @@ const Sidebar = () => {
                             <span>Logs</span>
                           </NavLink>
                         </li>
-                        <li>
+                        {/* <li>
                           <NavLink
                             to="/dashboard/employee-attendance-report"
                             className={({ isActive }) =>
@@ -322,13 +322,13 @@ const Sidebar = () => {
                             <FaFileAlt className="nav-icon" />
                             <span>Report</span>
                           </NavLink>
-                        </li>
+                        </li> */}
                       </ul>
                     )}
                   </li>
 
                   {/* leave management dropdown for employee */}
-                  <li>
+                  {/* <li>
                     <NavLink
                       to="/dashboard/employee-leave-management"
                       className={({ isActive }) =>
@@ -338,7 +338,7 @@ const Sidebar = () => {
                       <FaCalendarCheck className="nav-icon" />
                       <span>Leave Management</span>
                     </NavLink>
-                  </li>
+                  </li> */}
 
                   <li>
                     <NavLink

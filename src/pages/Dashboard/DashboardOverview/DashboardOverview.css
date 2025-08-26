@@ -131,7 +131,7 @@
   margin-top: 1rem;
 }
 
-.hr-recent-payments-card {
+.hr-recently-hired-card {
   background-color: white;
   flex: 1;
   min-width: 280px;
@@ -142,21 +142,21 @@
   flex-direction: column;
 }
 
-.hr-recent-payments-card h3 {
+.hr-recently-hired-card h3 {
   font-weight: 700;
   font-size: 1.3rem;
   color: #1e293b;
   margin-bottom: 1rem;
 }
 
-.hr-recent-payments-list {
+.hr-recently-hired-list {
   list-style: none;
   padding: 0;
   margin: 0;
   flex-grow: 1;
 }
 
-.hr-recent-payment-item {
+.hr-recently-hired-item {
   display: flex;
   justify-content: space-between;
   padding: 0.5rem 0;
@@ -165,27 +165,35 @@
   color: #334155;
 }
 
-.hr-payment-name {
+.hr-hired-name {
   font-weight: 600;
   flex: 2;
   text-align: left;
 }
 
-.hr-payment-amount {
+.hr-hired-department {
   flex: 1;
   text-align: left;
   font-weight: 500;
-  color: #ff5003;
+  color: #64748b;
 }
 
-.hr-payment-date {
+.hr-hired-job-title {
+  flex: 1;
+  text-align: left;
+  font-weight: 400;
+  color: #334155;
+}
+
+.hr-hired-hired-date {
   flex: 1;
   text-align: right;
   font-weight: 300;
   color: #64748b;
 }
 
-.hr-salary-history-card {
+.hr-salary-history-card,
+.hr-hired-history-card {
   background-color: white;
   flex: 2;
   min-width: 360px;
@@ -196,14 +204,16 @@
   flex-direction: column;
 }
 
-.hr-salary-history-header {
+.hr-salary-history-header,
+.hr-hired-history-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
 }
 
-.hr-salary-history-header h3 {
+.hr-salary-history-header h3,
+.hr-hired-history-header h3 {
   font-weight: 700;
   font-size: 1.3rem;
   color: #1e293b;
@@ -271,8 +281,8 @@
   }
 
   .hr-stat-card,
-  .hr-recent-payments-card,
-  .hr-salary-history-card {
+  .hr-salary-history-card,
+  .hr-hired-history-card {
     min-width: 100%;
   }
 

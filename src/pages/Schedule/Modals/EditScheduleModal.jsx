@@ -156,14 +156,14 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
       <div className="edit-modal-container">
         <div className="edit-modal-header">
           <h2>Edit Schedule</h2>
-          <button className="close-button" onClick={onClose}>×</button>
+          <button className="schedule-close-button" onClick={onClose}>×</button>
         </div>
 
         <div className="edit-modal-content">
           <div className="edit-section">
             <h3>Schedule Information</h3>
-            <div className="form-grid">
-              <div className="form-group">
+            <div className="edit-form-grid">
+              <div className="edit-form-group">
                 <label>Schedule Name *</label>
                 <input
                   type="text"
@@ -172,7 +172,7 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
                   placeholder="Enter schedule name"
                 />
               </div>
-              <div className="form-group">
+              <div className="edit-form-group">
                 <label>Schedule Type</label>
                 <select
                   value={formData.scheduleType}
@@ -183,7 +183,7 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
                 </select>
               </div>
             </div>
-            <div className="form-group">
+            <div className="edit-form-group">
               <label>Schedule Description *</label>
               <textarea
                 value={formData.scheduleDescription}
@@ -192,8 +192,8 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
                 rows="3"
               />
             </div>
-            <div className="form-grid">
-              <div className="form-group">
+            <div className="edit-form-grid">
+              <div className="edit-form-group">
                 <label>Start Date *</label>
                 <input
                   type="date"
@@ -201,7 +201,7 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
                   onChange={(e) => handleInputChange('startDate', e.target.value)}
                 />
               </div>
-              <div className="form-group">
+              <div className="edit-form-group">
                 <label>End Date</label>
                 <input
                   type="date"
@@ -230,7 +230,7 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
 
           <div className="edit-section">
             <h3>Work Schedule</h3>
-            <div className="form-group">
+            <div className="edit-form-group">
               <label>Work Days *</label>
               <div className="work-days">
                 {['S', 'M', 'T', 'W', 'Th', 'F', 'Sa'].map(day => (
@@ -245,8 +245,8 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
                 ))}
               </div>
             </div>
-            <div className="form-grid">
-              <div className="form-group">
+            <div className="edit-form-grid">
+              <div className="edit-form-group">
                 <label>Work Start *</label>
                 <input
                   type="time"
@@ -254,7 +254,7 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
                   onChange={(e) => handleInputChange('workStart', e.target.value)}
                 />
               </div>
-              <div className="form-group">
+              <div className="edit-form-group">
                 <label>Work End *</label>
                 <input
                   type="time"
@@ -263,8 +263,8 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
                 />
               </div>
             </div>
-            <div className="form-grid">
-              <div className="form-group">
+            <div className="edit-form-grid">
+              <div className="edit-form-group">
                 <label>Lateness Grace Period (mins)</label>
                 <select
                   value={formData.latenessGrace}
@@ -276,7 +276,7 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
                   <option value={20}>20 mins</option>
                 </select>
               </div>
-              <div className="form-group">
+              <div className="edit-form-group">
                 <label>Absence Grace Period (mins)</label>
                 <select
                   value={formData.absenceGrace}
