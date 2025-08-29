@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'; 
+import React from 'react'; 
 import { Clock, Timer, Users } from 'lucide-react'; 
-import api from "../../../api/api";
 import './StatsSection.css'; 
-
+ 
 const StatsSection = ({  
   calculateWorkedHours,  
   handleClockIn,  
@@ -12,74 +11,12 @@ const StatsSection = ({
   formatTimeForDisplay,  
   currentStatus  
 }) => { 
-  const [recentLogs, setRecentLogs] = useState([]);
-  const [stats, setStats] = useState({
-    totalHours: 0,
-    lateCount: 0,
-    absencesCount: 0
-  });
-
-  useEffect(() => {
-    // get logs for last 15 days
-    const today = new Date();
-    const startDate = new Date(today);
-    startDate.setDate(today.getDate() - 14); // last 15 days including today
-    const formattedStart = startDate.toISOString().slice(0,10);
-    const formattedEnd = today.toISOString().slice(0,10);
-
-    api.get("/attendance-logs", { params: { start: formattedStart, end: formattedEnd } })
-      .then(res => {
-        setRecentLogs(res.data);
-
-        // calculate stats
-        let totalHours = 0;
-        let lateCount = 0;
-        let absencesCount = 0;
-        res.data.forEach(log => {
-          // total hours worked
-          if (log.clockIn && log.clockOut && log.clockIn !== '--' && log.clockOut !== '--') {
-            const start = new Date(`2024-01-01 ${log.clockIn}`);
-            const end = new Date(`2024-01-01 ${log.clockOut}`);
-            const diffMs = end - start;
-            const hours = diffMs / (1000 * 60 * 60);
-            totalHours += hours;
-          }
-          if (log.status === "Late") lateCount += 1;
-          if (log.status === "Absent") absencesCount += 1;
-        });
-
-        setStats({
-          totalHours: totalHours.toFixed(1),
-          lateCount,
-          absencesCount
-        });
-      })
-      .catch(err => {
-        setRecentLogs([]);
-        setStats({ totalHours: 0, lateCount: 0, absencesCount: 0 });
-      });
-  }, []);
-
-// calculate hours
-const calculateHours = (clockIn, clockOut, status = "Present") => {
-  if (clockIn === '--' || clockOut === '--' || !clockIn || !clockOut) return 0;
-  const start = new Date(`2024-01-01 ${clockIn}`);
-  const end = new Date(`2024-01-01 ${clockOut}`);
-  const diffMs = end - start;
-  const hours = diffMs / (1000 * 60 * 60);
-
-  let cap = 8;
-  if (status === "Half Day") cap = 4;
-  if (status === "Absent" || status === "Leave") cap = 0;
-
-  return Math.min(hours, cap);
-};
-
   return ( 
     <div className="stats-grid"> 
       <div className="card-gradient"> 
         <div className="summary-card-header"> 
           <h3 className="summary-card-title">Today's Summary</h3> 
+          <p className="summary-card-subtitle">You have "Full time schedule" today</p> 
         </div> 
         <div> 
           <div className="summary-hours">{calculateWorkedHours()} hrs</div> 
@@ -101,10 +38,6 @@ const calculateHours = (clockIn, clockOut, status = "Present") => {
           </div> 
           <div className="clock-times"> 
             <div className="clock-time-item"> 
-              <div>Status</div> 
-              <div>{currentStatus}</div> 
-            </div>
-            <div className="clock-time-item"> 
               <div>Clock-In Time</div> 
               <div>{formatTimeForDisplay(clockInTime)}</div> 
             </div> 
@@ -119,7 +52,7 @@ const calculateHours = (clockIn, clockOut, status = "Present") => {
       <div className="stat-card"> 
         <div className="stat-card-content"> 
           <h3 className="stat-card-title">Total Hours Worked (Last 15d)</h3> 
-          <div className="stat-number">{stats.totalHours}</div> 
+          <div className="stat-number">12.0</div> 
         </div> 
         <div className="stat-card-icon-container"> 
           <Clock className="stat-card-icon text-blue-500" /> 
@@ -130,7 +63,7 @@ const calculateHours = (clockIn, clockOut, status = "Present") => {
       <div className="stat-card stat-card-late"> 
         <div className="stat-card-content"> 
           <h3 className="stat-card-title">Number of Late Resumptions (15d)</h3> 
-          <div className="stat-number">{stats.lateCount}</div> 
+          <div className="stat-number">0</div> 
         </div> 
         <div className="stat-card-icon-container"> 
           <Timer className="stat-card-icon text-orange-500" /> 
@@ -141,7 +74,7 @@ const calculateHours = (clockIn, clockOut, status = "Present") => {
       <div className="stat-card stat-card-absences"> 
         <div className="stat-card-content"> 
           <h3 className="stat-card-title">Number of Absences (15d)</h3> 
-          <div className="stat-number">{stats.absencesCount}</div> 
+          <div className="stat-number">3</div> 
         </div> 
         <div className="stat-card-icon-container"> 
           <Users className="stat-card-icon text-red-500" /> 

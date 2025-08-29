@@ -1,54 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import './AddLogsModal.css';
+import api from "../../../../api/api";
+
 
 const AddLogsModal = ({ show, onClose, onSave, calculateHours }) => {
+  const [employees, setEmployees] = useState([]);
   const [newLog, setNewLog] = useState({
-    employeeName: '',
-    department: 'IT',
+    employee: '',
     date: '',
     clockIn: '',
     clockOut: '',
     status: 'Present'
   });
 
+  // fetch employees
+  useEffect(() => {
+    if (show) {
+      api.get("/emp-info/all")
+        .then(res => {
+          console.log("Fetched employees:", res.data);
+          setEmployees(res.data);
+        })
+        .catch(err => setEmployees([]));
+    }
+  }, [show]);
+
   const handleInputChange = (field, value) => {
+    console.log(`InputChange: ${field} =`, value);
     setNewLog(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
-  const handleSave = () => {
-    if (!newLog.employeeName || !newLog.date) {
-      alert('Please fill in Employee Name and Date');
+  const handleSave = async () => {
+    if (!newLog.employee || !newLog.date || !newLog.status) {
+      alert('Please select Employee, Date and Status');
       return;
     }
 
-    const calculatedHours = calculateHours(newLog.clockIn, newLog.clockOut);
-    const logData = {
-      ...newLog,
+    // prepare the request body
+    const payload = {
+      employee: newLog.employee, 
+      date: newLog.date,
+      status: newLog.status,
       clockIn: newLog.clockIn || '--',
-      clockOut: newLog.clockOut || '--',
-      ...calculatedHours
+      clockOut: newLog.clockOut || '--'
     };
 
-    onSave(logData);
-    
-    // Reset form
-    setNewLog({
-      employeeName: '',
-      department: 'IT',
-      date: '',
-      clockIn: '',
-      clockOut: '',
-      status: 'Present'
-    });
+    try {
+      console.log("POST payload:", payload);
+      const res = await api.post("/attendance-logs/create", payload);
+      onSave(res.data); // pass the new log back to the parent
+      setNewLog({
+        employee: '',
+        date: '',
+        clockIn: '',
+        clockOut: '',
+        status: 'Present'
+      });
+    } catch (err) {
+      alert("Error saving attendance log: " + (err.response?.data?.message || err.message));
+    }
   };
 
   const handleClose = () => {
     setNewLog({
-      employeeName: '',
-      department: 'IT',
+      employee: '',
       date: '',
       clockIn: '',
       clockOut: '',
@@ -70,28 +88,21 @@ const AddLogsModal = ({ show, onClose, onSave, calculateHours }) => {
           <div className="addLogs-form-row">
             <div className="addLogs-form-group">
               <label>Employee Name *</label>
-              <input
-                type="text"
-                value={newLog.employeeName}
-                onChange={(e) => handleInputChange('employeeName', e.target.value)}
-                className="addLogs-form-input"
-                placeholder="Enter employee name"
-              />
-            </div>
-            <div className="addLogs-form-group">
-              <label>Department</label>
               <select
-                value={newLog.department}
-                onChange={(e) => handleInputChange('department', e.target.value)}
+                value={newLog.employee}
+                onChange={(e) => handleInputChange('employee', e.target.value)}
                 className="addLogs-form-select"
               >
-                <option value="IT">Select Department</option>
-                <option value="IT">IT</option>
-                <option value="HR">HR</option>
-                <option value="Finance">Finance</option>
-                <option value="Operations">Operations</option>
+                <option value="">Select Employee</option>
+                {employees
+                  .filter(emp => emp.userID && emp.userID._id)
+                  .map(emp => (
+                    <option key={emp._id} value={emp.userID._id}>
+                      {emp.firstName} {emp.lastName}
+                    </option>
+                ))}
               </select>
-            </div>
+            </div>   
           </div>
           <div className="addLogs-form-row">
             <div className="addLogs-form-group">
@@ -110,7 +121,7 @@ const AddLogsModal = ({ show, onClose, onSave, calculateHours }) => {
                 onChange={(e) => handleInputChange('status', e.target.value)}
                 className="addLogs-form-select"
               >
-                <option value="Present">Select Status</option>
+                <option value="">Select Status</option>
                 <option value="Present">Present</option>
                 <option value="Absent">Absent</option>
                 <option value="Late">Late</option>

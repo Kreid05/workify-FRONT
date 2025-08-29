@@ -17,39 +17,34 @@ function EmployeeList() {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [employees, setEmployees] = useState([]);
 
-  // Get unique departments for filter dropdown
-  const departments = [...new Set(employees.map(emp => emp.department))].sort();
+  const [availableDepartments, setAvailableDepartments] = useState([]);
 
-  // Filter employees based on search term and selected department
-  const filteredEmployees = employees.filter(emp =>
-    emp.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (selectedDepartment ? emp.department === selectedDepartment : true)
-  );
+  const filteredEmployees = employees.filter(emp => {
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch = emp.name.toLowerCase().includes(searchLower);
+    const matchesDepartment = selectedDepartment === "" || emp.department === selectedDepartment;
+    return matchesSearch && matchesDepartment;
+  });
 
-  // Toggle filter dropdown
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
   };
 
-  // Handle department selection
   const handleDepartmentSelect = (department) => {
     setSelectedDepartment(department);
     setIsFilterOpen(false);
   };
 
-  // Clear filter
   const clearFilter = () => {
     setSelectedDepartment("");
     setIsFilterOpen(false);
   };
 
-  // Helper function to parse date strings in MM-DD-YYYY format
   const parseDate = (dateString) => {
     const [month, day, year] = dateString.split('-').map(Number);
     return new Date(year, month - 1, day);
   };
 
-  // Handle employee update
   const handleEmployeeUpdate = (employeeId, updatedData) => {
     setEmployees(prevEmployees => 
       prevEmployees.map(emp => 
@@ -145,6 +140,21 @@ useEffect(() => {
   fetchEmployees();
 }, []);
 
+// fetch available departments for filter
+useEffect(() => {
+  const fetchDepartments = async () => {
+    try {
+      const { data } = await api.get("/department");
+      const departmentNames = data.map(dept => dept.departmentName).sort();
+      setAvailableDepartments(departmentNames);
+    } catch (err) {
+      console.error("Error fetching departments:", err);
+    }
+  };
+
+  fetchDepartments();
+}, []);
+
 
   // define columns for react-data-table-component with custom sorting
   const columns = [
@@ -199,7 +209,7 @@ useEffect(() => {
       sortFunction: (rowA, rowB) => {
         const dateA = parseDate(rowA.hiredDate);
         const dateB = parseDate(rowB.hiredDate);
-        return dateB - dateA; // Sort by recent date (newest first)
+        return dateB - dateA; 
       },
     },
     {
@@ -276,43 +286,51 @@ useEffect(() => {
   return (
     <div className="employee-list-container">
       <div className="employee-list-table-container">
-        <div className="controls-container">
-          <div className="search-container">
+        <div className="employee-controls-container">
+          <div className="employee-search-container">
             <input
               type="text"
-              placeholder="Search by Employee Name..."
+              placeholder="Search by employee name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input"
+              className="employee-search-input"
             />
           </div>
-          <div className="filter-container">
+          <div className="employee-filter-container">
             <button 
-              className={`filter-button ${selectedDepartment ? 'active' : ''}`}
+              className={`employee-filter-button ${selectedDepartment ? 'active' : ''}`}
               onClick={toggleFilter}
             >
               <FaFilter />
             </button>
             {isFilterOpen && (
-              <div className="filter-dropdown">
-                <div className="filter-dropdown-header">
+              <div className="employee-filter-dropdown">
+                <div className="employee-filter-dropdown-header">
                   <span>Filter by Department</span>
                   <button 
-                    className="clear-filter-btn"
+                    className="employee-clear-filter-btn"
                     onClick={clearFilter}
                   >
                     Clear
                   </button>
                 </div>
-                {departments.map((department) => (
-                  <div
-                    key={department}
-                    className={`filter-option ${selectedDepartment === department ? 'selected' : ''}`}
-                    onClick={() => handleDepartmentSelect(department)}
+                <div className="employee-filter-options">
+                  <div 
+                    className={`employee-filter-option ${selectedDepartment === "" ? 'active' : ''}`}
+                    onClick={() => handleDepartmentSelect("")}
                   >
-                    {department}
+                    All Departments
                   </div>
-                ))}
+                  {availableDepartments.map(department => (
+                    <div 
+                      key={department}
+                      className={`employee-filter-option ${selectedDepartment === department ? 'active' : ''}`}
+                      onClick={() => handleDepartmentSelect(department)}
+                    >
+                      {department}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>

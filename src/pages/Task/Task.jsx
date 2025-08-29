@@ -41,6 +41,7 @@ function Task() {
 
     fetchTasks();
   }, []);
+  
   const uniqueStatuses = [...new Set(tasks.map(task => task.status))].sort();
 
   const filteredTasks = tasks.filter(task => {
@@ -51,6 +52,11 @@ function Task() {
       task.assignedTo.toLowerCase().includes(searchLower);
     const matchesStatus = selectedStatus === "" || task.status === selectedStatus;
     return matchesSearch && matchesStatus;
+  }).sort((a, b) => {
+  
+    const dateA = new Date(a.dueDate);
+    const dateB = new Date(b.dueDate);
+    return dateB - dateA; // Descending order (latest first)
   });
 
   const toggleFilter = () => {
@@ -68,20 +74,20 @@ function Task() {
   };
 
   const handleAddTask = (newTask) => {
-    // Create a new task object with a unique ID
+ 
     const taskWithId = {
       ...newTask,
       id: String(tasks.length + 1),
-      status: "In Progress" // Default status for new tasks
+      status: "In Progress" 
     };
     
-    // Add the new task to the existing tasks
+   
     setTasks(prevTasks => [taskWithId, ...prevTasks]);
   };
 
   const handleUpdateTask = (taskId, updatedData) => {
     try {
-      // Update the task locally without API call
+     
       setTasks(prevTasks => 
         prevTasks.map(task => 
           task.id === taskId ? {

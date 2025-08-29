@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from "react";
 import DataTable from "react-data-table-component";
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { FaCheckCircle, FaTimesCircle, FaFilter } from "react-icons/fa";
 import ApproveModal from "./Modals/ApproveModal";
 import DeclineModal from "./Modals/DeclineModal";
 import "./Inquiries.css";
@@ -12,6 +12,11 @@ const Inquiries = () => {
   const [selectedInquiry, setSelectedInquiry] = useState(null);
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const statusOptions = ["Pending", "Approved", "Declined"];
 
   // fetch inquiries
   useEffect(() => {
@@ -28,6 +33,28 @@ const Inquiries = () => {
     };
     fetchInquiries();
   }, []);
+
+  // Filter inquiries based on search term and selected status
+  const filteredInquiries = inquiries.filter(inquiry => {
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch = inquiry.name.toLowerCase().includes(searchLower);
+    const matchesStatus = selectedStatus === "" || inquiry.status === selectedStatus;
+    return matchesSearch && matchesStatus;
+  });
+
+  const toggleFilter = () => {
+    setIsFilterOpen(!isFilterOpen);
+  };
+
+  const handleStatusSelect = (status) => {
+    setSelectedStatus(status);
+    setIsFilterOpen(false);
+  };
+
+  const clearFilter = () => {
+    setSelectedStatus("");
+    setIsFilterOpen(false);
+  };
 
   // approve inquiry
   const handleApprove = async (inquiry) => {
@@ -170,10 +197,59 @@ const Inquiries = () => {
   return (
     <div className="inquiries-container">
       <div className="inquiries-table-container">
+        <div className="inquiries-controls-container">
+          <div className="inquiries-search-container">
+            <input
+              type="text"
+              placeholder="Search by name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="inquiries-search-input"
+            />
+          </div>
+          <div className="inquiries-filter-container">
+            <button 
+              className={`inquiries-filter-button ${selectedStatus ? 'active' : ''}`}
+              onClick={toggleFilter}
+            >
+              <FaFilter />
+            </button>
+            {isFilterOpen && (
+              <div className="inquiries-filter-dropdown">
+                <div className="inquiries-filter-dropdown-header">
+                  <span>Filter by Status</span>
+                  <button 
+                    className="inquiries-clear-filter-btn"
+                    onClick={clearFilter}
+                  >
+                    Clear
+                  </button>
+                </div>
+                <div className="inquiries-filter-options">
+                  <div 
+                    className={`inquiries-filter-option ${selectedStatus === "" ? 'active' : ''}`}
+                    onClick={() => handleStatusSelect("")}
+                  >
+                    All Status
+                  </div>
+                  {statusOptions.map(status => (
+                    <div 
+                      key={status}
+                      className={`inquiries-filter-option ${selectedStatus === status ? 'active' : ''}`}
+                      onClick={() => handleStatusSelect(status)}
+                    >
+                      {status}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
 
         <DataTable
           columns={columns}
-          data={inquiries}
+          data={filteredInquiries}
           pagination
           highlightOnHover
           responsive

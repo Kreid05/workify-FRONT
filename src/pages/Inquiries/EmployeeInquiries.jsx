@@ -1,5 +1,6 @@
 import React, { useState, useEffect} from "react";
 import DataTable from "react-data-table-component";
+import { FaFilter } from "react-icons/fa";
 import SubmitInquiryModal from "./Modals/SubmitInquiryModal";
 import "./EmployeeInquiries.css";
 import api from '../../api/api';
@@ -8,6 +9,11 @@ const EmployeeInquiries = () => {
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [employeeInquiries, setEmployeeInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const statusOptions = ["Pending", "Approved", "Declined"];
 
   // fetch emp inquiries
   useEffect(() => {
@@ -24,6 +30,27 @@ const EmployeeInquiries = () => {
     };
     fetchEmployeeInquiries();
   }, []);
+
+  const filteredInquiries = employeeInquiries.filter(inquiry => {
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch = inquiry.requestName.toLowerCase().includes(searchLower);
+    const matchesStatus = selectedStatus === "" || inquiry.status === selectedStatus;
+    return matchesSearch && matchesStatus;
+  });
+
+  const toggleFilter = () => {
+    setIsFilterOpen(!isFilterOpen);
+  };
+
+  const handleStatusSelect = (status) => {
+    setSelectedStatus(status);
+    setIsFilterOpen(false);
+  };
+
+  const clearFilter = () => {
+    setSelectedStatus("");
+    setIsFilterOpen(false);
+  };
 
   const columns = [
     {
@@ -99,17 +126,65 @@ const EmployeeInquiries = () => {
   return (
     <div className="employee-inquiries-container">
       <div className="employee-inquiries-table-container">
-        <div className="table-header-with-button">
+        <div className="employee-inquiries-controls-container">
+          <div className="employee-inquiries-search-container">
+            <input
+              type="text"
+              placeholder="Search by Request Name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="employee-inquiries-search-input"
+            />
+          </div>
           <button 
             className="submit-inquiry-button"
             onClick={() => setIsSubmitModalOpen(true)}
-          > Submit Inquiry
+          >
+            Submit Inquiry
           </button>
+          <div className="employee-inquiries-filter-container">
+            <button 
+              className={`employee-inquiries-filter-button ${selectedStatus ? 'active' : ''}`}
+              onClick={toggleFilter}
+            >
+              <FaFilter />
+            </button>
+            {isFilterOpen && (
+              <div className="employee-inquiries-filter-dropdown">
+                <div className="employee-inquiries-filter-dropdown-header">
+                  <span>Filter by Status</span>
+                  <button 
+                    className="employee-inquiries-clear-filter-btn"
+                    onClick={clearFilter}
+                  >
+                    Clear
+                  </button>
+                </div>
+                <div className="employee-inquiries-filter-options">
+                  <div 
+                    className={`employee-inquiries-filter-option ${selectedStatus === "" ? 'active' : ''}`}
+                    onClick={() => handleStatusSelect("")}
+                  >
+                    All Status
+                  </div>
+                  {statusOptions.map(status => (
+                    <div 
+                      key={status}
+                      className={`employee-inquiries-filter-option ${selectedStatus === status ? 'active' : ''}`}
+                      onClick={() => handleStatusSelect(status)}
+                    >
+                      {status}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <DataTable
           columns={columns}
-          data={employeeInquiries}
+          data={filteredInquiries}
           pagination
           highlightOnHover
           responsive

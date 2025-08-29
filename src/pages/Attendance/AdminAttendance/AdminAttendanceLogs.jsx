@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import DataTable from "react-data-table-component";
 import './AdminAttendanceLogs.css';
 import AddLogsModal from './Modals/AddLogsModal';
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
@@ -9,46 +10,82 @@ const AdminAttendanceLogs = () => {
   const [selectedDepartment, setSelectedDepartment] = useState('All Departments');
   const [selectedDate, setSelectedDate] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [editingRow, setEditingRow] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [attendanceData, setAttendanceData] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch departments from the department API
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await api.get("/department");
+        const departmentNames = response.data.map(dept => dept.departmentName).sort();
+        setDepartments(departmentNames);
+      } catch (err) {
+        console.error("Error fetching departments:", err);
+        setDepartments([]);
+      }
+    };
+
+    fetchDepartments();
+  }, []);
 
   // fetch attendance logs
   useEffect(() => {
-    // build query params based on filters
-    let params = {};
-    // only filter dept if not all dept
-    if (selectedDepartment && selectedDepartment !== "All Departments") {
-      params.department = selectedDepartment;
-    }
-    // only filter date if selectedDate is not empty
-    if (selectedDate) {
-      params.date = selectedDate;
-    }
+    const fetchAttendanceLogs = async () => {
+      try {
+        setLoading(true);
+        // build query params based on filters
+        let params = {};
+        // only filter dept if not all dept
+        if (selectedDepartment && selectedDepartment !== "All Departments") {
+          params.department = selectedDepartment;
+        }
+        // only filter date if selectedDate is not empty
+        if (selectedDate) {
+          params.date = selectedDate;
+        }
 
-    api.get("/attendance-logs", { params })
-      .then(res => {
+        const res = await api.get("/attendance-logs", { params });
         console.log("Attendance logs from backend:", res.data);
-        const logs = res.data.map((log, idx) => ({
-          id: log._id, 
-          employeeName: log.employeeName,
-          department: log.department,
-          date: log.date,
-          clockIn: log.clockIn,
-          clockOut: log.clockOut,
-          status: log.status,
-          totalHrs: Number(log.totalHrs ?? 0).toFixed(1),
-          regularHrs: Math.min(Number(log.totalHrs ?? 0), 8).toFixed(1), 
-          overtime: Number(log.overtime ?? 0).toFixed(1)
-        }));
+        const logs = res.data.map((log, idx) => {
+          let regularHrs = 8.0;
+          if (log.status && log.status.toUpperCase() === "HALF DAY") regularHrs = 4.0;
+          if (
+            log.status &&
+            (log.status.toUpperCase() === "ABSENT" || log.status.toUpperCase() === "LEAVE")
+          )
+            regularHrs = 0.0;
+
+          return {
+            id: log._id,
+            employeeName: log.employeeName,
+            department: log.department,
+            date: log.date,
+            clockIn: log.clockIn,
+            clockOut: log.clockOut,
+            status: log.status,
+            totalHrs: Number(log.totalHrs ?? 0).toFixed(1),
+            regularHrs: regularHrs.toFixed(1),
+            overtime: Number(log.overtime ?? 0).toFixed(1),
+          };
+        });
         setAttendanceData(logs);
-      })
-      .catch(err => {
+        setError(null);
+      } catch (err) {
         console.error("Error fetching attendance logs:", err);
-        setAttendanceData([]); 
-      });
+        setAttendanceData([]);
+        setError("Failed to load attendance logs. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAttendanceLogs();
   }, [selectedDepartment, selectedDate]);
 
   const handleEdit = (id) => {
@@ -91,22 +128,20 @@ const AdminAttendanceLogs = () => {
     setShowAddModal(false);
   };
 
-  const calculateHours = (clockIn, clockOut, status = "Present") => {
+  const calculateHours = (clockIn, clockOut, status = "PRESENT") => {
     if (clockIn === '--' || clockOut === '--' || !clockIn || !clockOut) {
-      return { totalHrs: '0', regularHrs: '0', overtime: '0' };
+      return { totalHrs: '0.0', regularHrs: '0.0', overtime: '0.0' };
     }
-
     const startTime = new Date(`2024-01-01 ${clockIn}`);
     const endTime = new Date(`2024-01-01 ${clockOut}`);
     const diffMs = endTime - startTime;
     const totalHours = diffMs / (1000 * 60 * 60);
 
-    let regularCap = 8;
-    if (status === "Half Day") regularCap = 4;
-    if (status === "Absent" || status === "Leave") regularCap = 0;
+    let regularHrs = 8;
+    if (status.toUpperCase() === "HALF DAY") regularHrs = 4;
+    if (status.toUpperCase() === "ABSENT" || status.toUpperCase() === "LEAVE") regularHrs = 0;
 
-    const regularHrs = Math.min(totalHours, regularCap);
-    const overtime = Math.max(0, totalHours - regularCap);
+    const overtime = regularHrs > 0 ? Math.max(0, totalHours - regularHrs) : 0;
 
     return {
       totalHrs: parseFloat(totalHours.toFixed(1)),
@@ -115,92 +150,28 @@ const AdminAttendanceLogs = () => {
     };
   };
 
-  const EditableRow = ({ item }) => {
-    const [editData, setEditData] = useState({
-      clockIn: item.clockIn,
-      clockOut: item.clockOut,
-      status: item.status,
-      date: item.date
-    });
-
-    const handleInputChange = (field, value) => {
-      setEditData(prev => ({
-        ...prev,
-        [field]: value
-      }));
-    };
-
-    const handleSaveClick = async () => {
-    const calculatedHours = calculateHours(editData.clockIn, editData.clockOut);
-
-    // build update payload for backend
-    const payload = {
-      clockIn: editData.clockIn,
-      clockOut: editData.clockOut,
-      status: editData.status,
-      date: editData.date,
-      ...calculatedHours
-    };
-
-    try {
-      await api.put(`/attendance-logs/${item.id}`, payload);
-      handleSave(item.id, { ...editData, ...calculatedHours }); // update frontend state
-    } catch (err) {
-      alert("Error updating attendance log: " + (err.response?.data?.message || err.message));
+  const EditableCell = ({ value, onChange, type = "text", options = null }) => {
+    if (options) {
+      return (
+        <select 
+          value={value}
+          onChange={onChange}
+          className="admin-attendance-edit-select"
+        >
+          {options.map(option => (
+            <option key={option} value={option}>{option}</option>
+          ))}
+        </select>
+      );
     }
-  };
-
+    
     return (
-      <tr className="admin-attendance-edit-row">
-        <td>{item.employeeName}</td>
-        <td>{item.department}</td>
-        <td>
-          <input 
-            type="date" 
-            value={editData.date || ''}
-            onChange={e => handleInputChange('date', e.target.value)}
-            className="admin-attendance-edit-input"
-          />
-        </td>
-        <td>
-          <input 
-            type="time" 
-            value={editData.clockIn !== '--' ? editData.clockIn : ''}
-            onChange={(e) => handleInputChange('clockIn', e.target.value || '--')}
-            className="admin-attendance-edit-input"
-          />
-        </td>
-        <td>
-          <input 
-            type="time" 
-            value={editData.clockOut !== '--' ? editData.clockOut : ''}
-            onChange={(e) => handleInputChange('clockOut', e.target.value || '--')}
-            className="admin-attendance-edit-input"
-          />
-        </td>
-        <td>
-          <select 
-            value={editData.status}
-            onChange={(e) => handleInputChange('status', e.target.value)}
-            className="admin-attendance-edit-select"
-          >
-            <option value="Present">Present</option>
-            <option value="Absent">Absent</option>
-            <option value="Late">Late</option>
-            <option value="Half Day">Half Day</option>
-            <option value="Leave">Leave</option>
-          </select>
-        </td>
-        <td>{calculateHours(editData.clockIn, editData.clockOut).totalHrs}</td>
-        <td>{calculateHours(editData.clockIn, editData.clockOut).regularHrs}</td>
-        <td>{calculateHours(editData.clockIn, editData.clockOut).overtime}</td>
-        <td>
-          <div className="admin-attendance-action-buttons">
-            <button className="admin-attendance-save-btn" onClick={handleSaveClick}><FaCheckCircle size={16} /></button>
-            <button className="admin-attendance-cancel-btn" onClick={handleCancel}><FaTimesCircle size={16} /></button>
-          </div>
-        </td>
-      </tr>
+      <input 
+        type={type}
+        value={value !== '--' ? value : ''}
+        onChange={onChange}
+        className="admin-attendance-edit-input"
+      />
     );
   };
 
@@ -208,9 +179,6 @@ const AdminAttendanceLogs = () => {
     item.employeeName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Get unique departments from attendance data
-  const uniqueDepartments = [...new Set(attendanceData.map(item => item.department))].sort();
-  
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
   };
@@ -224,6 +192,242 @@ const AdminAttendanceLogs = () => {
     setSelectedDepartment('All Departments');
     setIsFilterOpen(false);
   };
+
+  const columns = [
+    {
+      name: "Employee Name",
+      selector: row => row.employeeName,
+      sortable: true,
+      width: "15%",
+      sortFunction: (rowA, rowB) => {
+        return rowA.employeeName.localeCompare(rowB.employeeName);
+      },
+    },
+    {
+      name: "Department",
+      selector: row => row.department,
+      sortable: true,
+      width: "12%",
+      center: true,
+    },
+    {
+      name: "Date",
+      selector: row => row.date,
+      sortable: true,
+      width: "10%",
+      center: true,
+      cell: (row) => editingRow === row.id ? (
+        <EditableCell 
+          type="date"
+          value={row.date}
+          onChange={(e) => {
+            const newData = [...attendanceData];
+            const index = newData.findIndex(item => item.id === row.id);
+            newData[index].date = e.target.value;
+            setAttendanceData(newData);
+          }}
+        />
+      ) : row.date,
+    },
+    {
+      name: "Clock In",
+      selector: row => row.clockIn,
+      sortable: true,
+      width: "10%",
+      center: true,
+      cell: (row) => editingRow === row.id ? (
+        <EditableCell 
+          type="time"
+          value={row.clockIn}
+          onChange={(e) => {
+            const newData = [...attendanceData];
+            const index = newData.findIndex(item => item.id === row.id);
+            newData[index].clockIn = e.target.value || '--';
+            setAttendanceData(newData);
+          }}
+        />
+      ) : row.clockIn,
+    },
+    {
+      name: "Clock Out",
+      selector: row => row.clockOut,
+      sortable: true,
+      width: "10%",
+      center: true,
+      cell: (row) => editingRow === row.id ? (
+        <EditableCell 
+          type="time"
+          value={row.clockOut}
+          onChange={(e) => {
+            const newData = [...attendanceData];
+            const index = newData.findIndex(item => item.id === row.id);
+            newData[index].clockOut = e.target.value || '--';
+            setAttendanceData(newData);
+          }}
+        />
+      ) : row.clockOut,
+    },
+    {
+      name: "Status",
+      selector: row => row.status,
+      sortable: true,
+      width: "10%",
+      center: true,
+      cell: (row) => editingRow === row.id ? (
+        <EditableCell 
+          value={row.status}
+          options={['Present', 'Absent', 'Late', 'Half Day', 'Leave']}
+          onChange={(e) => {
+            const newData = [...attendanceData];
+            const index = newData.findIndex(item => item.id === row.id);
+            newData[index].status = e.target.value;
+            setAttendanceData(newData);
+          }}
+        />
+      ) : (
+        <span className={`admin-attendance-status-badge ${row.status.toLowerCase().replace(' ', '-')}`}>
+          {row.status}
+        </span>
+      ),
+    },
+    {
+      name: "Total Hrs",
+      selector: row => row.totalHrs,
+      sortable: true,
+      width: "8%",
+      center: true,
+    },
+    {
+      name: "Regular Hrs",
+      selector: row => row.regularHrs,
+      sortable: true,
+      width: "8%",
+      center: true,
+    },
+    {
+      name: "Overtime",
+      selector: row => row.overtime,
+      sortable: true,
+      width: "8%",
+      center: true,
+    },
+    {
+      name: "Action",
+      cell: (row) => editingRow === row.id ? (
+        <div className="admin-attendance-action-buttons">
+          <button 
+            className="admin-attendance-save-btn" 
+            onClick={async () => {
+              const calculatedHours = calculateHours(row.clockIn, row.clockOut);
+              const payload = {
+                clockIn: row.clockIn,
+                clockOut: row.clockOut,
+                status: row.status,
+                date: row.date,
+                ...calculatedHours
+              };
+
+              try {
+                await api.put(`/attendance-logs/${row.id}`, payload);
+                handleSave(row.id, { ...payload });
+              } catch (err) {
+                alert("Error updating attendance log: " + (err.response?.data?.message || err.message));
+              }
+            }}
+          >
+            <FaCheckCircle size={16} />
+          </button>
+          <button 
+            className="admin-attendance-cancel-btn" 
+            onClick={handleCancel}
+          >
+            <FaTimesCircle size={16} />
+          </button>
+        </div>
+      ) : (
+        <button 
+          className="admin-attendance-update-btn"
+          onClick={() => handleEdit(row.id)}
+        >
+          Update
+        </button>
+      ),
+      width: "9%",
+      center: true,
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+    },
+  ];
+
+  const customStyles = {
+    headRow: {
+      style: {
+        backgroundColor: '#003f7d',
+        fontWeight: 'bold',
+        color: '#fff',
+        fontSize: '14px',
+      },
+    },
+    rows: {
+      style: {
+        minHeight: '55px',
+        fontSize: '12px',
+        backgroundColor: '#ffffff',
+        color: '#000000',
+      },
+    },
+    pagination: {
+      style: {
+        backgroundColor: '#f8f9fa',
+        borderTop: '1px solid #e0e0e0',
+      },
+    },
+  };
+
+  const conditionalRowStyles = [
+    {
+      when: row => editingRow === row.id,
+      style: {
+        background: 'linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%)',
+        border: '2px solid #FFD699',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(255, 165, 0, 0.15)',
+        '&:hover': {
+          background: 'linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%)',
+          borderColor: '#FFB366',
+          boxShadow: '0 6px 16px rgba(255, 165, 0, 0.2)',
+        },
+      },
+    },
+  ];
+
+  if (loading) {
+    return (
+      <div className="admin-attendance-logs">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="admin-attendance-logs">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+          <strong className="font-bold">Error!</strong>
+          <span className="block sm:inline"> {error}</span>
+          <button 
+            onClick={() => window.location.reload()}
+            className="ml-4 bg-red-500 text-white px-3 py-1 rounded text-sm"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-attendance-logs">
@@ -265,21 +469,23 @@ const AdminAttendanceLogs = () => {
                   Clear
                 </button>
               </div>
-              <div
-                className={`admin-attendance-filter-option ${selectedDepartment === 'All Departments' ? 'selected' : ''}`}
-                onClick={() => handleDepartmentSelect('All Departments')}
-              >
-                All Departments
-              </div>
-              {uniqueDepartments.map((department) => (
+              <div className="admin-attendance-filter-options">
                 <div
-                  key={department}
-                  className={`admin-attendance-filter-option ${selectedDepartment === department ? 'selected' : ''}`}
-                  onClick={() => handleDepartmentSelect(department)}
+                  className={`admin-attendance-filter-option ${selectedDepartment === 'All Departments' ? 'active' : ''}`}
+                  onClick={() => handleDepartmentSelect('All Departments')}
                 >
-                  {department}
+                  All Departments
                 </div>
-              ))}
+                {departments.map((department) => (
+                  <div
+                    key={department}
+                    className={`admin-attendance-filter-option ${selectedDepartment === department ? 'active' : ''}`}
+                    onClick={() => handleDepartmentSelect(department)}
+                  >
+                    {department}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -288,77 +494,18 @@ const AdminAttendanceLogs = () => {
       </div>
 
       <div className="admin-attendance-table-container">
-        <table className="admin-attendance-table">
-          <thead>
-            <tr>
-              <th>Employee Name</th>
-              <th>Department</th>
-              <th>Date</th>
-              <th>Clock In</th>
-              <th>Clock Out</th>
-              <th>Status</th>
-              <th>Total Hrs</th>
-              <th>Regular Hrs</th>
-              <th>Overtime</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredData.map((item) => (
-              editingRow === item.id ? (
-                <EditableRow key={item.id} item={item} />
-              ) : (
-                <tr key={item.id}>
-                  <td>{item.employeeName}</td>
-                  <td>{item.department}</td>
-                  <td>{item.date}</td>
-                  <td>{item.clockIn}</td>
-                  <td>{item.clockOut}</td>
-                  <td>
-                    <span className={`admin-attendance-status-badge ${item.status.toLowerCase().replace(' ', '-')}`}>
-                      {item.status}
-                    </span>
-                  </td>
-                  <td>{item.totalHrs}</td>
-                  <td>{item.regularHrs}</td>
-                  <td>{item.overtime}</td>
-                  <td>
-                    <button 
-                      className="admin-attendance-update-btn"
-                      onClick={() => handleEdit(item.id)}
-                    >
-                      Update
-                    </button>
-                  </td>
-                </tr>
-              )
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="admin-attendance-table-footer">
-        <div className="admin-attendance-show-entries">
-          <label>Show </label>
-          <select 
-            value={entriesPerPage}
-            onChange={(e) => setEntriesPerPage(e.target.value)}
-            className="admin-attendance-entries-select"
-          >
-            <option value={10}>10</option>
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-          </select>
-          <span> entries</span>
-        </div>
-        <div className="admin-attendance-showing-info">
-          Showing 1 to {Math.min(entriesPerPage, filteredData.length)} of {filteredData.length} entries
-        </div>
-        <div className="admin-attendance-pagination">
-          <button className="admin-attendance-page-btn">Previous</button>
-          <button className="admin-attendance-page-btn active">1</button>
-          <button className="admin-attendance-page-btn">Next</button>
-        </div>
+        <DataTable
+          columns={columns}
+          data={filteredData}
+          pagination
+          highlightOnHover
+          responsive
+          customStyles={customStyles}
+          conditionalRowStyles={conditionalRowStyles}
+          paginationPerPage={6}
+          paginationRowsPerPageOptions={[6, 12, 18, 24]}
+          pointerOnHover
+        />
       </div>
 
       <AddLogsModal 

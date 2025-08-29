@@ -16,6 +16,7 @@ function ProgressList() {
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [Progress, setProgress] = useState([]);
+  const [availableDepartments, setAvailableDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -49,28 +50,37 @@ function ProgressList() {
     fetchProgress();
   }, []);
 
-  const departments = [...new Set(Progress.map(emp => emp.department))].sort();
+  // fetch available departments for filter
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const { data } = await api.get("/department");
+        const departmentNames = data.map(dept => dept.departmentName).sort();
+        setAvailableDepartments(departmentNames);
+      } catch (err) {
+        console.error("Error fetching departments:", err);
+      }
+    };
 
+    fetchDepartments();
+  }, []);
   
   const filteredProgress = Progress.filter(progress => {
     const searchLower = searchTerm.toLowerCase();
-    const matchesSearch = progress.name.toLowerCase().includes(searchLower);
+    const matchesSearch = progress.taskName.toLowerCase().includes(searchLower);
     const matchesDepartment = selectedDepartment === "" || progress.department === selectedDepartment;
     return matchesSearch && matchesDepartment;
   });
 
- 
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
   };
 
- 
   const handleDepartmentSelect = (department) => {
     setSelectedDepartment(department);
     setIsFilterOpen(false);
   };
 
-  
   const clearFilter = () => {
     setSelectedDepartment("");
     setIsFilterOpen(false);
@@ -250,7 +260,6 @@ function ProgressList() {
   if (loading) return <p>Loading progress...</p>;
   if (error) return <p>{error}</p>;
 
-  // Custom styles for the data table
   const customStyles = {
     headRow: {
       style: {
@@ -280,42 +289,50 @@ function ProgressList() {
     <div className="progress-container">
       <div className="progress-table-container">
         <div className="progress-controls-container">
-          <div className="search-container">
+          <div className="progress-search-container">
             <input
               type="text"
-              placeholder="Search by Employee Name..."
+              placeholder="Search by task name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input"
+              className="progress-search-input"
             />
           </div>
-          <div className="filter-container">
+          <div className="progress-filter-container">
             <button 
-              className={`filter-button ${selectedDepartment ? 'active' : ''}`}
+              className={`progress-filter-button ${selectedDepartment ? 'active' : ''}`}
               onClick={toggleFilter}
             >
               <FaFilter />
             </button>
             {isFilterOpen && (
-              <div className="filter-dropdown">
-                <div className="filter-dropdown-header">
+              <div className="progress-filter-dropdown">
+                <div className="progress-filter-dropdown-header">
                   <span>Filter by Department</span>
                   <button 
-                    className="clear-filter-btn"
+                    className="progress-clear-filter-btn"
                     onClick={clearFilter}
                   >
                     Clear
                   </button>
                 </div>
-                {departments.map((department) => (
-                  <div
-                    key={department}
-                    className={`filter-option ${selectedDepartment === department ? 'selected' : ''}`}
-                    onClick={() => handleDepartmentSelect(department)}
+                <div className="progress-filter-options">
+                  <div 
+                    className={`progress-filter-option ${selectedDepartment === "" ? 'active' : ''}`}
+                    onClick={() => handleDepartmentSelect("")}
                   >
-                    {department}
+                    All Departments
                   </div>
-                ))}
+                  {availableDepartments.map(department => (
+                    <div 
+                      key={department}
+                      className={`progress-filter-option ${selectedDepartment === department ? 'active' : ''}`}
+                      onClick={() => handleDepartmentSelect(department)}
+                    >
+                      {department}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -363,7 +380,6 @@ function ProgressList() {
             </div>
           </div>
         )}
-
 
       </div>
     </div>

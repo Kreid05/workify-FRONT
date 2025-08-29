@@ -16,7 +16,7 @@
 /* Modal Container */
 .submit-modal-container {
   background: white;
-  border-radius: 12px;
+  border-radius: 8px;
   width: 90%;
   max-width: 500px;
   max-height: 90vh;
@@ -41,15 +41,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 24px 0;
-  border-bottom: 1px solid #e5e7eb;
-  margin-bottom: 20px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e5e5;
+  background-color: #002347;
+  color: white;
 }
 
 .submit-modal-header h2 {
   margin: 0;
-  color: #111827;
-  font-size: 1.5rem;
+  color: white;
+  font-size: 20px;
   font-weight: 600;
 }
 
@@ -58,20 +59,19 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #666;
-  padding: 0;
-  width: 30px;
-  height: 30px;
+  color: white;
+  padding: 4px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: 4px;
   transition: background-color 0.2s;
 }
 
 .submit-close-button:hover {
-  background-color: #f3f4f6;
-  color: #374151;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Modal Content */
@@ -87,30 +87,34 @@
 .empInquiry-form-group label {
   display: block;
   margin-bottom: 6px;
-  font-weight: 500;
-  color: #374151;
-  font-size: 0.875rem;
+  font-weight: 600;
+  color: #666;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .empInquiry-form-group input,
 .empInquiry-form-group select,
 .empInquiry-form-group textarea {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  padding: 8px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  font-size: 14px;
   transition: all 0.2s;
-  background-color: white;
-  color: black;
+  background-color: #f8f9fa;
+  color: #333;
+  box-sizing: border-box;
 }
 
 .empInquiry-form-group input:focus,
 .empInquiry-form-group select:focus,
 .empInquiry-form-group textarea:focus {
   outline: none;
-  border-color: #fd7702;
-  box-shadow: 0 0 0 3px rgba(246, 187, 59, 0.1);
+  border-color: #002347;
+  box-shadow: 0 0 0 3px rgba(0, 35, 71, 0.1);
+  background-color: white;
 }
 
 .empInquiry-form-group textarea {
@@ -124,41 +128,38 @@
   gap: 12px;
   justify-content: flex-end;
   margin-top: 32px;
-  padding-top: 20px;
-  border-top: 1px solid #e5e7eb;
+  padding: 20px 24px;
+  border-top: 1px solid #e5e5e5;
+  background-color: #f8f9fa;
 }
 
 .submit-cancel-button,
 .submit-confirm-button {
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-  border: 1px solid;
+  border: none;
 }
 
 .submit-cancel-button {
-  background-color: white;
-  border-color: #d1d5db;
-  color: #374151;
+  background-color: #6c757d;
+  color: white;
 }
 
 .submit-cancel-button:hover {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
+  background-color: #5a6268;
 }
 
 .submit-confirm-button {
-  background-color: #003f7d;
-  border-color: #003f7d;
+  background-color: #002347;
   color: white;
 }
 
 .submit-confirm-button:hover {
-  background-color: #002347;
-  border-color: #002347;
+  background-color: #003a66;
 }
 
 .submit-confirm-button:active {
@@ -215,4 +216,16 @@
 .form-group textarea:invalid:focus {
   border-color: #ef4444;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.empInquiry-form-group label::after {
+  content: ' *';
+  color: #ef4444;
+  font-weight: normal;
+}
+
+.empInquiry-form-group label[for="description"]::after,
+.empInquiry-form-group label[for="assignedBy"]::after,
+.empInquiry-form-group label[for="department"]::after {
+  content: '';
 }

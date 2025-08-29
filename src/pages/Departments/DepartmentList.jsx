@@ -18,11 +18,14 @@ function DepartmentList() {
   const [selectedDepartmentForUpdate, setSelectedDepartmentForUpdate] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [departmentToDelete, setDepartmentToDelete] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // fetch departments
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
+        setLoading(true);
         const { data } = await api.get("/department");
 
         // ensure consistent formatting 
@@ -33,8 +36,12 @@ function DepartmentList() {
         }));
 
         setDepartments(formatted);
+        setError(null);
       } catch (err) {
         console.error("Error fetching departments:", err);
+        setError("Failed to load departments. Please try again.");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -43,12 +50,11 @@ function DepartmentList() {
   
   const uniqueDepartments = [...new Set(departments.map(dept => dept.departmentName))].sort();
 
-
   const filteredDepartments = departments.filter(dept => {
     const searchLower = searchTerm.toLowerCase();
     const matchesSearch = 
-      dept.departmentName.toLowerCase().includes(searchLower) ||
-      dept.jobTitle.toLowerCase().includes(searchLower);
+      dept.departmentName?.toLowerCase().includes(searchLower) ||
+      dept.jobTitles?.some(jobTitle => jobTitle?.toLowerCase().includes(searchLower));
     const matchesDepartment = selectedDepartment === "" || dept.departmentName === selectedDepartment;
     return matchesSearch && matchesDepartment;
   });
@@ -119,8 +125,7 @@ function DepartmentList() {
 
   const handleAssignDepartment = (assignmentData) => {
     console.log("Department assigned:", assignmentData);
-    // Here you can add logic to update the UI or make additional API calls if needed
-    // For now, we'll just log the assignment data
+    
   };
 
   const columns = [
@@ -135,11 +140,11 @@ function DepartmentList() {
     },
     {
       name: "Job Titles",
-      selector:  row => row.jobTitles.join(", "),
+      selector: row => row.jobTitles.join(", "),
       sortable: true,
       width: "40%",
       sortFunction: (rowA, rowB) => {
-        return rowA.jobTitle.localeCompare(rowB.jobTitle);
+        return rowA.jobTitles.join(", ").localeCompare(rowB.jobTitles.join(", "));
       },
     },
     {
@@ -195,6 +200,33 @@ function DepartmentList() {
     },
   };
 
+  if (loading) {
+    return (
+      <div className="department-container">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="department-container">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+          <strong className="font-bold">Error!</strong>
+          <span className="block sm:inline"> {error}</span>
+          <button 
+            onClick={() => window.location.reload()}
+            className="ml-4 bg-red-500 text-white px-3 py-1 rounded text-sm"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="department-container">
       <div className="department-table-container">
@@ -202,7 +234,7 @@ function DepartmentList() {
           <div className="department-search-container">
             <input
               type="text"
-              placeholder="Search by Department or Job Title..."
+              placeholder="Search by department name or job titles..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="department-search-input"
@@ -238,15 +270,23 @@ function DepartmentList() {
                     Clear
                   </button>
                 </div>
-                {uniqueDepartments.map((department) => (
-                  <div
-                    key={department}
-                    className={`department-filter-option ${selectedDepartment === department ? 'selected' : ''}`}
-                    onClick={() => handleDepartmentSelect(department)}
+                <div className="department-filter-options">
+                  <div 
+                    className={`department-filter-option ${selectedDepartment === "" ? 'active' : ''}`}
+                    onClick={() => handleDepartmentSelect("")}
                   >
-                    {department}
+                    All Departments
                   </div>
-                ))}
+                  {uniqueDepartments.map((department) => (
+                    <div
+                      key={department}
+                      className={`department-filter-option ${selectedDepartment === department ? 'active' : ''}`}
+                      onClick={() => handleDepartmentSelect(department)}
+                    >
+                      {department}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>

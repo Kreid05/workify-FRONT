@@ -14,29 +14,29 @@
 
 .modal-content {
   background-color: white;
-  border-radius: 1rem;
-  max-width: 24rem;
-  width: 100%;
-  max-height: 85vh;
+  border-radius: 0.75rem;
+  max-width: 500px; 
+  width: 90%;
+  max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
 
 .modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem;
+  padding: 20px 25px; 
   border-bottom: 1px solid #e2e8f0;
   position: sticky;
   top: 0;
   background-color: white;
-  border-radius: 1rem 1rem 0 0;
+  border-radius: 0.75rem 0.75rem 0 0;
   z-index: 10;
 }
 
 .modal-title {
-  font-size: 1.5rem;
+  font-size: 1.25rem; 
   font-weight: bold;
   color: #1e293b;
 }
@@ -48,7 +48,7 @@
   background-color: #f8fafc;
   border: 1px solid #e2e8f0;
   cursor: pointer;
-  font-size: 1.25rem;
+  font-size: 1.125rem; 
 }
 
 .modal-close-button:hover {
@@ -56,21 +56,20 @@
 }
 
 .modal-body {
-  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 20px;
 }
 
 .section-title {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem; 
 }
 
 .section-title h3 {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #1e293b;
   margin: 0;
@@ -90,29 +89,23 @@
   100% { transform: rotate(360deg); }
 }
 
-/* DateTime Cards */
+
 .datetime-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
-}
-
-@media (min-width: 768px) {
-  .datetime-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+  gap: 15px;
 }
 
 .date-card {
   background-color: #dbeafe;
-  padding: 1rem;
+  padding: 15px; 
   border-radius: 0.5rem;
   text-align: center;
 }
 
 .time-card {
   background-color: #dcfce7;
-  padding: 1rem;
+  padding: 15px;
   border-radius: 0.5rem;
   text-align: center;
 }
@@ -126,13 +119,13 @@
 }
 
 .datetime-title {
-  font-size: 1.125rem;
+  font-size: 1rem; 
   font-weight: 600;
   color: #1e293b;
 }
 
 .datetime-value {
-  font-size: 1.25rem;
+  font-size: 1.125rem; 
   font-weight: bold;
 }
 
@@ -144,12 +137,11 @@
   color: #16a34a;
 }
 
-
 .status-error {
   background-color: #fef2f2;
   border: 1px solid #fecaca;
   border-radius: 0.5rem;
-  padding: 1rem;
+  padding: 0.75rem;
 }
 
 .error-text {
@@ -175,7 +167,7 @@
   background-color: #f0fdf4;
   border: 1px solid #bbf7d0;
   border-radius: 0.5rem;
-  padding: 1rem;
+  padding: 0.75rem; 
 }
 
 .success-text {
@@ -195,7 +187,7 @@
   background-color: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  padding: 1rem;
+  padding: 0.75rem; 
 }
 
 .loading-text {
@@ -203,15 +195,14 @@
   font-size: 0.875rem;
 }
 
-
 .map-container {
-  height: 12rem;
+  height: 200px; 
   background-color: #e2e8f0;
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: 15px;
 }
 
 .map-iframe {
@@ -226,7 +217,7 @@
   background-color: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  padding: 1rem;
+  padding: 0.75rem; 
 }
 
 .photo-placeholder {
@@ -235,38 +226,32 @@
 
 .photo-preview {
   width: 100%;
-  height: 12rem;
+  height: 200px; 
   background-color: #e2e8f0;
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
-  font-size: 3.75rem;
+  margin-bottom: 15px;
+  font-size: 3.5rem;
 }
 
 .photo-buttons {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-}
-
-@media (min-width: 640px) {
-  .photo-buttons {
-    flex-direction: row;
-    justify-content: center;
-  }
+  gap: 0.5rem; 
 }
 
 .button-primary {
   background-color: #002347;
   color: white;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 1rem; 
   border-radius: 0.5rem;
   font-weight: 500;
   transition: background-color 0.2s;
   border: none;
   cursor: pointer;
+  font-size: 0.875rem; 
 }
 
 .button-primary:hover {
@@ -276,12 +261,13 @@
 .button-secondary {
   background-color: #4b5563;
   color: white;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 1rem; 
   border-radius: 0.5rem;
   font-weight: 500;
   transition: background-color 0.2s;
   border: none;
   cursor: pointer;
+  font-size: 0.875rem; 
 }
 
 .button-secondary:hover {
@@ -291,12 +277,13 @@
 .button-success {
   background-color: #16a34a;
   color: white;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 1rem; 
   border-radius: 0.5rem;
   font-weight: 500;
   transition: background-color 0.2s;
   border: none;
   cursor: pointer;
+  font-size: 0.875rem; 
 }
 
 .button-success:hover {
@@ -304,17 +291,16 @@
 }
 
 .button-small {
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem; 
+  font-size: 0.75rem; 
 }
-
 
 .camera-video {
   width: 100%;
-  height: 16rem;
+  height: 14rem; 
   background-color: black;
   border-radius: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem; 
   object-fit: cover;
   display: block;
   transform: scaleX(-1);
@@ -322,10 +308,10 @@
 
 .photo-display {
   width: 100%;
-  height: 12rem;
+  height: 10rem; 
   object-fit: cover;
   border-radius: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .photo-success-message {
@@ -338,9 +324,10 @@
 
 .submit-button {
   width: 100%;
-  padding: 0.75rem 1.5rem;
+  padding: 0.625rem 1rem; 
   border-radius: 0.5rem;
   font-weight: 500;
+  font-size: 0.875rem; 
   color: white;
   transition: background-color 0.2s;
   border: none;
@@ -361,36 +348,35 @@
 }
 
 .submit-section {
-  padding-top: 1rem;
+  padding-top: 0.75rem; 
   position: sticky;
   bottom: 0;
   background-color: white;
 }
 
-
 .confirmation-modal {
   background-color: white;
-  border-radius: 1rem;
-  padding: 2rem;
-  max-width: 28rem;
-  width: 100%;
+  border-radius: 0.75rem;
+  padding: 25px; 
+  max-width: 500px; 
+  width: 90%;
   text-align: center;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
 
 .confirmation-icon {
-  width: 4rem;
-  height: 4rem;
+  width: 3rem; 
+  height: 3rem; 
   background-color: #dcfce7;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1.5rem;
+  margin: 0 auto 1rem; 
 }
 
 .confirmation-title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: bold;
   color: #1e293b;
   margin-bottom: 0.5rem;
@@ -398,22 +384,24 @@
 
 .confirmation-date {
   color: #64748b;
-  margin-bottom: 1.5rem;
+  font-size: 0.875rem; 
+  margin-bottom: 1rem; 
 }
 
 .confirmation-message {
-  font-size: 1.125rem;
+  font-size: 1rem; 
   color: #374151;
   font-weight: 500;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .confirmation-button {
   background-color: #002347;
   color: white;
-  padding: 0.75rem 2rem;
+  padding: 0.625rem 1.5rem; 
   border-radius: 0.5rem;
   font-weight: 500;
+  font-size: 0.875rem;
   transition: background-color 0.2s;
   border: none;
   cursor: pointer;
@@ -432,14 +420,31 @@
   playsinline: true;
 }
 
-
-video {
-  max-width: 100%;
-  height: auto;
-}
-
 @supports (-webkit-appearance: none) {
   .camera-video {
     -webkit-transform: scaleX(-1);
+  }
+}
+
+
+@media (max-width: 768px) {
+  .modal-content {
+    margin: 20px;
+    width: calc(100% - 40px);
+    max-height: calc(100vh - 40px);
+  }
+  
+  .modal-header {
+    padding: 16px 20px;
+  }
+  
+  .modal-body {
+    padding: 20px;
+  }
+  
+  .confirmation-modal {
+    margin: 20px;
+    width: calc(100% - 40px);
+    padding: 20px;
   }
 }

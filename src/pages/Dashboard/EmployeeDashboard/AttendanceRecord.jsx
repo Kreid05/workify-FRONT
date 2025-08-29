@@ -44,12 +44,11 @@ const calculateHours = (clockIn, clockOut, status = "PRESENT") => {
   const diffMs = endTime - startTime;
   const totalHours = diffMs / (1000 * 60 * 60);
 
-  let regularCap = 8;
-  if (status.toUpperCase() === "HALF DAY") regularCap = 4;
-  if (status.toUpperCase() === "ABSENT" || status.toUpperCase() === "LEAVE") regularCap = 0;
+  let regularHrs = 8.0;
+  if (status.toUpperCase() === "HALF DAY") regularHrs = 4.0;
+  if (status.toUpperCase() === "ABSENT" || status.toUpperCase() === "LEAVE") regularHrs = 0;
 
-  const regularHrs = Math.min(totalHours, regularCap);
-  const overtime = Math.max(0, totalHours - regularCap);
+  const overtime = regularHrs > 0 ? Math.max(0, totalHours - regularHrs) : 0;
 
   return {
     totalHrs: parseFloat(totalHours.toFixed(1)),

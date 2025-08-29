@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Coffee, Timer, AlertCircle, X, DollarSign } from 'lucide-react';
+import { Clock, Coffee, AlertCircle } from 'lucide-react';
 import './CurrentTimeSection.css';
 
 const CurrentTimeSection = ({ clockInTime, clockOutTime, currentStatus }) => {
@@ -8,8 +8,6 @@ const CurrentTimeSection = ({ clockInTime, clockOutTime, currentStatus }) => {
   const [breakRemainingTime, setBreakRemainingTime] = useState(3600); 
   const [isOnBreak, setIsOnBreak] = useState(false);
   const [breakCompleted, setBreakCompleted] = useState(false); 
-  const [overtimeHours, setOvertimeHours] = useState(2.5); 
-  const [showOvertimeModal, setShowOvertimeModal] = useState(false);
 
   // Sample employee data
   const employeeData = {
@@ -64,12 +62,6 @@ const CurrentTimeSection = ({ clockInTime, clockOutTime, currentStatus }) => {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const formatHours = (hours) => {
-    const h = Math.floor(hours);
-    const m = Math.floor((hours - h) * 60);
-    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-  };
-
   const handleBreakStart = () => {
     if (!isOnBreak && !breakCompleted) {
       setBreakStartTime(Date.now());
@@ -91,143 +83,49 @@ const CurrentTimeSection = ({ clockInTime, clockOutTime, currentStatus }) => {
     return formatDuration(breakRemainingTime);
   };
 
-  const handleOvertimeClick = () => {
-    if (overtimeHours > 0) {
-      setShowOvertimeModal(true);
-    }
-  };
-
-  const handleOvertimeRequest = () => {
-    alert('Overtime pay request submitted successfully!');
-    setShowOvertimeModal(false);
-  };
-
   return (
-    <>
-      <div className="bottom-cards-grid">
-        <div className="card-white status-card">
-          <div className="status-label">CURRENT TIME</div>
-          <div>
-            <Clock className="status-icon text-blue-500" />
-          </div>
-          <div className="status-value">{formatTime(currentTime)}</div>
-          <div className="status-description">Live Time</div>
+    <div className="bottom-cards-grid">
+      <div className="card-white status-card">
+        <div className="status-label">CURRENT TIME</div>
+        <div>
+          <Clock className="status-icon text-blue-500" />
         </div>
-
-        <div className={`card-white status-card break-card ${breakCompleted ? 'disabled' : ''}`}>
-          <div className="status-label">BREAK TIME</div>
-          <div>
-            <Coffee className={`status-icon ${breakCompleted ? 'text-gray-400' : 'text-orange-500'}`} />
-          </div>
-          <div className="status-value">{getBreakTime()}</div>
-          <div className="status-description">{getBreakStatus()}</div>
-          {currentStatus === 'Clocked In' && !isOnBreak && !breakCompleted && breakRemainingTime === 3600 && (
-            <button 
-              className="break-button"
-              onClick={handleBreakStart}
-            >
-              Start Break
-            </button>
-          )}
-          {isOnBreak && (
-            <div className="break-countdown">Countdown Active</div>
-          )}
-          {breakCompleted && (
-            <div className="break-completed">Break Used</div>
-          )}
-        </div>
-
-        <div className="card-white status-card overtime-card" onClick={handleOvertimeClick}>
-          <div className="status-label">OVERTIME</div>
-          <div>
-            <Timer className="status-icon text-green-500" />
-          </div>
-          <div className="status-value">{formatHours(overtimeHours)}</div>
-          <div className="status-description">Hours</div>
-          {overtimeHours > 0 && (
-            <div className="overtime-indicator">Click for details</div>
-          )}
-        </div>
-
-        <div className="card-white status-card">
-          <div className="status-label">STATUS</div>
-          <div>
-            <AlertCircle className={`status-icon ${currentStatus === 'Clocked In' ? 'text-green-500' : 'text-red-500'}`} />
-          </div>
-          <div className="status-value">{currentStatus || 'Clocked Out'}</div>
-          <div className="status-description">Current Status</div>
-        </div>
+        <div className="status-value">{formatTime(currentTime)}</div>
+        <div className="status-description">Live Time</div>
       </div>
 
-      {/* Overtime Modal */}
-      {showOvertimeModal && (
-        <div className="modal-overlay" onClick={() => setShowOvertimeModal(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Overtime Details & Pay Request</h2>
-              <button 
-                className="modal-close"
-                onClick={() => setShowOvertimeModal(false)}
-              >
-                <X size={24} />
-              </button>
-            </div>
-            
-            <div className="modal-body">
-              <div className="employee-info">
-                <h3>Employee Information</h3>
-                <div className="info-row">
-                  <span className="info-label">Name:</span>
-                  <span className="info-value">{employeeData.name}</span>
-                </div>
-                <div className="info-row">
-                  <span className="info-label">Employee Number:</span>
-                  <span className="info-value">{employeeData.employeeNumber}</span>
-                </div>
-                <div className="info-row">
-                  <span className="info-label">Email:</span>
-                  <span className="info-value">{employeeData.email}</span>
-                </div>
-              </div>
-
-              <div className="time-info">
-                <h3>Time Details</h3>
-                <div className="info-row">
-                  <span className="info-label">Clock In:</span>
-                  <span className="info-value">{employeeData.clockInTime}</span>
-                </div>
-                <div className="info-row">
-                  <span className="info-label">Clock Out:</span>
-                  <span className="info-value">{employeeData.clockOutTime}</span>
-                </div>
-                <div className="info-row">
-                  <span className="info-label">Regular Hours:</span>
-                  <span className="info-value">{employeeData.regularHours} hours</span>
-                </div>
-                <div className="info-row">
-                  <span className="info-label">Break Time:</span>
-                  <span className="info-value">{employeeData.breakHours} hour</span>
-                </div>
-                <div className="info-row overtime-highlight">
-                  <span className="info-label">Overtime Hours:</span>
-                  <span className="info-value">{formatHours(overtimeHours)} hours</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="modal-footer">
-              <button 
-                className="request-button"
-                onClick={handleOvertimeRequest}
-              >
-                <DollarSign size={20} />
-                Request Overtime Pay
-              </button>
-            </div>
-          </div>
+      <div className={`card-white status-card break-card ${breakCompleted ? 'disabled' : ''}`}>
+        <div className="status-label">BREAK TIME</div>
+        <div>
+          <Coffee className={`status-icon ${breakCompleted ? 'text-gray-400' : 'text-orange-500'}`} />
         </div>
-      )}
-    </>
+        <div className="status-value">{getBreakTime()}</div>
+        <div className="status-description">{getBreakStatus()}</div>
+        {currentStatus === 'Clocked In' && !isOnBreak && !breakCompleted && breakRemainingTime === 3600 && (
+          <button 
+            className="break-button"
+            onClick={handleBreakStart}
+          >
+            Start Break
+          </button>
+        )}
+        {isOnBreak && (
+          <div className="break-countdown">Countdown Active</div>
+        )}
+        {breakCompleted && (
+          <div className="break-completed">Break Used</div>
+        )}
+      </div>
+
+      <div className="card-white status-card">
+        <div className="status-label">STATUS</div>
+        <div>
+          <AlertCircle className={`status-icon ${currentStatus === 'Clocked In' ? 'text-green-500' : 'text-red-500'}`} />
+        </div>
+        <div className="status-value">{currentStatus || 'Clocked Out'}</div>
+        <div className="status-description">Current Status</div>
+      </div>
+    </div>
   );
 };
 

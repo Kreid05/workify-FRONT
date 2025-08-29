@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import DataTable from "react-data-table-component";
+import { FaFilter } from "react-icons/fa";
 import './SchedulingPage.css';
 import ScheduleInformationModal from './Modals/ScheduleInformationModal';
 import EditScheduleModal from './Modals/EditScheduleModal';
@@ -13,15 +15,39 @@ const SchedulingPage = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedScheduleType, setSelectedScheduleType] = useState('');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filteredSchedules, setFilteredSchedules] = useState([]);
+
+  
+  const scheduleTypes = ["Full time", "Half Day"];
+  const getScheduleDate = (schedule) => {
+    const dateField = schedule.startDate || schedule.createdDate || schedule.dateCreated || schedule.createdAt || schedule.effectiveDate;
+    
+    if (!dateField) {
+
+      return new Date();
+    }
+    
+    return new Date(dateField);
+  };
+
+  const sortSchedulesByStartDate = (schedulesToSort) => {
+    return [...schedulesToSort].sort((a, b) => {
+      const dateA = getScheduleDate(a);
+      const dateB = getScheduleDate(b);
+      return dateB - dateA; 
+    });
+  };
 
  // fetch schedules
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
         const { data } = await api.get("/schedule");
-        setRawSchedules(data); // <-- store originals
-        setFilteredSchedules(data); // <-- use originals for table
+        const sortedData = sortSchedulesByStartDate(data);
+        setRawSchedules(sortedData);
+        setFilteredSchedules(sortedData);
       } catch (err) {
         console.error("Error fetching schedules:", err);
       }
@@ -31,26 +57,54 @@ const SchedulingPage = () => {
 
   // filtering
   useEffect(() => {
-    if (!searchTerm) {
-      setFilteredSchedules(rawSchedules);
-    } else {
-      setFilteredSchedules(
-        rawSchedules.filter(schedule =>
-          schedule.scheduleName.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+    let filtered = rawSchedules;
+    
+    // Filter by search term
+    if (searchTerm) {
+      filtered = filtered.filter(schedule =>
+        schedule.scheduleName.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-  }, [searchTerm, rawSchedules]);
+    
+    // Filter by schedule type (case-insensitive)
+    if (selectedScheduleType) {
+      filtered = filtered.filter(schedule =>
+        schedule.scheduleType && 
+        schedule.scheduleType.toLowerCase() === selectedScheduleType.toLowerCase()
+      );
+    }
+    
+    filtered = sortSchedulesByStartDate(filtered);
+    
+    setFilteredSchedules(filtered);
+  }, [searchTerm, selectedScheduleType, rawSchedules]);
+
+  const toggleFilter = () => {
+    setIsFilterOpen(!isFilterOpen);
+  };
+
+  const handleScheduleTypeSelect = (scheduleType) => {
+    setSelectedScheduleType(scheduleType);
+    setIsFilterOpen(false);
+  };
+
+  const clearFilter = () => {
+    setSelectedScheduleType("");
+    setIsFilterOpen(false);
+  };
 
   const handleAddSchedule = (newSchedule) => {
-    setRawSchedules(prev => [...prev, newSchedule]);
+    const updatedSchedules = sortSchedulesByStartDate([...rawSchedules, newSchedule]);
+    setRawSchedules(updatedSchedules);
     setIsModalOpen(false);
   };
 
   const handleUpdateSchedule = (updatedSchedule) => {
-    setRawSchedules(prev =>
-      prev.map(sch => sch._id === updatedSchedule._id ? updatedSchedule : sch)
+    const updatedSchedules = rawSchedules.map(sch => 
+      sch._id === updatedSchedule._id ? updatedSchedule : sch
     );
+    const sortedSchedules = sortSchedulesByStartDate(updatedSchedules);
+    setRawSchedules(sortedSchedules);
     setIsEditModalOpen(false);
     setSelectedSchedule(null);
   };
@@ -65,82 +119,156 @@ const SchedulingPage = () => {
     setIsViewModalOpen(true);
   };
 
+  const columns = [
+    {
+      name: "Schedule Name",
+      selector: row => row.scheduleName,
+      sortable: true,
+      width: "20%",
+      sortFunction: (rowA, rowB) => {
+        return rowA.scheduleName.localeCompare(rowB.scheduleName);
+      },
+    },
+    {
+      name: "Day",
+      selector: row => row.workDays && row.workDays.length > 0 ? row.workDays.join(', ') : 'No days selected',
+      sortable: true,
+      width: "25%",
+    },
+    {
+      name: "Time",
+      selector: row => `${row.workStart} - ${row.workEnd}`,
+      sortable: true,
+      width: "20%",
+    },
+    {
+      name: "Schedule Type",
+      selector: row => row.scheduleType,
+      sortable: true,
+      width: "15%",
+    },
+    {
+      name: "Action",
+      cell: (row) => (
+        <div className="schedule-action-buttons">
+          <button
+            className="btn-update"
+            onClick={() => handleEditClick(row)}
+          >
+            Update
+          </button>
+          <button
+            className="btn-view"
+            onClick={() => handleViewDetails(row)}
+          >
+            View Details
+          </button>
+        </div>
+      ),
+      width: "20%",
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+    },
+  ];
+
+  const customStyles = {
+    headRow: {
+      style: {
+        backgroundColor: '#003f7d',
+        fontWeight: 'bold',
+        color: '#fff',
+        fontSize: '14px',
+      },
+    },
+    rows: {
+      style: {
+        minHeight: '55px',
+        fontSize: '12px',
+        backgroundColor: '#ffffff',
+        color: '#000000',
+      },
+    },
+    pagination: {
+      style: {
+        backgroundColor: '#f8f9fa',
+        borderTop: '1px solid #e0e0e0',
+      },
+    },
+  };
+
   return (
     <div className="scheduling-page">
-      <div className="schedule-control-container">
+      <div className="schedule-controls-container">
         <div className="schedule-search-container">
           <input
             type="text"
             placeholder="Search by Schedule Name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="scheduling-search-input"
+            className="schedule-search-input"
           />
         </div>
         
-        <div className="buttons-container">
+        <button 
+          className="add-schedule-button"
+          onClick={() => setIsModalOpen(true)}
+        >
+          Add Schedule
+        </button>
+
+        <div className="schedule-filter-container">
           <button 
-            className="btn-add-schedule"
-            onClick={() => setIsModalOpen(true)}
+            className={`schedule-filter-button ${selectedScheduleType ? 'active' : ''}`}
+            onClick={toggleFilter}
           >
-            Add Schedule
+            <FaFilter />
           </button>
+          {isFilterOpen && (
+            <div className="schedule-filter-dropdown">
+              <div className="schedule-filter-dropdown-header">
+                <span>Filter by Schedule Type</span>
+                <button 
+                  className="schedule-clear-filter-btn"
+                  onClick={clearFilter}
+                >
+                  Clear
+                </button>
+              </div>
+              <div className="schedule-filter-options">
+                <div 
+                  className={`schedule-filter-option ${selectedScheduleType === "" ? 'active' : ''}`}
+                  onClick={() => handleScheduleTypeSelect("")}
+                >
+                  All Types
+                </div>
+                {scheduleTypes.map(scheduleType => (
+                  <div 
+                    key={scheduleType}
+                    className={`schedule-filter-option ${selectedScheduleType === scheduleType ? 'active' : ''}`}
+                    onClick={() => handleScheduleTypeSelect(scheduleType)}
+                  >
+                    {scheduleType}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       <div className="schedule-table-container">
-        <table className="schedules-table">
-          <thead>
-            <tr>
-              <th>Schedule Name</th>
-              <th>Day</th>
-              <th>Time</th>
-              <th>Schedule Type</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredSchedules.length > 0 ? (
-              filteredSchedules.map((schedule) => (
-                <tr key={schedule._id}>
-                  <td>{schedule.scheduleName}</td>
-                  <td>{schedule.workDays && schedule.workDays.length > 0 ? schedule.workDays.join(', ') : 'No days selected'}</td>
-                  <td>{`${schedule.workStart} - ${schedule.workEnd}`}</td>
-                  <td>{schedule.scheduleType}</td>
-                  <td>
-                    <div className="schedule-action-buttons">
-                      <button
-                        className="btn-update"
-                        onClick={() => handleEditClick(schedule)}
-                      >
-                        Update
-                      </button>
-                      <button
-                        className="btn-view"
-                        onClick={() => handleViewDetails(schedule)}
-                      >
-                        View Details
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="no-data">No schedules found</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="pagination">
-        <span>Rows per page: 6</span>
-        <span>1-{filteredSchedules.length} of {filteredSchedules.length}</span>
-        <div className="pagination-controls">
-          <button disabled>‹</button>
-          <button disabled>›</button>
-        </div>
+        <DataTable
+          columns={columns}
+          data={filteredSchedules}
+          pagination
+          highlightOnHover
+          responsive
+          customStyles={customStyles}
+          paginationPerPage={6}
+          paginationRowsPerPageOptions={[6, 12, 18, 24]}
+          pointerOnHover
+        />
       </div>
 
       {isModalOpen && (

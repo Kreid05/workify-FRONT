@@ -1,4 +1,3 @@
-/* Modal Overlay */
 .add-department-modal-overlay {
   position: fixed;
   top: 0;
@@ -13,14 +12,15 @@
   backdrop-filter: blur(4px);
 }
 
-/* Modal Container */
 .add-department-modal-container {
   background: white;
-  border-radius: 12px;
+  border-radius: 8px;
   width: 90%;
   max-width: 500px;
   max-height: 90vh;
-  overflow-y: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   animation: modalSlideIn 0.3s ease-out;
 }
@@ -28,66 +28,64 @@
 @keyframes modalSlideIn {
   from {
     opacity: 0;
-    transform: translateY(-50px);
+    transform: translateY(-20px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
-/* Modal Header */
 .add-department-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 24px 0;
-  border-bottom: 1px solid #e5e7eb;
-  margin-bottom: 24px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e5e5;
+  background-color: #002347;
+  color: white;
 }
 
 .add-department-modal-header h2 {
   margin: 0;
-  color: #111827;
-  font-size: 1.5rem;
+  font-size: 20px;
   font-weight: 600;
+  color: white;
 }
 
 .add-department-close-button {
   background: none;
   border: none;
   font-size: 24px;
+  color: white;
   cursor: pointer;
-  color: #666;
-  padding: 0;
-  width: 30px;
-  height: 30px;
+  padding: 4px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  transition: background-color 0.2s;
+  border-radius: 4px;
 }
 
 .add-department-close-button:hover {
-  background-color: #f0f0f0;
-  color: #333;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Error Message */
 .add-department-error-message {
-  background-color: #fee;
-  color: #c53030;
+  background-color: #fee2e2;
+  color: #ef4444;
   padding: 12px 16px;
   margin: 16px 24px 0;
-  border-radius: 6px;
+  border-radius: 4px;
   font-size: 14px;
-  border-left: 4px solid #e53e3e;
+  border-left: 4px solid #ef4444;
 }
 
-/* Form Styles */
 .add-department-form {
-  padding: 0 24px 24px;
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
 }
 
 .add-department-form-group {
@@ -97,42 +95,45 @@
 .add-department-form-group label {
   display: block;
   margin-bottom: 6px;
-  font-weight: 500;
-  color: #374151;
-  font-size: 0.875rem;
+  font-weight: 600;
+  color: #666;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .add-department-form-group input {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  padding: 8px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  background-color: #f8f9fa;
+  color: #333;
   transition: all 0.2s;
-  background-color: white;
-  color: black;
+  box-sizing: border-box;
 }
 
 .add-department-form-group input:focus {
   outline: none;
-  border-color: #fd7702;
-  box-shadow: 0 0 0 3px rgba(246, 187, 59, 0.1);
+  border-color: #002347;
+  box-shadow: 0 0 0 3px rgba(0, 35, 71, 0.1);
+  background-color: white;
 }
 
 .add-department-form-group input:disabled {
-  background-color: #f9fafb;
-  cursor: not-allowed;
   opacity: 0.6;
+  cursor: not-allowed;
 }
 
-/* Job Title Button */
 .add-job-title-btn {
   background-color: #f8f9fa;
-  border: 1px dashed #d1d5db;
-  color: #374151;
+  border: 1px dashed #e5e5e5;
+  color: #666;
   padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  border-radius: 4px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
@@ -143,24 +144,22 @@
 }
 
 .add-job-title-btn:hover:not(:disabled) {
-  background-color: #e5e7eb;
-  border-color: #9ca3af;
-  color: #111827;
+  background-color: #e5e5e5;
+  border-color: #d1d5db;
+  color: #333;
 }
 
 .add-job-title-btn:focus {
   outline: none;
-  border-color: #fd7702;
-  box-shadow: 0 0 0 3px rgba(246, 187, 59, 0.1);
+  border-color: #002347;
+  box-shadow: 0 0 0 3px rgba(0, 35, 71, 0.1);
 }
 
 .add-job-title-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background-color: #f9fafb;
 }
 
-/* Job Title Row */
 .job-title-row {
   display: flex;
   gap: 8px;
@@ -175,7 +174,7 @@
 .remove-job-title-btn {
   background: none;
   border: none;
-  color: #dc2626;
+  color: #ef4444;
   cursor: pointer;
   padding: 6px;
   border-radius: 4px;
@@ -198,47 +197,46 @@
   cursor: not-allowed;
 }
 
-/* Form Actions */
 .add-department-form-actions {
+  border-top: 1px solid #e5e5e5;
+  padding: 16px 24px;
+  background-color: #f8f9fa;
   display: flex;
-  gap: 12px;
   justify-content: flex-end;
-  margin-top: 32px;
-  padding-top: 20px;
-  border-top: 1px solid #e5e7eb;
+  gap: 12px;
 }
 
 .add-department-cancel-button,
 .add-department-submit-button {
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-  border: 1px solid;
+  border: none;
 }
 
 .add-department-cancel-button {
-  background-color: white;
-  border-color: #d1d5db;
-  color: #374151;
+  background-color: #6c757d;
+  color: white;
 }
 
 .add-department-cancel-button:hover:not(:disabled) {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
+  background-color: #5a6268;
 }
 
 .add-department-submit-button {
-  background-color: #003f7d;
-  border-color: #003f7d;
+  background-color: #002347;
   color: white;
 }
 
 .add-department-submit-button:hover:not(:disabled) {
-  background-color: #002347;
-  border-color: #002347;
+  background-color: #003a66;
+}
+
+.add-department-submit-button:active {
+  transform: translateY(1px);
 }
 
 .add-department-cancel-button:disabled,
@@ -247,27 +245,72 @@
   cursor: not-allowed;
 }
 
-/* Responsive Design */
-@media (max-width: 480px) {
-  .add-department-modal-container {
-    width: 95%;
-    margin: 10px;
+@media (max-width: 768px) {
+  .add-department-modal-overlay {
+    padding: 10px;
   }
   
-  .add-department-modal-header {
-    padding: 16px 20px;
+  .add-department-modal-container {
+    max-width: 100%;
+    max-height: 95vh;
   }
   
   .add-department-form {
-    padding: 20px;
+    padding: 16px;
   }
   
   .add-department-form-actions {
     flex-direction: column;
+    padding: 16px;
   }
   
   .add-department-cancel-button,
   .add-department-submit-button {
     width: 100%;
   }
+}
+
+@media (max-width: 480px) {
+  .add-department-modal-header {
+    padding: 16px 20px;
+  }
+  
+  .add-department-modal-header h2 {
+    font-size: 18px;
+  }
+  
+  .add-department-form-group label {
+    font-size: 11px;
+  }
+  
+  .add-department-form-group input {
+    font-size: 13px;
+  }
+}
+
+.add-department-form::-webkit-scrollbar {
+  width: 6px;
+}
+
+.add-department-form::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.add-department-form::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.add-department-form::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.add-department-form-group label::after {
+  content: ' *';
+  color: #ef4444;
+  font-weight: normal;
+}
+
+.add-department-form-group label.optional::after {
+  content: '';
 }
