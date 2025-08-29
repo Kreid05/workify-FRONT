@@ -255,6 +255,7 @@ function Task() {
     rows: {
       style: {
         minHeight: '55px',
+        padding: '5px',
         fontSize: '12px',
         backgroundColor: '#ffffff',
         color: '#000000',

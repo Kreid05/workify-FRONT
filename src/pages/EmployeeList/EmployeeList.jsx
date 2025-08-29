@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import { FaFilter, FaEdit } from "react-icons/fa";
+import { FaFilter, FaEdit,} from "react-icons/fa";
 import EmployeeDetails from "./EmployeeDetails";
 import EmployeeUpdateModal from "./Modals/EmployeeUpdateModal";
+import AddEmployeeModal from "./Modals/addEmployeeModal";
 import "./EmployeeList.css";
 import api from "../../api/api";
 
@@ -15,6 +16,7 @@ function EmployeeList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEmployeeForUpdate, setSelectedEmployeeForUpdate] = useState(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
   const [employees, setEmployees] = useState([]);
 
   const [availableDepartments, setAvailableDepartments] = useState([]);
@@ -296,43 +298,50 @@ useEffect(() => {
               className="employee-search-input"
             />
           </div>
-          <div className="employee-filter-container">
+          <div className="employee-controls-buttons">
             <button 
-              className={`employee-filter-button ${selectedDepartment ? 'active' : ''}`}
-              onClick={toggleFilter}
-            >
-              <FaFilter />
+              className="employee-add-button"
+              onClick={() => setIsAddEmployeeModalOpen(true)}
+            >Add Employee
             </button>
-            {isFilterOpen && (
-              <div className="employee-filter-dropdown">
-                <div className="employee-filter-dropdown-header">
-                  <span>Filter by Department</span>
-                  <button 
-                    className="employee-clear-filter-btn"
-                    onClick={clearFilter}
-                  >
-                    Clear
-                  </button>
-                </div>
-                <div className="employee-filter-options">
-                  <div 
-                    className={`employee-filter-option ${selectedDepartment === "" ? 'active' : ''}`}
-                    onClick={() => handleDepartmentSelect("")}
-                  >
-                    All Departments
-                  </div>
-                  {availableDepartments.map(department => (
-                    <div 
-                      key={department}
-                      className={`employee-filter-option ${selectedDepartment === department ? 'active' : ''}`}
-                      onClick={() => handleDepartmentSelect(department)}
+            <div className="employee-filter-container">
+              <button 
+                className={`employee-filter-button ${selectedDepartment ? 'active' : ''}`}
+                onClick={toggleFilter}
+              >
+                <FaFilter />
+              </button>
+              {isFilterOpen && (
+                <div className="employee-filter-dropdown">
+                  <div className="employee-filter-dropdown-header">
+                    <span>Filter by Department</span>
+                    <button 
+                      className="employee-clear-filter-btn"
+                      onClick={clearFilter}
                     >
-                      {department}
+                      Clear
+                    </button>
+                  </div>
+                  <div className="employee-filter-options">
+                    <div 
+                      className={`employee-filter-option ${selectedDepartment === "" ? 'active' : ''}`}
+                      onClick={() => handleDepartmentSelect("")}
+                    >
+                      All Departments
                     </div>
-                  ))}
+                    {availableDepartments.map(department => (
+                      <div 
+                        key={department}
+                        className={`employee-filter-option ${selectedDepartment === department ? 'active' : ''}`}
+                        onClick={() => handleDepartmentSelect(department)}
+                      >
+                        {department}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
         <DataTable
@@ -357,6 +366,15 @@ useEffect(() => {
         employee={selectedEmployeeForUpdate}
         onUpdateEmployee={handleEmployeeUpdate}
       />
+      {isAddEmployeeModalOpen && (
+        <AddEmployeeModal
+          onClose={() => setIsAddEmployeeModalOpen(false)}
+          onSave={(newEmployee) => {
+            console.log("New employee data:", newEmployee);
+            setIsAddEmployeeModalOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }

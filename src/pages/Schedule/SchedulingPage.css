@@ -3,7 +3,6 @@
 .scheduling-page {
   padding: 1.5rem 0;
   background-color: #f9fafb;
-  max-height: 100%;
 }
 
 @media (min-width: 768px) {
