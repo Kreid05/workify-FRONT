@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-} from "recharts";
-import { FaClipboardList, FaCreditCard, FaUsers } from "react-icons/fa";
+import { FaClipboardList, FaTasks, FaUsers } from "react-icons/fa";
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import "./DashboardOverview.css";
 import api from "../../../api/api";
 
@@ -17,16 +9,16 @@ const DashboardOverview = () => {
   const navigate = useNavigate();
   const [remainingTasks, setRemainingTasks] = useState(0); 
   const [completedTasks, setCompletedTasks] = useState(0);
-  const [pendingTasks, setPendingTasks] = useState(0);
   const [pendingTaskCount, setPendingTaskCount] = useState(0);
   const [totalTaskCount, setTotalTaskCount] = useState(0);
+  const [totalEmployees, setTotalEmployees] = useState(0);
 
   // fetch tasks and calculate totals for stats
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         const res = await api.get("/tasks");
-        let inProgress = 0;
+        let inProgress = 0; 
         let completed = 0;
         let pending = 0;
 
@@ -39,13 +31,11 @@ const DashboardOverview = () => {
 
         setRemainingTasks(inProgress);
         setCompletedTasks(completed);
-        setPendingTasks(pending);
         setPendingTaskCount(pending); 
         setTotalTaskCount(res.data.length); 
       } catch (err) {
         setRemainingTasks(0);
         setCompletedTasks(0);
-        setPendingTasks(0);
         setPendingTaskCount(0);
         setTotalTaskCount(0);
       }
@@ -54,7 +44,23 @@ const DashboardOverview = () => {
     fetchTasks();
   }, []);
 
-  const totalEmployees = 45;
+  // fetch total employees count
+  useEffect(() => {
+    const fetchTotalEmployees = async () => {
+      try {
+        const res = await api.get("/emp-info/all");
+        setTotalEmployees(res.data.length);
+      } catch (err) {
+        setTotalEmployees(0);
+      }
+    };
+
+    fetchTotalEmployees();
+  }, []);
+
+  const handletotalEmployeesClick = () => {
+    navigate('/dashboard/employee-list');
+  };
 
   const handleRemainingTasksClick = () => {
     navigate('/dashboard/progress');
@@ -68,79 +74,137 @@ const DashboardOverview = () => {
     navigate('/dashboard/task');
   };
 
-  const recentlyHired = [
-    { name: "Chris Friedkly", department: "Engineering", jobTitle: "Software Engineer", hiredDate: "August 11, 2025" },
-    { name: "Maggie Johnson", department: "Marketing", jobTitle: "Marketing Manager", hiredDate: "August 9, 2025" },
-    { name: "Gael Harry", department: "Finance", jobTitle: "Financial Analyst", hiredDate: "August 9, 2025" },
-    { name: "Jenna Sullivan", department: "HR", jobTitle: "HR Specialist", hiredDate: "August 5, 2025" },
-  ];
-
-  const hiredHistoryData = [
-    { year: 2016, monthlyRate: 5 },
-    { year: 2017, monthlyRate: 8 },
-    { year: 2018, monthlyRate: 12 },
-    { year: 2019, monthlyRate: 15 },
-    { year: 2020, monthlyRate: 10 },
-    { year: 2021, monthlyRate: 18 },
-    { year: 2022, monthlyRate: 22 },
-    { year: 2023, monthlyRate: 25 },
-  ];
-
-  const topEmployeeMonth = {
-    name: "Chris Redfield",
-    month: "August",
-  };
-
-  const topEmployeeYear = {
-    name: "Leon Kennedy",
-    year: 2024,
-  };
-
   // circular progress bar calculation
   const progressPercent = totalTaskCount > 0 ? (pendingTaskCount / totalTaskCount) * 100 : 0;
+
+  // Hardcoded data for employees per department
+  const departmentData = [
+    { name: "Engineering", value: 12 },
+    { name: "Marketing", value: 8 },
+    { name: "Sales", value: 6 },
+    { name: "HR", value: 4 },
+    { name: "Finance", value: 3 },
+    { name: "Operations", value: 5 }
+  ];
+
+  // Hardcoded data for new hired employees (2 most recent)
+  const newHiredEmployees = [
+    {
+      name: "Lim Alcovendas",
+      department: "Engineering",
+      jobTitle: "Software Engineer",
+      hiredDate: "2024-12-10"
+    },
+    {
+      name: "Mark Regie Magtangob",
+      department: "Marketing",
+      jobTitle: "Marketing Specialist",
+      hiredDate: "2024-12-08"
+    }
+  ];
+
+  // Colors for pie chart segments
+  const COLORS = ['#002347', '#003366', '#003f7d', '#FF8e00', '#fd7702', '#FF5003'];
+
+  // Function to determine urgency class based on due date
+  const getDueDateClass = (dueDate) => {
+    const today = new Date();
+    const due = new Date(dueDate);
+    const diffTime = due - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays <= 2) return 'due-date-urgent';
+    if (diffDays <= 7) return 'due-date-soon';
+    return 'due-date-future';
+  };
+
+  // Hardcoded data for upcoming due date tasks - limited to 8 rows
+  const upcomingTasks = [
+    { 
+      taskName: "Q4 Financial Report", 
+      assignedTo: "Regine Mae Hambiol", 
+      dueDate: "2025-12-15",
+    },
+    { 
+      taskName: "Website Redesign", 
+      assignedTo: "Klei Ishia Pagatpatan", 
+      dueDate: "2025-12-18",
+    },
+    { 
+      taskName: "Client Presentation", 
+      assignedTo: "Lim Alcovendas", 
+      dueDate: "2025-12-20",
+    },
+    { 
+      taskName: "Inventory Audit", 
+      assignedTo: "Zeke Rusell Olasiman", 
+      dueDate: "2025-12-22",
+    },
+    { 
+      taskName: "Team Training Session", 
+      assignedTo: "Mark Regie Magtangob", 
+      dueDate: "2025-12-25",
+    },
+    { 
+      taskName: "Update UI", 
+      assignedTo: "Jesalle Villegas", 
+      dueDate: "2025-12-29",
+    },
+    { 
+      taskName: "Annual Budget Planning", 
+      assignedTo: "Cedric Mark Solano", 
+      dueDate: "2025-12-31",
+    },
+    { 
+      taskName: "Performance Reviews", 
+      assignedTo: "Regina Gail Federez", 
+      dueDate: "2026-01-05",
+    }
+  ];
 
   return (
     <div className="hr-dashboard-container">
       <div className="hr-dashboard-stats-row">
-      <div className="hr-stat-card stat-card-remainingTask" onClick={handleRemainingTasksClick} style={{ cursor: 'pointer' }}>
-        <div className="hr-stat-header">
-          <h3>Remaining Tasks</h3>
+        <div className="hr-stat-card stat-card-totalEmployees" onClick={handletotalEmployeesClick} style={{ cursor: 'pointer' }}>
+          <div className="hr-stat-header">
+            <h3>Total Employee</h3>
+          </div>
+          <div className="hr-stat-main">
+            <div className="hr-stat-number">{totalEmployees}</div>
+            <FaUsers className="stat-icon" />
+          </div>
+          <div className="hr-stat-subtext">
+            Employees of Lunara Co.
+          </div>
+          <div className="hr-stat-link">Details &rarr;</div>
         </div>
-        <div className="hr-stat-main">
-          <div className="hr-stat-number">{remainingTasks}</div>
-          <FaClipboardList className="stat-icon" />
-        </div>
-        <div className="hr-stat-subtext">In progress tasks</div>
-        <div className="hr-stat-link">Progress &rarr;</div>
-      </div>
 
-      <div className="hr-stat-card stat-card-completedTask" onClick={handleCompletedTasksClick} style={{ cursor: 'pointer' }}>
-        <div className="hr-stat-header">
-          <h3>Completed Tasks</h3>
+        <div className="hr-stat-card stat-card-remainingTask" onClick={handleRemainingTasksClick} style={{ cursor: 'pointer' }}>
+          <div className="hr-stat-header">
+            <h3>Remaining Tasks</h3>
+          </div>
+          <div className="hr-stat-main">
+            <div className="hr-stat-number">{remainingTasks}</div>
+            <FaClipboardList className="stat-icon" />
+          </div>
+          <div className="hr-stat-subtext">In progress tasks</div>
+          <div className="hr-stat-link">Progress &rarr;</div>
         </div>
-        <div className="hr-stat-main">
-          <div className="hr-stat-number">{completedTasks}</div>
-          <FaClipboardList className="stat-icon" />
-        </div>
-        <div className="hr-stat-subtext">Finished tasks</div>
-        <div className="hr-stat-link">Details &rarr;</div>
-      </div>
 
-      <div className="hr-stat-card stat-card-totalPaid" onClick={handlePendingTasksClick} style={{ cursor: 'pointer' }}>
-        <div className="hr-stat-header">
-          <h3>Pending Tasks</h3>
+        <div className="hr-stat-card stat-card-completedTask" onClick={handleCompletedTasksClick} style={{ cursor: 'pointer' }}>
+          <div className="hr-stat-header">
+            <h3>Completed Tasks</h3>
+          </div>
+          <div className="hr-stat-main">
+            <div className="hr-stat-number">{completedTasks}</div>
+            <FaTasks className="stat-icon" />
+          </div>
+          <div className="hr-stat-subtext">Finished tasks</div>
+          <div className="hr-stat-link">Details &rarr;</div>
         </div>
-        <div className="hr-stat-main">
-          <div className="hr-stat-number">{pendingTasks}</div>
-          <FaClipboardList className="stat-icon" />
-        </div>
-        <div className="hr-stat-subtext">
-          Pending Tasks
-        </div>
-        <div className="hr-stat-link">Details &rarr;</div>
-      </div>
 
-          <div className="hr-stat-card stat-card-pendingPayments">
+        <div className="hr-stat-card stat-card-pendingTasks" 
+          onClick={handlePendingTasksClick} style={{ cursor: 'pointer' }}>
           <div className="hr-stat-header">
             <h3>Pending Tasks</h3>
           </div>
@@ -179,73 +243,100 @@ const DashboardOverview = () => {
           <div className="hr-stat-subtext-small">
             Pending Tasks out of Total Tasks
           </div>
+          <div className="hr-stat-link-pending">Details &rarr;</div>
         </div>
       </div>
 
-      <div className="hr-dashboard-lower-row">
-        <div className="hr-recently-hired-card">
-          <h3>Recently Hired</h3>
-          <ul className="hr-recently-hired-list">
-            {recentlyHired.map((employee, index) => (
-              <li key={index} className="recently-hired-item">
-                <div className="hr-hired-name">{employee.name}</div>
-                <div className="hr-hired-department">{employee.department}</div>
-                <div className="hr-hired-job-title">{employee.jobTitle}</div>
-                <div className="hr-hired-hired-date">{employee.hiredDate}</div>
-              </li>
-            ))}
-          </ul>
-          <div className="hr-stat-link-orange">Hired History &rarr;</div>
+      {/* Charts and Tables Row */}
+      <div className="hr-charts-tables-row">
+        {/* Left Column - Pie Chart and New Hires Table */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          {/* Pie Chart for Employees per Department */}
+          <div className="hr-pie-chart-container">
+            <h3 className="hr-pie-chart-title">Employees by Department</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={departmentData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {departmentData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value) => [`${value} employees`, 'Count']}
+                  labelFormatter={(name) => `Department: ${name}`}
+                />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* New Hired Employees Table - Below Pie Chart */}
+          <div className="hr-new-hires-container">
+            <h3 className="hr-new-hires-title">New Hired Employees</h3>
+            <div className="hr-new-hires-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Job Title</th>
+                    <th>Hired Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {newHiredEmployees.map((employee, index) => (
+                    <tr key={index}>
+                      <td className="employee-name">{employee.name}</td>
+                      <td className="employee-department">{employee.department}</td>
+                      <td className="employee-job-title">{employee.jobTitle}</td>
+                      <td className="employee-hired-date">
+                        {new Date(employee.hiredDate).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
-        <div className="hr-hired-history-card">
-          <div className="hr-hired-history-header">
-            <h3>Hired History</h3>
-            <select className="hr-yearly-select" defaultValue="yearly">
-              <option value="yearly">Yearly</option>
-              <option value="monthly">Monthly</option>
-            </select>
-          </div>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={hiredHistoryData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="colorSalary" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="year" stroke="#333" />
-              <YAxis stroke="#333" />
-              <CartesianGrid strokeDasharray="3 3" />
-              <Tooltip />
-              <Line
-                type="monotone"
-                dataKey="monthlyRate"
-                stroke="#8884d8"
-                fillOpacity={1}
-                fill="url(#colorSalary)"
-                strokeWidth={3}
-                dot={{ r: 4 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-          <div className="hr-bottom-cards-row">
-            <div className="hr-bottom-card">
-              <div className="hr-bottom-card-title">Top Employee of the Month</div>
-              <div className="hr-bottom-card-name">{topEmployeeMonth.name}</div>
-              <div className="hr-bottom-card-sub">{topEmployeeMonth.month}</div>
-            </div>
-            <div className="hr-bottom-card">
-              <div className="hr-bottom-card-title">Top Employee of the Year</div>
-              <div className="hr-bottom-card-name">{topEmployeeYear.name}</div>
-              <div className="hr-bottom-card-sub">{topEmployeeYear.year}</div>
-            </div>
-            <div className="hr-bottom-card">
-              <div className="hr-bottom-card-title">Total Employee</div>
-              <FaUsers className="hr-bottom-card-icon" />
-              <div className="hr-bottom-card-number">{totalEmployees}</div>
-              <div className="hr-bottom-card-sub">Employees</div>
-            </div>
+        {/* Right Column - Upcoming Due Date Tasks Table */}
+        <div className="hr-tasks-table-container">
+          <h3 className="hr-tasks-table-title">Upcoming Due Date Tasks</h3>
+          <div className="hr-tasks-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Task Name</th>
+                  <th>Assigned To</th>
+                  <th>Due Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {upcomingTasks.map((task, index) => (
+                  <tr key={index}>
+                    <td className="task-name">
+                      {task.taskName}
+                    </td>
+                    <td className="task-assigned">{task.assignedTo}</td>
+                    <td>
+                      <span className={`task-due-date ${getDueDateClass(task.dueDate)}`}>
+                        {new Date(task.dueDate).toLocaleDateString()}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
